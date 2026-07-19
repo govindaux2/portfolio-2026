@@ -32,8 +32,9 @@ Hire as a Product Designer with core experience building UX for AI agents. Portf
 ## Miro board (execution surface for phase artifacts)
 
 - **Status:** Preferred working surface for M0→M8 outputs (per user: “Continue with m1 on Miro”)
-- **Board URL:** `[NEED INPUT — paste Miro board URL]`
-- **Blocker (2026-07-19 cloud run):** Miro MCP server is `needsAuth`. Interactive auth is **only available in Cursor desktop IDE** — not in this mobile/cloud agent environment. After auth, resume and push `portfolio/mfg/M1-thesis.md` onto the Manufacturing frame.
+- **Board URL:** https://miro.com/app/board/uXjVH6N3ezY=/?share_link_id=31391533379
+- **Board ID:** `uXjVH6N3ezY=`
+- **Blocker (2026-07-19 cloud run):** Miro MCP server is `needsAuth`. Interactive auth is **only available in Cursor desktop IDE** — not in this mobile/cloud agent environment. Board is private (`isDirectLinkToPrivateBoard`); share link alone does not grant API access. After auth, resume and push `portfolio/mfg/M1-thesis.md` onto the Manufacturing frame.
 
 ## Projects
 
@@ -55,12 +56,13 @@ Hire as a Product Designer with core experience building UX for AI agents. Portf
 - Planning board + detailed AI build routes are **done** on FigJam
 - **Repo:** draft **M1 thesis** written at `portfolio/mfg/M1-thesis.md` (from planning locks only; metrics still `[NEED INPUT]`)
 - **Repo:** `portfolio/mfg/M0-source-dump.md` is a placeholder — real M0 dump not yet captured
-- **Miro:** could not write M1 (MCP auth required)
+- **Miro board URL captured:** https://miro.com/app/board/uXjVH6N3ezY=/?share_link_id=31391533379
+- **Miro write still blocked:** MCP `needsAuth` (desktop Cursor only); private board not readable via share link alone
 - **Next action:**
   1. Authenticate **Miro** MCP in Cursor **desktop**
-  2. Paste Miro board URL into this checkpoint
+  2. Agent: `context_explore` board → place M1 doc from `portfolio/mfg/M1-thesis.md`
   3. Complete / verify **M0** on Miro → reconcile into `M0-source-dump.md`
-  4. Lock **M1** on Miro (thesis + value + measurement) using `M1-thesis.md`
+  4. Lock **M1** on Miro (thesis + value + measurement)
   5. Only then continue **M2→M8**
 
 ## Suggested resume steps for the agent
