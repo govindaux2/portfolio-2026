@@ -3,6 +3,11 @@
 **Saved:** 2026-07-19  
 **Resume phrase:** “Continue from the portfolio case study checkpoint”
 
+## Repo
+
+- **GitHub:** https://github.com/govindaux2/portfolio-2026
+- **Local:** `/Users/govinda/portfolio-2026` (`main` tracking `origin/main`)
+
 ## Goal
 
 Hire as a Product Designer with core experience building UX for AI agents. Portfolio proves agent UX across three projects with clear **value delivered** + **value measured**.
