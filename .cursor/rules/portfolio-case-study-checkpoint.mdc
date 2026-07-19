@@ -1,0 +1,15 @@
+---
+description: Resume portfolio AI-agent UX case study work from the saved checkpoint (FigJam build routes, next steps).
+alwaysApply: true
+---
+
+# Portfolio case study checkpoint
+
+When the user wants to continue portfolio / case study / FigJam planning work, or says anything like “continue from the checkpoint”:
+
+1. Read `CHECKPOINT-portfolio-case-studies.md` first.
+2. Treat the FigJam board in that file as the planning source of truth.
+3. Resume at the **Next action** in the checkpoint (currently: Manufacturing M0 → M1) unless the user specifies otherwise.
+4. Follow the phase prompts on the board; one artifact per step; no invented production metrics.
+
+Do not rebuild the FigJam map from scratch unless explicitly asked.
