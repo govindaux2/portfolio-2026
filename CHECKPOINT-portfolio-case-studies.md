@@ -1,18 +1,19 @@
 # Checkpoint — Portfolio case studies (AI Agent UX)
 
 **Saved:** 2026-07-19  
-**Resume phrase:** “Continue from the portfolio case study checkpoint”
+**Resume phrase:** “Continue from the portfolio case study checkpoint” / “Continue with M1 on Miro”
 
 ## Repo
 
 - **GitHub:** https://github.com/govindaux2/portfolio-2026
 - **Local:** `/Users/govinda/portfolio-2026` (`main` tracking `origin/main`)
+- **This run branch:** `cursor/mfg-m1-thesis-6537`
 
 ## Goal
 
 Hire as a Product Designer with core experience building UX for AI agents. Portfolio proves agent UX across three projects with clear **value delivered** + **value measured**.
 
-## FigJam board (source of truth for planning)
+## FigJam board (source of truth for **planning**)
 
 - **URL:** https://www.figma.com/board/w9GCsW6R4c4dQ3q1mUwvAQ
 - **File key:** `w9GCsW6R4c4dQ3q1mUwvAQ`
@@ -28,6 +29,12 @@ Hire as a Product Designer with core experience building UX for AI agents. Portf
 5. **PAGE 3 — Nile 2.0 AI Build Flow** — N0→N8 prompts (build 2nd)
 6. **PAGE 4 — Shared AI Agent UX System** — S1→S4 craft page (after 2+ case studies)
 
+## Miro board (execution surface for phase artifacts)
+
+- **Status:** Preferred working surface for M0→M8 outputs (per user: “Continue with m1 on Miro”)
+- **Board URL:** `[NEED INPUT — paste Miro board URL]`
+- **Blocker (2026-07-19 cloud run):** Miro MCP server is `needsAuth`. Interactive auth is **only available in Cursor desktop IDE** — not in this mobile/cloud agent environment. After auth, resume and push `portfolio/mfg/M1-thesis.md` onto the Manufacturing frame.
+
 ## Projects
 
 | Project | Narrative | Hero limelight | Build order |
@@ -40,21 +47,29 @@ Hire as a Product Designer with core experience building UX for AI agents. Portf
 
 - One AI thread per project; pin the yellow “thread” card text at the top
 - AI drafts → user verifies truth → then screens (no fake metrics as fact; mark unknowns `[NEED INPUT]`)
-- Phase outputs go in folders: `/portfolio/mfg`, `/nile`, `/kynder`, `/system` (one markdown per phase)
+- Phase outputs go in folders: `/portfolio/mfg`, `/nile`, `/kynder`, `/system` (one markdown per phase) **and** mirrored to Miro when MCP is available
 - Value template: *For [persona], the agent [does job], so they [outcome]. Measured by [metric/proxy]…*
 
 ## Where we left off
 
 - Planning board + detailed AI build routes are **done** on FigJam
-- **No** case study copy, hero frames, or site sections implemented yet from this plan
-- **Next action:** PAGE 0 “Start here today” → PAGE 2 → **M0 source dump** → **M1 thesis**
+- **Repo:** draft **M1 thesis** written at `portfolio/mfg/M1-thesis.md` (from planning locks only; metrics still `[NEED INPUT]`)
+- **Repo:** `portfolio/mfg/M0-source-dump.md` is a placeholder — real M0 dump not yet captured
+- **Miro:** could not write M1 (MCP auth required)
+- **Next action:**
+  1. Authenticate **Miro** MCP in Cursor **desktop**
+  2. Paste Miro board URL into this checkpoint
+  3. Complete / verify **M0** on Miro → reconcile into `M0-source-dump.md`
+  4. Lock **M1** on Miro (thesis + value + measurement) using `M1-thesis.md`
+  5. Only then continue **M2→M8**
 
 ## Suggested resume steps for the agent
 
-1. Open / re-read this checkpoint + FigJam PAGE 0 and PAGE 2
-2. Help user complete Manufacturing **M0** (structured dump) then **M1** (thesis + value + measurement)
-3. Continue M2→M8 only after thesis is locked
+1. Confirm Miro MCP is authenticated; `context_explore` the board
+2. Place M1 document (and stickies if useful) in the Manufacturing frame
+3. Help user lock thesis checklist in `M1-thesis.md`
 4. Do not redesign the whole board unless asked; execute the phase prompts
+5. Do not invent production metrics
 
 ## Related local asset
 
