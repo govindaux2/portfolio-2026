@@ -5,6 +5,12 @@ import { Home } from './pages/Home';
 const PrototypePage = lazy(() =>
   import('./pages/PrototypePage').then((m) => ({ default: m.PrototypePage }))
 );
+const GlassLabPage = lazy(() =>
+  import('./pages/GlassLabPage').then((m) => ({ default: m.GlassLabPage }))
+);
+const GlassLabV1Page = lazy(() =>
+  import('./pages/GlassLabV1Page').then((m) => ({ default: m.GlassLabV1Page }))
+);
 
 export default function App() {
   return (
@@ -12,6 +18,8 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/prototypes/:slug" element={<PrototypePage />} />
+        <Route path="/lab/glass" element={<GlassLabPage />} />
+        <Route path="/lab/glass/v1" element={<GlassLabV1Page />} />
       </Routes>
     </Suspense>
   );

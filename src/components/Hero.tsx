@@ -5,8 +5,7 @@ import { heroFrag } from './gl/shaders';
 
 const ShaderPlane = lazy(() => import('./gl/ShaderPlane'));
 
-const reduced = () =>
-  window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+gsap.registerPlugin(useGSAP);
 
 export function Hero() {
   const root = useRef<HTMLElement>(null);
@@ -23,22 +22,32 @@ export function Hero() {
 
   useGSAP(
     () => {
-      if (reduced()) return;
-      gsap.from('.hero h1 .line > span', {
-        yPercent: 110,
-        duration: 1.1,
-        stagger: 0.09,
-        ease: 'power4.out',
-        delay: 0.15,
+      const mm = gsap.matchMedia();
+
+      mm.add('(prefers-reduced-motion: no-preference)', () => {
+        const tl = gsap.timeline({
+          delay: 0.15,
+          defaults: { ease: 'power4.out' },
+        });
+
+        tl.from('.hero h1 .line > span', {
+          yPercent: 110,
+          duration: 1.1,
+          stagger: 0.09,
+        }).from(
+          '.hero-sub, .hero-cta',
+          {
+            autoAlpha: 0,
+            y: 18,
+            duration: 0.9,
+            stagger: 0.12,
+            ease: 'power3.out',
+          },
+          0.4
+        );
       });
-      gsap.from('.hero-sub, .hero-cta', {
-        opacity: 0,
-        y: 18,
-        duration: 0.9,
-        stagger: 0.12,
-        ease: 'power3.out',
-        delay: 0.55,
-      });
+
+      return () => mm.revert();
     },
     { scope: root }
   );

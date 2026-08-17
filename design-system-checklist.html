@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Design System — Build Checklist</title>
+<style>
+  :root{
+    --bg:#0e1013; --panel:#14171c; --line:#262b33; --line2:#1c2027;
+    --text:#e8eaed; --muted:#8b93a1; --dim:#6f7787;
+    --accent:#6ea8fe; --done:#31c48d; --doubt:#f0a63f;
+    --s:#7c6cf0; --m:#3fa9f5; --l:#e5687f;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--text);
+    font:14px/1.55 ui-sans-serif,-apple-system,"Inter","Segoe UI",Roboto,sans-serif;}
+
+  /* nav */
+  .topnav{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:6px;
+    padding:0 16px;height:48px;background:rgba(14,16,19,.9);backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line)}
+  .topnav .brand{font-size:12.5px;font-weight:650;margin-right:14px;letter-spacing:.01em}
+  .topnav a{color:var(--muted);text-decoration:none;font-size:12.5px;padding:6px 10px;border-radius:7px}
+  .topnav a:hover{background:#1a1e24;color:var(--text)}
+  .topnav a.active{background:#243044;color:#cfe0ff}
+  .topnav .sp{flex:1}
+
+  .btn{background:#1a1e24;border:1px solid var(--line);color:var(--text);
+    padding:6px 11px;border-radius:7px;font-size:12px;cursor:pointer;font-family:inherit}
+  .btn:hover{background:#222732;border-color:#39414e}
+  .btn.on{background:#243044;border-color:#3c5a86;color:#cfe0ff}
+
+  .wrap{max-width:1080px;margin:0 auto;padding:34px 20px 120px}
+  h1{font-size:26px;margin:0 0 8px;letter-spacing:-.01em}
+  .lede{color:var(--muted);font-size:14px;max-width:70ch;margin:0 0 22px}
+  .lede b{color:var(--text);font-weight:600}
+
+  /* controls */
+  .controls{position:sticky;top:48px;z-index:40;background:rgba(14,16,19,.94);
+    backdrop-filter:blur(10px);padding:12px 0;margin-bottom:18px;border-bottom:1px solid var(--line2);
+    display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+  .controls .lbl{font-size:11px;color:var(--dim);text-transform:uppercase;letter-spacing:.12em;margin-right:2px}
+
+  .progress{display:flex;align-items:center;gap:10px;margin-left:auto;font-size:12px;color:var(--muted)}
+  .bar{width:150px;height:6px;border-radius:99px;background:#1e232b;overflow:hidden}
+  .bar i{display:block;height:100%;background:var(--done);width:0;transition:width .25s}
+
+  /* table */
+  section{margin-bottom:34px}
+  section > h2{font-size:15px;margin:0 0 3px;display:flex;align-items:baseline;gap:9px}
+  section > h2 em{font-style:normal;font-size:11px;color:var(--dim);font-weight:400}
+  section > .why{color:var(--muted);font-size:12.5px;margin:0 0 12px;max-width:78ch}
+
+  table{width:100%;border-collapse:collapse;background:var(--panel);
+    border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  th{font-size:10.5px;text-transform:uppercase;letter-spacing:.12em;color:var(--dim);
+    text-align:left;font-weight:600;padding:9px 12px;background:#161a20;border-bottom:1px solid var(--line)}
+  td{padding:11px 12px;border-bottom:1px solid var(--line2);vertical-align:top;font-size:13px}
+  tr:last-child td{border-bottom:none}
+  tr.row:hover td{background:#171b21}
+  td.item b{display:block;font-weight:600;margin-bottom:2px}
+  td.item span{color:var(--muted);font-size:12px;line-height:1.5}
+  td.sizes{width:112px;white-space:nowrap}
+  td.st{width:150px;white-space:nowrap}
+
+  .pill{display:inline-block;font-size:9.5px;font-weight:700;letter-spacing:.08em;
+    padding:2px 6px;border-radius:5px;margin-right:3px;color:#0e1013}
+  .pill.s{background:var(--s);color:#fff}
+  .pill.m{background:var(--m)}
+  .pill.l{background:var(--l);color:#fff}
+  .pill.off{background:#232830;color:#4d545f}
+
+  .mark{border:1px solid var(--line);background:#1a1e24;color:var(--muted);
+    border-radius:7px;padding:4px 9px;font-size:11.5px;cursor:pointer;font-family:inherit}
+  .mark:hover{border-color:#39414e;color:var(--text)}
+  .mark[data-st=done]{background:rgba(49,196,141,.13);border-color:#2a6f55;color:#7fe0bb}
+  .mark[data-st=doubt]{background:rgba(240,166,63,.13);border-color:#7a5a24;color:#f3c887}
+
+  tr.hide{display:none}
+  .note{color:var(--dim);font-size:12px;margin-top:26px;padding:14px;border:1px dashed var(--line);
+    border-radius:10px;line-height:1.6}
+  .note b{color:var(--text)}
+  a.inline{color:var(--accent)}
+</style>
+</head>
+<body>
+
+<nav class="topnav">
+  <span class="brand">Design System Kit</span>
+  <a href="design-system-agent-blueprint.html">Agent blueprint</a>
+  <a href="design-system-checklist.html" class="active">Build checklist</a>
+  <a href="design-system-components.html">Component gallery</a>
+  <a href="design-system-motion.html">Motion lab</a>
+  <a href="design-system-agent-ui.html">Agent UI</a>
+  <a href="agent-ui-architecture.html">Architecture</a>
+  <span class="sp"></span>
+  <button class="btn" id="export">Export status</button>
+  <button class="btn" id="copy">Copy for agent</button>
+  <button class="btn" id="clear">Clear marks</button>
+</nav>
+
+<div class="wrap">
+  <h1>What it actually takes to build a design system</h1>
+  <p class="lede">Every row is one decision or artefact. Read the plain-English line, then mark it
+  <b>Done</b> when it exists, or <b>Not sure</b> when you don't understand it or don't know if you need it.
+  Then hit <b>Copy for agent</b> and paste it into chat — I'll pick up exactly the rows you flagged and walk you through them.
+  Filter by size first: if you're starting out, hide everything that isn't <span class="pill s">S</span>.</p>
+
+  <div class="controls">
+    <span class="lbl">Show</span>
+    <button class="btn size on" data-size="S">Small / solo</button>
+    <button class="btn size on" data-size="M">Mid product</button>
+    <button class="btn size on" data-size="L">Enterprise</button>
+    <span class="lbl" style="margin-left:10px">Status</span>
+    <button class="btn filt" data-filt="all">All</button>
+    <button class="btn filt" data-filt="todo">Unmarked</button>
+    <button class="btn filt" data-filt="doubt">Not sure</button>
+    <div class="progress"><span id="pct">0%</span><span class="bar"><i id="fill"></i></span><span id="cnt"></span></div>
+  </div>
+
+  <div id="out"></div>
+
+  <div class="note">
+    <b>Reading the size columns.</b>
+    <span class="pill s">S</span> Small / solo — one product, one team, one theme. Roughly 2–4 weeks of part-time work.
+    <span class="pill m">M</span> Mid product — several squads, light + dark, a real component library. 2–4 months.
+    <span class="pill l">L</span> Enterprise — multiple brands or products, versioning, governance, audits. 6–18 months and it never really "finishes".
+    <br><br>
+    <b>Start here if you're a beginner.</b> Do the S rows in Sections 1, 2 and 4 only. That gives you tokens, a type and colour scale,
+    and about twelve components — which is a genuinely usable design system you can reuse on every project. Everything else is what you add
+    when more people start depending on your work.
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   DATA
+   sizes: which org sizes need it
+   ============================================================ */
+const SECTIONS = [
+  {
+    id:"strategy", title:"1 · Strategy & scope",
+    why:"Before any pixels. Most design systems fail here — they get built as a pile of components with nobody clear on who it serves or when it's allowed to change.",
+    items:[
+      ["Who it serves", "Name the products and teams that will use this. A system for one portfolio site is a very different object from one serving four apps.", "SML"],
+      ["Principles (3–5 lines)", "Short opinions like 'quiet by default' or 'never more than two accent colours on screen'. They settle arguments later so you don't re-decide the same thing weekly.", "SML"],
+      ["Scope list", "Write down what is IN the system and what is deliberately OUT. 'Marketing page layouts are out of scope' is a real, useful sentence.", "SML"],
+      ["Audit of what exists", "Screenshot every button, input and card currently in your product. You'll usually find 9 button styles. That list IS your component backlog.", "ML"],
+      ["Ownership model", "Who approves changes, who can add components, how requests come in. Skip at solo scale, mandatory the moment a second person contributes.", "ML"],
+      ["Success measures", "Adoption %, how many detached instances, time to build a new screen. Without these you can't argue for more investment.", "L"],
+    ]
+  },
+  {
+    id:"foundations", title:"2 · Foundations (design tokens)",
+    why:"Tokens are just named values — colour.bg.default instead of #101317. This is 80% of the value of a design system and the part beginners skip. Do this first.",
+    items:[
+      ["Colour primitives", "The raw ramps: grey 50→950, plus your brand hue and success/warning/danger. About 10 steps each. Nobody uses these directly in designs.", "SML"],
+      ["Semantic colour tokens", "The ones you actually use: surface, surface-raised, text-primary, text-muted, border, accent, danger. They point AT primitives. This indirection is what lets dark mode be a one-line swap.", "SML"],
+      ["Contrast checked", "Every text-on-background pair hits 4.5:1 (3:1 for large text). Check it once at the token level and you can stop worrying about it per-component.", "SML"],
+      ["Type scale", "5–7 sizes from one ratio (1.2 or 1.25 works). Pair each with a line-height and weight. Name them display / h1 / h2 / body / small / caption.", "SML"],
+      ["Font stack + loading", "One or two families max. Decide the fallback stack and how you avoid layout shift while webfonts load.", "SML"],
+      ["Spacing scale", "A 4px base: 4, 8, 12, 16, 24, 32, 48, 64. Never use a number outside the scale. This single rule fixes most 'looks off' problems.", "SML"],
+      ["Radius scale", "3 values, e.g. 6 / 10 / 999px. More than that and the UI stops feeling like one product.", "SML"],
+      ["Elevation / shadows", "2–3 levels only. In a minimal system prefer a border over a shadow wherever you can.", "SML"],
+      ["Motion tokens", "Two durations (120ms, 220ms) and two easings. Consistent motion is a surprisingly strong quality signal.", "SM"],
+      ["Icon set + sizing rules", "Pick one library (Lucide, Phosphor). Fix the sizes to 16/20/24 and one stroke width. Mixing icon sets is the fastest way to look amateur.", "SML"],
+      ["Dark mode as token modes", "Same semantic names, different values. If your semantic layer is right this is nearly free; if it isn't, it's a rewrite.", "SM"],
+      ["Multi-brand / density modes", "Extra modes on the same tokens for a second brand or a compact table view. Only enterprises need this.", "L"],
+      ["Layout grid & breakpoints", "Container widths, column count, gutters, and 3–4 breakpoints. Write them down or every page invents its own.", "SML"],
+    ]
+  },
+  {
+    id:"figma", title:"3 · Figma setup",
+    why:"How the file is built decides whether the system is pleasant or painful to use. Get this right before you make 40 components — restructuring later is genuinely awful.",
+    items:[
+      ["Figma Variables for all tokens", "Collections for Primitives and Semantic, with modes for light/dark. Bind every fill and text colour to a variable. No raw hex anywhere.", "SML"],
+      ["Text & effect styles", "Styles for the type scale and shadows. Variables don't cover typography composition yet, so styles still carry it.", "SML"],
+      ["Auto-layout everywhere", "Every component resizes properly with hug/fill set deliberately. A component that breaks when you type a longer label is not done.", "SML"],
+      ["Variant naming grammar", "Decide the property names once: Variant / Size / State / Icon. Consistent naming is what makes the library searchable.", "SML"],
+      ["Component properties", "Boolean for optional icons, instance-swap for the icon itself, text props for labels. Cuts your variant count enormously.", "SM"],
+      ["Page structure", "Cover, Foundations, Components, Patterns, Playground, Archive. Predictable structure beats clever structure.", "SML"],
+      ["Published library + versioning", "Publish it as a library, write release notes on each publish. Consumers need to know what changed.", "ML"],
+      ["Branching workflow", "Changes proposed on a Figma branch and reviewed before merge. Only worth it with several contributors.", "L"],
+    ]
+  },
+  {
+    id:"components", title:"4 · Components",
+    why:"Build in dependency order — primitives first, then things made of primitives. The full inventory with live examples is on the Component gallery page.",
+    items:[
+      ["Tier 0: Button, Input, Icon, Text, Link", "The five things every other component is made of. Get their states and focus rings perfect; everything downstream inherits them.", "SML"],
+      ["Tier 1: Select, Checkbox, Radio, Switch, Textarea, Badge, Avatar, Card, Tooltip", "Covers most forms and most content layouts. With Tier 0 this is your usable v1.", "SML"],
+      ["Tier 2: Modal, Dropdown, Tabs, Toast, Table, Pagination, Breadcrumb, Accordion", "Application furniture. Needed once you're building product rather than pages.", "ML"],
+      ["Tier 3: Date picker, Combobox, Command palette, Data grid, File upload", "Expensive, complex, easy to get wrong. Consider adopting a library instead of building these.", "L"],
+      ["Full state matrix per component", "Default, hover, focus-visible, active, disabled, loading, error, empty. Missing states are the number one source of 'the design system didn't cover my case'.", "SML"],
+      ["Responsive behaviour defined", "What each component does when narrow. Tables in particular need a decision, not an accident.", "SML"],
+      ["Content guidance", "Button labels are verbs, error messages say what to do next, sentence case not Title Case. Cheap to write, big consistency payoff.", "ML"],
+    ]
+  },
+  {
+    id:"a11y", title:"5 · Accessibility",
+    why:"Build it into the components once and every product gets it free. Retrofitting accessibility is 10× the cost of building it in.",
+    items:[
+      ["Visible focus ring", "A 2px ring with a 2px offset, using focus-visible so it shows for keyboard but not mouse. Never remove outlines without a replacement.", "SML"],
+      ["Keyboard operable", "Everything reachable and usable with Tab, Enter, Space, Escape and arrow keys. Test it by unplugging your mouse for ten minutes.", "SML"],
+      ["Target size ≥ 44px", "Interactive things need a 44×44 hit area even when they look smaller. Use padding, not size.", "SML"],
+      ["Semantic HTML / correct roles", "A real <button>, not a clickable div. This one choice gives you keyboard, focus and screen-reader support for free.", "SML"],
+      ["Labels & descriptions", "Every input has a real label; icon-only buttons have accessible names. Placeholder text is not a label.", "SML"],
+      ["Not colour-alone", "Errors get an icon or text too, not just red. Roughly 1 in 12 men can't rely on the colour.", "SML"],
+      ["Reduced motion", "Honour prefers-reduced-motion and drop the animations. Two lines of CSS.", "SM"],
+      ["Screen reader pass", "Actually run VoiceOver or NVDA over the key flows. Automated checks catch maybe 40% of issues.", "ML"],
+      ["Formal WCAG 2.2 AA audit", "External audit with a written report. Required in most enterprise and public-sector contexts.", "L"],
+    ]
+  },
+  {
+    id:"code", title:"6 · Code side",
+    why:"Optional if you only design. Essential the moment engineers consume the system — otherwise Figma and production drift apart within weeks.",
+    items:[
+      ["Tokens exported to code", "One JSON source generating CSS variables (and Tailwind theme if you use it). Style Dictionary is the standard tool.", "SML"],
+      ["Component library", "React/Vue/Svelte components matching the Figma ones. Start with Tier 0 only.", "ML"],
+      ["Headless base", "Build on Radix or React Aria so keyboard and ARIA behaviour is handled for you. Do not hand-roll a modal in 2026.", "ML"],
+      ["Versioning + changelog", "Semver and a changelog so consumers can upgrade deliberately rather than being surprised.", "ML"],
+      ["Figma Code Connect", "Links each Figma component to its real code component, so devs see the right snippet in Dev Mode.", "L"],
+      ["Visual regression tests", "Chromatic or Playwright snapshots so a token change can't silently break 30 components.", "L"],
+    ]
+  },
+  {
+    id:"docs", title:"7 · Documentation",
+    why:"An undocumented system gets used wrong and then blamed. Docs can be simple, but they have to exist.",
+    items:[
+      ["Per-component usage page", "What it's for, when NOT to use it, anatomy diagram, one do and one don't. Half a page is plenty.", "SML"],
+      ["Foundations reference", "Visible swatches, type specimens and the spacing scale — so people can see the choices, not just read names.", "SML"],
+      ["Getting-started guide", "How a newcomer installs it, uses it and asks for a change, in under ten minutes.", "ML"],
+      ["Storybook or docs site", "A live, browsable, always-current home for the system.", "ML"],
+      ["Contribution guide", "How to propose a component, what makes something system-worthy, and the review bar.", "L"],
+    ]
+  },
+  {
+    id:"ops", title:"8 · Adoption & upkeep",
+    why:"The build is the easy part. This section is why most design systems quietly die about eight months in.",
+    items:[
+      ["Migration plan", "Which screens move over first, and who does it. New work only, or a retrofit sweep?", "ML"],
+      ["Detached-instance tracking", "Detached components are a signal the system is missing something, not that people are being naughty. Investigate each one.", "ML"],
+      ["Regular office hours", "A standing slot where anyone can ask for help. Cheapest adoption lever there is.", "L"],
+      ["Deprecation policy", "How things get removed: mark deprecated, give a replacement and a date, then delete.", "L"],
+      ["Roadmap & funding", "Named owner with actual time allocated. An unfunded system is a hobby that will be dropped.", "L"],
+    ]
+  },
+];
+
+/* ============================================================
+   RENDER
+   ============================================================ */
+const KEY='ds-checklist-v1';
+let state={}; try{ state=JSON.parse(localStorage.getItem(KEY)||'{}') }catch(e){ state={} }
+
+const out=document.getElementById('out');
+const cycle={undefined:'done', 'todo':'done', 'done':'doubt', 'doubt':'todo'};
+const label={todo:'Mark', done:'Done', doubt:'Not sure'};
+
+function slug(s){ return s.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'') }
+
+SECTIONS.forEach(sec=>{
+  const el=document.createElement('section');
+  el.id=sec.id;
+  let rows='';
+  sec.items.forEach(([t,d,sizes])=>{
+    const id=sec.id+':'+slug(t);
+    const st=state[id]||'todo';
+    const pill=x=> sizes.includes(x)
+      ? `<span class="pill ${x.toLowerCase()}">${x}</span>`
+      : `<span class="pill off">${x}</span>`;
+    rows+=`<tr class="row" data-id="${id}" data-sizes="${sizes}" data-st="${st}">
+      <td class="item"><b>${t}</b><span>${d.replace(/</g,'&lt;')}</span></td>
+      <td class="sizes">${pill('S')}${pill('M')}${pill('L')}</td>
+      <td class="st"><button class="mark" data-st="${st}">${label[st]}</button></td>
+    </tr>`;
+  });
+  el.innerHTML=`<h2>${sec.title} <em>${sec.items.length} items</em></h2>
+    <p class="why">${sec.why}</p>
+    <table><thead><tr><th>Item</th><th>Needed at</th><th>Status</th></tr></thead>
+    <tbody>${rows}</tbody></table>`;
+  out.appendChild(el);
+});
+
+out.addEventListener('click',e=>{
+  const b=e.target.closest('.mark'); if(!b) return;
+  const tr=b.closest('tr');
+  const next=cycle[tr.dataset.st];
+  tr.dataset.st=next; b.dataset.st=next; b.textContent=label[next];
+  if(next==='todo') delete state[tr.dataset.id]; else state[tr.dataset.id]=next;
+  localStorage.setItem(KEY,JSON.stringify(state));
+  refresh();
+});
+
+/* filters */
+const sizesOn=new Set(['S','M','L']);
+let filt='all';
+document.querySelectorAll('.size').forEach(b=>{
+  b.onclick=()=>{
+    const s=b.dataset.size;
+    if(sizesOn.has(s)&&sizesOn.size>1) sizesOn.delete(s); else sizesOn.add(s);
+    b.classList.toggle('on',sizesOn.has(s));
+    refresh();
+  };
+});
+document.querySelectorAll('.filt').forEach(b=>{
+  b.onclick=()=>{
+    filt=b.dataset.filt;
+    document.querySelectorAll('.filt').forEach(x=>x.classList.toggle('on',x===b));
+    refresh();
+  };
+});
+document.querySelector('.filt').classList.add('on');
+
+function refresh(){
+  let shown=0, done=0, doubt=0;
+  document.querySelectorAll('tr.row').forEach(tr=>{
+    const sizeOk=[...tr.dataset.sizes].some(c=>sizesOn.has(c));
+    const st=tr.dataset.st;
+    const stOk = filt==='all' || (filt==='todo'&&st==='todo') || (filt==='doubt'&&st==='doubt');
+    const vis = sizeOk && stOk;
+    tr.classList.toggle('hide',!vis);
+    if(sizeOk){ shown++; if(st==='done') done++; if(st==='doubt') doubt++; }
+  });
+  document.querySelectorAll('section').forEach(s=>{
+    const any=[...s.querySelectorAll('tr.row')].some(r=>!r.classList.contains('hide'));
+    s.style.display=any?'':'none';
+  });
+  const pct=shown?Math.round(done/shown*100):0;
+  document.getElementById('pct').textContent=pct+'%';
+  document.getElementById('fill').style.width=pct+'%';
+  document.getElementById('cnt').textContent=`${done} done · ${doubt} unsure · ${shown} in view`;
+}
+refresh();
+
+/* export */
+function report(){
+  let md='# Design system checklist — status\n\n';
+  md+=`Sizes in view: ${[...sizesOn].join(', ')}\n\n`;
+  SECTIONS.forEach(sec=>{
+    const lines=sec.items.map(([t,d,sizes])=>{
+      const st=state[sec.id+':'+slug(t)]||'todo';
+      const mark = st==='done'?'[x]' : st==='doubt'?'[?]' : '[ ]';
+      return `- ${mark} ${t}  _(${sizes})_`;
+    });
+    md+=`## ${sec.title}\n${lines.join('\n')}\n\n`;
+  });
+  const unsure=[];
+  SECTIONS.forEach(sec=>sec.items.forEach(([t])=>{
+    if(state[sec.id+':'+slug(t)]==='doubt') unsure.push(`- ${sec.title} → ${t}`);
+  }));
+  md+=`## Flagged "not sure" — explain these to me\n${unsure.length?unsure.join('\n'):'- (none yet)'}\n`;
+  return md;
+}
+document.getElementById('export').onclick=()=>{
+  const blob=new Blob([report()],{type:'text/markdown'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob); a.download='DS-CHECKLIST-STATUS.md'; a.click();
+};
+document.getElementById('copy').onclick=async e=>{
+  await navigator.clipboard.writeText(report());
+  e.target.textContent='Copied — paste in chat'; setTimeout(()=>e.target.textContent='Copy for agent',1800);
+};
+document.getElementById('clear').onclick=()=>{
+  if(!confirm('Clear all marks?'))return;
+  state={}; localStorage.removeItem(KEY);
+  document.querySelectorAll('tr.row').forEach(tr=>{
+    tr.dataset.st='todo';
+    const b=tr.querySelector('.mark'); b.dataset.st='todo'; b.textContent='Mark';
+  });
+  refresh();
+};
+</script>
+</body>
+</html>

@@ -1,0 +1,34 @@
+/* Hit-target + type only. The glass and light live in the shader. */
+
+.gwb {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 240px;
+  height: 52px;
+  padding: 0 42px;
+  overflow: hidden;
+  border: 0;
+  outline: none;
+  border-radius: 999px;
+  color: #eef8fa;
+  background: transparent;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.gwb:focus-visible {
+  box-shadow: 0 0 0 2px #07151a, 0 0 0 4px rgb(150 230 240 / 0.7);
+}
+
+.gwb-label {
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  line-height: 1;
+  white-space: nowrap;
+  text-shadow: 0 0 14px rgb(170 230 240 / 0.28);
+  pointer-events: none;
+}

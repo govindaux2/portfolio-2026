@@ -46,13 +46,16 @@ Hire as a Product Designer with core experience building UX for AI agents. Portf
 ## Where we left off
 
 - Planning board + detailed AI build routes are **done** on FigJam
+- **M0 seeded** with illustrative dummy plant vignette: `portfolio/mfg/M0-source.md`
+- **M0 Miro board:** https://miro.com/app/board/uXjVH6N3ezY=/ (work-system flowchart + personas + guardrails + metrics + source doc)
+- Recruiter walkthrough canvas: `mfg-agentic-workflow-recruiter-flow.canvas.tsx`
 - **No** case study copy, hero frames, or site sections implemented yet from this plan
-- **Next action:** PAGE 0 “Start here today” → PAGE 2 → **M0 source dump** → **M1 thesis**
+- **Next action:** **M1 thesis** (lock hire narrative + value + measurement + claims to avoid)
 
 ## Suggested resume steps for the agent
 
-1. Open / re-read this checkpoint + FigJam PAGE 0 and PAGE 2
-2. Help user complete Manufacturing **M0** (structured dump) then **M1** (thesis + value + measurement)
+1. Open / re-read this checkpoint + FigJam PAGE 0 and PAGE 2 + `portfolio/mfg/M0-source.md`
+2. Complete Manufacturing **M1** (thesis + value + measurement); user verifies truth
 3. Continue M2→M8 only after thesis is locked
 4. Do not redesign the whole board unless asked; execute the phase prompts
 

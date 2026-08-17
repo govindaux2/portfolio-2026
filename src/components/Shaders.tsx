@@ -6,7 +6,7 @@ import { ribbonFrag, orbFrag, gridFrag } from './gl/shaders';
 
 const ShaderPlane = lazy(() => import('./gl/ShaderPlane'));
 
-gsap.registerPlugin(ScrollTrigger);
+gsap.registerPlugin(useGSAP, ScrollTrigger);
 
 const pieces = [
   { name: 'Ribbon field', usedIn: 'App onboarding background', frag: ribbonFrag },
@@ -20,25 +20,39 @@ export function Shaders() {
 
   useGSAP(
     () => {
-      const reduce = window.matchMedia(
-        '(prefers-reduced-motion: reduce)'
-      ).matches;
-      const desktop = window.matchMedia('(min-width: 768px)').matches;
-      if (reduce || !desktop || !wrap.current || !track.current) return;
+      if (!wrap.current || !track.current) return;
 
-      const distance = () => track.current!.scrollWidth - window.innerWidth;
-      gsap.to(track.current, {
-        x: () => -distance(),
-        ease: 'none',
-        scrollTrigger: {
-          trigger: wrap.current,
-          start: 'top top',
-          end: () => `+=${distance()}`,
-          pin: true,
-          scrub: 1,
-          invalidateOnRefresh: true,
+      const mm = gsap.matchMedia();
+
+      mm.add(
+        {
+          isDesktop: '(min-width: 768px)',
+          reduceMotion: '(prefers-reduced-motion: reduce)',
         },
-      });
+        (context) => {
+          const { isDesktop, reduceMotion } = context.conditions ?? {};
+          if (!isDesktop || reduceMotion || !track.current) return;
+
+          const distance = () =>
+            Math.max(0, track.current!.scrollWidth - window.innerWidth);
+
+          gsap.to(track.current, {
+            x: () => -distance(),
+            ease: 'none',
+            scrollTrigger: {
+              trigger: wrap.current,
+              start: 'top top',
+              end: () => `+=${distance()}`,
+              pin: true,
+              scrub: 1,
+              invalidateOnRefresh: true,
+            },
+          });
+        },
+        wrap.current
+      );
+
+      return () => mm.revert();
     },
     { scope: wrap }
   );
