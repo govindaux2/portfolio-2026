@@ -56,6 +56,7 @@ export function Nav({ variant = 'home' }: NavProps) {
               {l.label}
             </a>
           ))}
+          <Link to="/flow">Flow</Link>
         </nav>
 
         <button
@@ -87,6 +88,9 @@ export function Nav({ variant = 'home' }: NavProps) {
               {l.label}
             </a>
           ))}
+          <Link to="/flow" onClick={() => setOpen(false)}>
+            Flow
+          </Link>
         </nav>
       </div>
     </header>
