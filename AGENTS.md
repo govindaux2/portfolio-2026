@@ -13,6 +13,19 @@ Standard scripts are defined in `package.json`; run them with `npm`:
 - Build: `npm run build` (`tsc -b` for type-checking, then `vite build` to `dist/`).
 - Preview production build: `npm run preview`.
 
+### Local development (for local agents / machines)
+
+The repo is the shared source of truth on GitHub (`github.com/govindaux2/portfolio-2026`, default branch `main`). To run and edit it locally:
+
+```bash
+git pull                # or: git clone https://github.com/govindaux2/portfolio-2026.git
+npm install             # REQUIRED after any pull that changes dependencies
+npm run dev             # open http://localhost:5173/  (e.g. /flow)
+```
+
+- Gotcha: after pulling changes that add a dependency, you MUST run `npm install`. Skipping it makes lazy-loaded routes (e.g. `/flow`, which needs `@xyflow/react`) render a **blank page**, because the dynamic import fails silently under the `Suspense` fallback. A hard refresh (`Cmd/Ctrl+Shift+R`) clears any stale HMR state after switching branches.
+- There is no public/deployed URL yet. `localhost` only works on the machine running `npm run dev`; it is not reachable from other devices. A hosted deploy (e.g. Vercel) is pending and requires a `VERCEL_TOKEN` secret before a cloud agent can deploy.
+
 ### Routes worth knowing (React Router)
 
 - `/` — home page (`src/pages/Home.tsx`)
