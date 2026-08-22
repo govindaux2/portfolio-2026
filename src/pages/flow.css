@@ -242,10 +242,24 @@
 }
 
 .flow-handle {
-  width: 9px;
-  height: 9px;
+  width: 14px;
+  height: 14px;
   background: var(--accent);
   border: 2px solid var(--bg);
+  transition: transform 0.12s var(--ease-out);
+}
+/* Enlarge the invisible hit area so connections are easy to grab. */
+.flow-handle::after {
+  content: '';
+  position: absolute;
+  inset: -8px;
+  border-radius: 50%;
+}
+.flow-card:hover .flow-handle {
+  transform: scale(1.15);
+}
+.react-flow__handle-connecting {
+  background: #fff;
 }
 
 /* ---------- Flow: list ---------- */

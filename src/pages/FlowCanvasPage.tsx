@@ -4,6 +4,7 @@ import {
   addEdge,
   Background,
   BackgroundVariant,
+  ConnectionMode,
   Controls,
   MiniMap,
   ReactFlow,
@@ -157,6 +158,7 @@ function FlowEditor({ workflow }: { workflow: Workflow }) {
           nodeTypes={nodeTypes}
           fitView
           colorMode="dark"
+          connectionMode={ConnectionMode.Loose}
           proOptions={{ hideAttribution: true }}
           defaultEdgeOptions={{ animated: true }}
         >
