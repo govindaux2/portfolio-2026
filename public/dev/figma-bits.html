@@ -1,0 +1,148 @@
+<!doctype html>
+<meta charset="utf-8" />
+<title>Figma bits</title>
+<style>
+  :root { --bg:#0b0b0c; --line:#232326; --text:#f0f0ec; --muted:#96968f; --gold:#c4a56a; --panel:#141416; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 14px/1.45 system-ui, sans-serif; }
+  header { padding: 28px 28px 8px; max-width: 1100px; margin: 0 auto; }
+  h1 { font-size: 1.45rem; font-weight: 560; letter-spacing: -0.03em; margin: 0 0 8px; }
+  .lede { color: var(--muted); max-width: 56ch; margin: 0; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; max-width: 1100px; margin: 24px auto 80px; padding: 0 28px; }
+  .card { text-align: left; border: 1px solid var(--line); border-radius: 12px; background: var(--panel); cursor: pointer; overflow: hidden; padding: 0; color: inherit; font: inherit; }
+  .card:hover, .card:focus-visible { border-color: #3a3a3c; outline: none; }
+  .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--line); min-height: 160px; }
+  .pair figure { margin: 0; background: #101012; min-height: 160px; display: grid; place-items: end center; overflow: hidden; }
+  .pair img { display: block; width: 100%; height: 160px; object-fit: contain; object-position: top; }
+  .pair span { position: absolute; left: 6px; top: 6px; font-size: 9px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+  .pair > div { position: relative; background: #101012; }
+  .meta { padding: 12px 14px 14px; }
+  .tag { font-size: 10px; letter-spacing: .08em; text-transform: uppercase; }
+  .ok { color: var(--gold); }
+  .rebuild { color: #e0c078; }
+  .shot { color: #d98989; }
+  .meta h2 { font-size: 14px; font-weight: 560; margin: 4px 0 2px; }
+  .meta p { margin: 0; color: var(--muted); font-size: 12px; }
+  .drawer { position: fixed; inset: 0 0 0 auto; width: min(520px, 100%); background: var(--panel); border-left: 1px solid var(--line); transform: translateX(100%); transition: transform .2s ease; z-index: 20; overflow: auto; padding: 24px; }
+  .drawer.is-on { transform: none; }
+  .veil { position: fixed; inset: 0; background: rgb(0 0 0 / .45); z-index: 19; opacity: 0; pointer-events: none; }
+  .veil.is-on { opacity: 1; pointer-events: auto; }
+  .drawer .pair { min-height: 280px; border-radius: 10px; overflow: hidden; }
+  .drawer .pair img { height: 280px; }
+  .drawer h2 { margin: 16px 0 6px; font-size: 18px; font-weight: 560; }
+  .close { float: right; border: 0; background: none; color: var(--muted); cursor: pointer; font: inherit; }
+</style>
+<header>
+  <h1>Figma bits</h1>
+  <p class="lede">Click a card. Left is Figma. Right is what we coded — or empty if it is still a screenshot. Newest first.</p>
+</header>
+<div class="grid" id="grid"></div>
+<div class="veil" id="veil"></div>
+<aside class="drawer" id="drawer"></aside>
+<script>
+const bits = [
+  {
+    id: 'personal',
+    added: '2026-08-22',
+    status: 'ok',
+    statusLabel: '1:1 HTML',
+    title: 'Personal info',
+    node: 'Prototype 1:4606 · slide 1:2979',
+    note: 'Coded from the Prototype frame. Slide phone was a screenshot fill — not the source.',
+    original: '/dev/bits/personal-slide.png',
+    recoded: '/dev/bits/personal-proto.png',
+    originalLabel: 'Slide',
+    recodedLabel: 'Coded from',
+  },
+  {
+    id: 'unfreeze',
+    added: '2026-08-22',
+    status: 'ok',
+    statusLabel: '1:1 HTML',
+    title: 'Unfreeze steps',
+    node: 'Prototype 1:6094 · slide 1:2982',
+    note: 'Selectable HTML. Globe / lock / phone are Figma SVGs.',
+    original: '/dev/bits/unfreeze-slide.png',
+    recoded: '/dev/bits/unfreeze-proto.png',
+    originalLabel: 'Slide',
+    recodedLabel: 'Coded from',
+  },
+  {
+    id: 'iter2',
+    added: '2026-08-22',
+    status: 'rebuild',
+    statusLabel: 'Rebuild later',
+    title: 'Iteration 2 access card',
+    node: '1:3033 Truncated name with card preview 2',
+    note: 'Real Figma component. Next HTML pass. Not coded yet.',
+    original: '/dev/bits/iter2.png',
+    recoded: '',
+    originalLabel: 'Figma',
+    recodedLabel: 'Not yet',
+  },
+  {
+    id: 'iter1',
+    added: '2026-08-22',
+    status: 'shot',
+    statusLabel: 'Screenshot',
+    title: 'Iteration 1 card',
+    node: 'image 30 · 1:3022',
+    note: 'Still a picture. Needs a Prototype instance with text.',
+    original: '/dev/bits/iter1.png',
+    recoded: '',
+    originalLabel: 'Figma',
+    recodedLabel: 'Not yet',
+  },
+];
+
+const grid = document.getElementById('grid');
+const drawer = document.getElementById('drawer');
+const veil = document.getElementById('veil');
+
+function pair(b, tall) {
+  const r = b.recoded
+    ? `<div><span>${b.recodedLabel}</span><img src="${b.recoded}" alt=""></div>`
+    : `<div><span>${b.recodedLabel}</span></div>`;
+  return `<div class="pair">
+    <div><span>${b.originalLabel}</span><img src="${b.original}" alt=""></div>
+    ${r}
+  </div>`;
+}
+
+grid.innerHTML = bits.map((b) => `
+  <button class="card" type="button" data-id="${b.id}">
+    ${pair(b)}
+    <div class="meta">
+      <span class="tag ${b.status}">${b.statusLabel}</span>
+      <h2>${b.title}</h2>
+      <p>${b.added} · ${b.node}</p>
+    </div>
+  </button>
+`).join('');
+
+function open(id) {
+  const b = bits.find((x) => x.id === id);
+  if (!b) return;
+  drawer.innerHTML = `
+    <button class="close" type="button" id="close">Close</button>
+    ${pair(b)}
+    <h2>${b.title}</h2>
+    <p class="tag ${b.status}">${b.statusLabel}</p>
+    <p>${b.added} · ${b.node}</p>
+    <p>${b.note}</p>
+  `;
+  drawer.classList.add('is-on');
+  veil.classList.add('is-on');
+  document.getElementById('close').onclick = close;
+}
+function close() {
+  drawer.classList.remove('is-on');
+  veil.classList.remove('is-on');
+}
+grid.addEventListener('click', (e) => {
+  const btn = e.target.closest('.card');
+  if (btn) open(btn.dataset.id);
+});
+veil.addEventListener('click', close);
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
+</script>

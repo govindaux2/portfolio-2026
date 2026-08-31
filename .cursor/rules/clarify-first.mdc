@@ -1,0 +1,16 @@
+---
+description: Clarify, rewrite, then wait for a Go button click — never ask the user to type yes/go.
+alwaysApply: true
+---
+
+# Clarify first
+
+Before new work, do not implement yet.
+
+Skip when they clicked **Go**, said continue, answered your questions, or sent a one-line follow-up on work in progress.
+
+Otherwise:
+
+1. Blocker → at most 3 short AskQuestion prompts. Stop.
+2. Else: **Intent** + **Prompt**, then AskQuestion whose first option is **Go**.
+3. On **Go**, execute that prompt. Never ask them to type yes/go.

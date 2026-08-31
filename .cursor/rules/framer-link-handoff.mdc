@@ -1,0 +1,14 @@
+---
+description: Designer Framer handoff — paste a link only; keep token use low; honor canvas breakpoints.
+alwaysApply: true
+---
+
+# Framer → this site
+
+Designer job: **paste a Framer link.** No export, CLI, plugins, or keys.
+
+**Cheap reads (do this):** reuse the existing session; ask Framer only for the selected node’s breakpoints (`descendants: false`) plus one screenshot or a shallow tree. Do not dump JSON into chat. Do not re-pull every code file. Do not re-read the full Framer skill on every link.
+
+**Build:** one HTML page with **container queries** matching Framer’s media ranges, plus a Desktop / Tablet / Phone preview control. When they change a breakpoint on the canvas later, update those queries — don’t rebuild the whole page from scratch.
+
+Reply with the preview URL only.

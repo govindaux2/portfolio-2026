@@ -10,7 +10,7 @@ lerna-debug.log*
 node_modules
 dist
 dist-ssr
-*.local
+src/flow/sync/workflows.json
 
 # Editor directories and files
 .vscode/*

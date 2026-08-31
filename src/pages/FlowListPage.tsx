@@ -1,11 +1,16 @@
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { PhoneLink } from '../flow/PhoneLink';
+import { FlowToast } from '../flow/FlowToast';
 import {
   createWorkflow,
   deleteWorkflow,
   listWorkflows,
   renameWorkflow,
 } from '../flow/storage';
+import { ThemeToggle } from '../flow/ThemeToggle';
+import { readTheme, type FlowTheme } from '../flow/theme';
+import { useFlowStorageTick, useFlowSync } from '../flow/useFlowSync';
 import type { WorkflowSummary } from '../flow/types';
 import './flow.css';
 
@@ -18,9 +23,17 @@ function formatDate(ts: number): string {
 
 export function FlowListPage() {
   const navigate = useNavigate();
-  const [items, setItems] = useState<WorkflowSummary[]>(() => listWorkflows());
+  const ready = useFlowSync();
+  const [items, setItems] = useState<WorkflowSummary[]>([]);
+  const [theme, setTheme] = useState<FlowTheme>(() => readTheme());
 
-  const refresh = () => setItems(listWorkflows());
+  const refresh = useCallback(() => setItems(listWorkflows()), []);
+
+  useEffect(() => {
+    if (ready) refresh();
+  }, [ready, refresh]);
+
+  useFlowStorageTick(refresh);
 
   const onCreate = () => {
     const wf = createWorkflow();
@@ -36,14 +49,15 @@ export function FlowListPage() {
   };
 
   const onDelete = (id: string, name: string) => {
-    if (window.confirm(`Delete "${name}"? This cannot be undone.`)) {
-      deleteWorkflow(id);
-      refresh();
-    }
+    if (!window.confirm(`Delete "${name}"? This cannot be undone.`)) return;
+    deleteWorkflow(id);
+    refresh();
   };
 
+  if (!ready) return <div className="route-fallback" aria-hidden />;
+
   return (
-    <div className="flow-list-page">
+    <div className="flow-list-page" data-theme={theme}>
       <header className="flow-list-head">
         <div>
           <Link to="/" className="flow-back">
@@ -51,13 +65,16 @@ export function FlowListPage() {
           </Link>
           <h1>Workflows</h1>
           <p className="flow-list-sub">
-            Free-flowing canvases. Drag cards, connect them, attach images.
-            Everything saves to this browser automatically.
+            Every board on this Mac. Copy the phone link, same Wi-Fi, no deploy.
           </p>
+          <PhoneLink showUrl />
         </div>
-        <button type="button" className="flow-new-btn" onClick={onCreate}>
-          + New workflow
-        </button>
+        <div className="flow-list-actions">
+          <ThemeToggle theme={theme} onChange={setTheme} />
+          <button type="button" className="flow-new-btn" onClick={onCreate}>
+            New
+          </button>
+        </div>
       </header>
 
       {items.length === 0 ? (
@@ -71,7 +88,10 @@ export function FlowListPage() {
         <ul className="flow-grid">
           {items.map((w) => (
             <li key={w.id} className="flow-tile">
-              <Link to={`/flow/${w.id}`} className="flow-tile-open">
+              <Link
+                to={`/flow/${encodeURIComponent(w.id)}`}
+                className="flow-tile-open"
+              >
                 <span className="flow-tile-canvas" aria-hidden>
                   <span className="flow-tile-dot" />
                   <span className="flow-tile-dot" />
@@ -79,7 +99,8 @@ export function FlowListPage() {
                 </span>
                 <span className="flow-tile-name">{w.name}</span>
                 <span className="flow-tile-meta">
-                  {w.nodeCount} {w.nodeCount === 1 ? 'node' : 'nodes'} ·
+                  {w.nodeCount} {w.nodeCount === 1 ? 'node' : 'nodes'}
+                  {w.pageCount > 1 ? ` · ${w.pageCount} boards` : ''} ·
                   updated {formatDate(w.updatedAt)}
                 </span>
               </Link>
@@ -95,6 +116,7 @@ export function FlowListPage() {
           ))}
         </ul>
       )}
+      <FlowToast />
     </div>
   );
 }

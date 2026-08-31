@@ -93,6 +93,8 @@ img {
   padding-top: var(--safe-top);
   display: flex;
   align-items: center;
+  transform-origin: 0 0;
+  width: 100%;
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   background: color-mix(in srgb, var(--bg) 62%, transparent);
@@ -567,6 +569,7 @@ section {
 }
 
 .three-stage {
+  position: relative;
   aspect-ratio: 1;
   width: 100%;
   max-width: min(100%, 640px);
@@ -578,10 +581,24 @@ section {
   touch-action: none;
 }
 
+.three-stage-shader,
 .three-stage canvas {
   display: block;
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
+}
+
+.three-stage-fallback {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  color: var(--muted);
+  font-size: 14px;
+  text-align: center;
 }
 
 @media (max-width: 900px) {

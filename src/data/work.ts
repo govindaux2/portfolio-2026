@@ -68,5 +68,5 @@ export type ThreeSpec = {
 export const threeSpecs: ThreeSpec[] = [
   { label: 'Product configurator', value: 'R3F, 60fps on mobile' },
   { label: 'Hero scenes for app launches', value: 'GLTF, draco compressed' },
-  { label: 'Interactive landing visuals', value: 'custom materials' },
+  { label: 'Interactive landing visuals', value: 'Chrome, WebGPU' },
 ];

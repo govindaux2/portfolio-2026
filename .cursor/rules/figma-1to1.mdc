@@ -1,0 +1,13 @@
+---
+description: Figma Prototype → 1:1 HTML, bits board, studio resize (dev only)
+globs: src/pages/Ndla*.tsx,src/pages/ndla-*.tsx,src/dev/**,public/dev/**
+alwaysApply: false
+---
+
+# Figma 1:1
+
+Follow `.cursor/skills/figma-1to1/SKILL.md`.
+
+- Copy Prototype frames (text + auto-layout), not slide screenshots.
+- Pixel size must match the Figma node. Icons stay 24px; never parent `img { width: 100% }` on a screen.
+- Gaps go on `public/dev/figma-bits.html`. Wrap exports in `ExportStudio`. Controls only with `?studio=1` in dev.

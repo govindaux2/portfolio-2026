@@ -7,7 +7,9 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "oxlint",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "framer:pull-code": "bash scripts/framer-pull-code.sh",
+    "framer:sync-canvas": "npx unframer KFUflMBkwkSj9SBYfgHD --outDir ./src/framer/canvas --jsx"
   },
   "dependencies": {
     "@fontsource-variable/geist": "^5.2.9",
@@ -20,6 +22,7 @@
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
     "react-router-dom": "^7.18.1",
+    "shaders": "^3.1.457",
     "three": "^0.185.1"
   },
   "devDependencies": {
