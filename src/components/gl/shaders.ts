@@ -6,7 +6,7 @@ void main() {
 }
 `;
 
-// Slow-drifting fbm fog in the site palette. Runs behind the hero.
+// Soft grade. One pool of light, mouse shifts it. No veins — those band.
 export const heroFrag = /* glsl */ `
 precision highp float;
 varying vec2 vUv;
@@ -18,47 +18,20 @@ float hash(vec2 p) {
   return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453);
 }
 
-float noise(vec2 p) {
-  vec2 i = floor(p);
-  vec2 f = fract(p);
-  vec2 u = f * f * (3.0 - 2.0 * f);
-  return mix(
-    mix(hash(i), hash(i + vec2(1.0, 0.0)), u.x),
-    mix(hash(i + vec2(0.0, 1.0)), hash(i + vec2(1.0, 1.0)), u.x),
-    u.y
-  );
-}
-
-float fbm(vec2 p) {
-  float v = 0.0;
-  float a = 0.5;
-  for (int i = 0; i < 4; i++) {
-    v += a * noise(p);
-    p = p * 2.1 + vec2(3.7, 1.3);
-    a *= 0.5;
-  }
-  return v;
-}
-
 void main() {
-  vec2 p = vUv;
-  p.x *= uAspect;
-
-  float t = uTime * 0.05;
-  vec2 drift = vec2(fbm(p * 1.4 + t), fbm(p * 1.4 - t + 5.0));
-  float field = fbm(p * 2.0 + drift * 1.6 + uMouse * 0.25);
+  vec2 shift = vec2(uMouse.x, -uMouse.y);
+  vec2 center = vec2(0.66, 0.58) + shift * 0.18;
+  vec2 q = vUv - center;
+  q.x *= uAspect;
+  float d = dot(q, q);
+  float grade = exp(-d * 1.15);
+  float breath = 0.5 + 0.5 * sin(uTime * 0.12);
 
   vec3 bg = vec3(0.043, 0.043, 0.047);
-  vec3 smoke = vec3(0.10, 0.105, 0.115);
-  vec3 acid = vec3(0.776, 0.949, 0.306);
+  vec3 lift = vec3(0.16, 0.17, 0.145);
+  vec3 col = mix(bg, lift, grade * (0.85 + breath * 0.08));
 
-  vec3 col = mix(bg, smoke, smoothstep(0.25, 0.85, field));
-  float vein = smoothstep(0.52, 0.55, field) * smoothstep(0.60, 0.57, field);
-  col = mix(col, acid * 0.85, vein * 0.5);
-
-  float vig = smoothstep(1.35, 0.35, length(vUv - 0.5) * 1.6);
-  col *= vig;
-
+  col += (hash(gl_FragCoord.xy) - 0.5) * (1.0 / 255.0);
   gl_FragColor = vec4(col, 1.0);
 }
 `;

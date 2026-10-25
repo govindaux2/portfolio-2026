@@ -1,0 +1,5 @@
+# Large data that is not page source. Keeps agent indexing off these files.
+lottie/
+src/flow/sync/workflows.json
+.cursor/skills/impeccable/scripts/bin/
+.cursor/skills/impeccable/scripts/data/font-index.json

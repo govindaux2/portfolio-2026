@@ -1,25 +1,8 @@
 import { Link, Navigate, useParams } from 'react-router-dom';
 import { motion, useReducedMotion } from 'motion/react';
-import { useLottie } from 'lottie-react';
 import { Nav } from '../components/Nav';
 import { Footer } from '../components/Footer';
 import { getPrototype } from '../data/work';
-import allScreensLottie from '../../lottie/All-screens.json';
-
-function CoverLottie({ label, reduce }: { label: string; reduce: boolean | null }) {
-  const { View } = useLottie({
-    animationData: allScreensLottie,
-    loop: true,
-    autoplay: !reduce,
-    rendererSettings: { preserveAspectRatio: 'xMidYMid meet' },
-  });
-
-  return (
-    <div className="project-cover-lottie" role="img" aria-label={label}>
-      {View}
-    </div>
-  );
-}
 
 export function PrototypePage() {
   const { slug } = useParams<{ slug: string }>();
@@ -78,18 +61,6 @@ export function PrototypePage() {
             </dl>
           </motion.header>
         </div>
-
-        <motion.div
-          className="project-cover"
-          initial={reduce ? false : { opacity: 0, y: 32 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.12, ease: [0.16, 1, 0.3, 1] }}
-        >
-          <CoverLottie
-            label={`${project.title} screen flow`}
-            reduce={reduce}
-          />
-        </motion.div>
 
         <div className="wrap project-body">
           {project.highlights?.length ? (

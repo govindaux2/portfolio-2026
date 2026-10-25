@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
+import { RouteFallback } from '../components/RouteFallback';
 import {
   addEdge,
   Background,
@@ -76,7 +77,6 @@ import { newId } from '../flow/id';
 import {
   deleteVersion,
   getWorkflow,
-  renameVersion,
   restoreVersion,
   saveVersion,
   saveWorkflow,
@@ -407,7 +407,6 @@ function FlowEditor({ workflow }: { workflow: Workflow }) {
   const selectedSections = selectedNodes.filter((n) => n.type === 'section');
   const selectedImages = selectedNodes.filter((n) => n.type === 'image');
   const selectedLinks = selectedNodes.filter((n) => n.type === 'link');
-  const selectedEdge = selectedEdges[0];
   selectedIdsRef.current = selectedNodes.map((n) => n.id);
   const inspectKey = [
     ...selectedNodes.map((n) => n.id),
@@ -545,7 +544,8 @@ function FlowEditor({ workflow }: { workflow: Workflow }) {
       if (rec.edgeId) return;
 
       if (rec.nodeId) {
-        const held = nodesRef.current.find((n) => n.id === rec.nodeId) as
+        const nodeId = rec.nodeId;
+        const held = nodesRef.current.find((n) => n.id === nodeId) as
           | { locked?: boolean }
           | undefined;
         if (held?.locked) return;
@@ -1081,16 +1081,6 @@ function FlowEditor({ workflow }: { workflow: Workflow }) {
     );
   };
 
-  const updateSelectedSections = (color?: string) => {
-    setNodes((nds) =>
-      nds.map((n) =>
-        n.selected && n.type === 'section'
-          ? { ...n, data: { ...n.data, color } }
-          : n
-      )
-    );
-  };
-
   const updateSelectedFill = (color?: string) => {
     setNodes((nds) =>
       nds.map((n) => {
@@ -1296,13 +1286,6 @@ function FlowEditor({ workflow }: { workflow: Workflow }) {
       setVersions(savedWf.versions);
       setVersionName('');
     }
-  };
-
-  const onRenameVersion = (version: WorkflowVersion) => {
-    const next = window.prompt('Rename version', version.name);
-    if (!next?.trim()) return;
-    const savedWf = renameVersion(workflow.id, version.id, next.trim());
-    if (savedWf) setVersions(savedWf.versions);
   };
 
   const onRestoreVersion = (version: WorkflowVersion) => {
@@ -2482,8 +2465,8 @@ export function FlowCanvasPage() {
     if (next) setWorkflow(next);
   });
 
-  if (!ready) return <div className="route-fallback" aria-hidden />;
-  if (!workflow) return <div className="route-fallback" aria-hidden />;
+  if (!ready) return <RouteFallback />;
+  if (!workflow) return <RouteFallback />;
 
   return (
     <ReactFlowProvider>

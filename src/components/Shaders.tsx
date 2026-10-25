@@ -1,4 +1,4 @@
-import { Suspense, lazy, useRef } from 'react';
+import { Suspense, lazy, useEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
 import { useGSAP } from '@gsap/react';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -17,6 +17,20 @@ const pieces = [
 export function Shaders() {
   const wrap = useRef<HTMLDivElement>(null);
   const track = useRef<HTMLDivElement>(null);
+  const [showGl, setShowGl] = useState(false);
+
+  useEffect(() => {
+    const el = wrap.current;
+    if (!el) return;
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) setShowGl(true);
+      },
+      { rootMargin: '200px' }
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
 
   useGSAP(
     () => {
@@ -70,9 +84,13 @@ export function Shaders() {
           </div>
           {pieces.map((s) => (
             <figure key={s.name} className="shader-tile">
-              <Suspense fallback={<div className="gl" />}>
-                <ShaderPlane frag={s.frag} className="gl" />
-              </Suspense>
+              {showGl ? (
+                <Suspense fallback={<div className="gl" />}>
+                  <ShaderPlane frag={s.frag} className="gl" dpr={[1, 1.25]} />
+                </Suspense>
+              ) : (
+                <div className="gl" />
+              )}
               <figcaption>
                 <strong>{s.name}</strong>
                 <span>{s.usedIn}</span>

@@ -1,8 +1,8 @@
 import { fileURLToPath, URL } from 'node:url'
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
-import { studioLayoutPlugin } from './vite-studio-plugin'
-import { flowSyncPlugin } from './vite-flow-sync-plugin'
+import { studioLayoutPlugin } from './vite-studio-plugin.ts'
+import { flowSyncPlugin } from './vite-flow-sync-plugin.ts'
 
 // https://vite.dev/config/
 export default defineConfig({

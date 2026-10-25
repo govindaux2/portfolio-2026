@@ -1,7 +1,7 @@
 import { useMemo, useRef } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
-import { useInView } from '../useInView';
+import { useLiveGl } from './useLiveGl';
 import { baseVert } from './shaders';
 
 type PlaneProps = {
@@ -23,11 +23,10 @@ function Plane({ frag, mouse }: PlaneProps) {
 
   useFrame((state, delta) => {
     if (!mat.current) return;
-    mat.current.uniforms.uTime.value += delta;
+    mat.current.uniforms.uTime.value += Math.min(delta, 0.05);
     mat.current.uniforms.uAspect.value =
       state.size.width / Math.max(state.size.height, 1);
     if (mouse?.current) {
-      // Ease toward the pointer so movement feels fluid, not tracked
       const u = mat.current.uniforms.uMouse.value as THREE.Vector2;
       u.x += (mouse.current.x - u.x) * 0.05;
       u.y += (mouse.current.y - u.y) * 0.05;
@@ -51,20 +50,25 @@ type ShaderPlaneProps = {
   frag: string;
   className?: string;
   mouse?: React.RefObject<{ x: number; y: number }>;
+  dpr?: [number, number];
 };
 
 /**
- * Fullscreen-quad shader canvas. Pauses rendering entirely when offscreen
- * so a page full of shader tiles costs only what is visible.
+ * Fullscreen-quad shader. Stops the loop offscreen and when the tab is hidden.
  */
-export default function ShaderPlane({ frag, className, mouse }: ShaderPlaneProps) {
-  const { ref, inView } = useInView<HTMLDivElement>();
+export default function ShaderPlane({
+  frag,
+  className,
+  mouse,
+  dpr = [1, 1.25],
+}: ShaderPlaneProps) {
+  const { ref, live } = useLiveGl<HTMLDivElement>();
 
   return (
     <div ref={ref} className={className}>
       <Canvas
-        dpr={[1, 1.5]}
-        frameloop={inView ? 'always' : 'never'}
+        dpr={dpr}
+        frameloop={live ? 'always' : 'never'}
         gl={{ antialias: false, powerPreference: 'low-power' }}
         orthographic
         camera={{ position: [0, 0, 1] }}

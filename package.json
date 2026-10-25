@@ -12,7 +12,6 @@
     "framer:sync-canvas": "npx unframer KFUflMBkwkSj9SBYfgHD --outDir ./src/framer/canvas --jsx"
   },
   "dependencies": {
-    "@fontsource-variable/geist": "^5.2.9",
     "@gsap/react": "^2.1.2",
     "@react-three/fiber": "^9.6.1",
     "@xyflow/react": "^12.11.3",
@@ -22,7 +21,6 @@
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
     "react-router-dom": "^7.18.1",
-    "shaders": "^3.1.457",
     "three": "^0.185.1"
   },
   "devDependencies": {

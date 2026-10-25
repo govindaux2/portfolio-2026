@@ -38,7 +38,7 @@ function lanIPs() {
   const ips: string[] = []
   for (const addrs of Object.values(nets)) {
     for (const addr of addrs ?? []) {
-      const v4 = addr.family === 'IPv4' || addr.family === 4
+      const v4 = addr.family === 'IPv4'
       if (!v4 || addr.internal) continue
       ips.push(addr.address)
     }

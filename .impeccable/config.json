@@ -1,0 +1,15 @@
+{
+  "buildPath": "code",
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "overused-font",
+        "value": "geist",
+        "createdAt": "2026-10-02T12:08:24.366Z",
+        "reason": "Existing portfolio: body already uses Geist Variable; the hero layout inherits that face."
+      }
+    ]
+  }
+}

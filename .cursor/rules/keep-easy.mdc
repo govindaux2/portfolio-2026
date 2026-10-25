@@ -1,0 +1,10 @@
+---
+description: Designer-owned site — experiment first, extract when asked, keep deploy boring.
+alwaysApply: true
+---
+
+# Keep easy (pointer)
+
+Govinda is a designer. Read `.cursor/skills/keep-easy/SKILL.md` when adding a page, lab, hero, shader, tuner, or deploy step.
+
+In chat, **suggest** a shared piece when a pattern appears twice. Do not extract until they say yes — unless they already asked to save it.

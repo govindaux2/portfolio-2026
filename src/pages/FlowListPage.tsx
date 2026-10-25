@@ -9,6 +9,7 @@ import {
   renameWorkflow,
 } from '../flow/storage';
 import { ThemeToggle } from '../flow/ThemeToggle';
+import { RouteFallback } from '../components/RouteFallback';
 import { readTheme, type FlowTheme } from '../flow/theme';
 import { useFlowStorageTick, useFlowSync } from '../flow/useFlowSync';
 import type { WorkflowSummary } from '../flow/types';
@@ -54,7 +55,7 @@ export function FlowListPage() {
     refresh();
   };
 
-  if (!ready) return <div className="route-fallback" aria-hidden />;
+  if (!ready) return <RouteFallback />;
 
   return (
     <div className="flow-list-page" data-theme={theme}>

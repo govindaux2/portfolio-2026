@@ -9,7 +9,7 @@ import type {
 } from './types';
 
 export const HOW_CURSOR_BUILDS_ID = 'ex-how-cursor-builds';
-export const HOW_CURSOR_BUILDS_REV = 3;
+export const HOW_CURSOR_BUILDS_REV = 4;
 
 const SHOT = '/flow-assets/how-cursor-builds';
 
@@ -403,6 +403,197 @@ const exampleBoard: BoardPage = {
   ],
 };
 
+const BLOC = '/flow-assets/bloc-compare';
+const NDLA = '/case/ndla/screens';
+const STEP_W = 260;
+const STEP_H = 400;
+const BLOC_COL_W = INSET_X * 2 + STEP_W;
+const BLOC_GAP = 48;
+const BLOC_STACK = 28;
+
+function blocColX(col: 0 | 1) {
+  return ORIGIN_X + col * (BLOC_COL_W + BLOC_GAP);
+}
+
+function blocRowY(row: number) {
+  return ORIGIN_Y + INSET_TOP + row * (STEP_H + BLOC_STACK);
+}
+
+function blocFrameH(rows: number) {
+  return INSET_TOP + rows * STEP_H + (rows - 1) * BLOC_STACK + INSET_BOT;
+}
+
+function blocCard(
+  id: string,
+  col: 0 | 1,
+  row: number,
+  heading: string,
+  text: string,
+  shot: string
+) {
+  return card(
+    id,
+    blocColX(col) + INSET_X,
+    blocRowY(row),
+    heading,
+    text,
+    shot,
+    { w: STEP_W, h: STEP_H }
+  );
+}
+
+const blocWellsSteps: [string, string, string, string][] = [
+  [
+    'wf-s0',
+    '0. Product → Apply now',
+    'Wells Fargo BusinessLine. Guest apply is public.',
+    `${BLOC}/wf-00-product-apply.png`,
+  ],
+  [
+    'wf-s1',
+    '1. Getting started',
+    'Sign on vs Apply as guest. Authority + contact consent.',
+    `${BLOC}/wf-01-getting-started.png`,
+  ],
+  [
+    'wf-s2',
+    '2. Verify identity',
+    'SSN/ITIN + mobile, then OTP. We stopped here — no dummy SSN submitted.',
+    `${BLOC}/wf-02-verify-identity.png`,
+  ],
+  [
+    'wf-s3',
+    '3. Personal info',
+    'Name, DOB, email, home address. Unfreeze credit banner.',
+    `${NDLA}/personal.png`,
+  ],
+  [
+    'wf-s4',
+    '4. Amount',
+    'How much line to request. Express path under $50k.',
+    `${NDLA}/amount.png`,
+  ],
+  [
+    'wf-s5',
+    '5. Business',
+    'Legal name, EIN, established date, structure, revenue.',
+    `${NDLA}/business.png`,
+  ],
+  [
+    'wf-s6',
+    '6. Beneficial owners',
+    '25%+ owners / control persons.',
+    `${NDLA}/beneficial.png`,
+  ],
+  [
+    'wf-s7',
+    '7. Personal guarantee',
+    'Owner guarantee before credit pull.',
+    `${NDLA}/guarantee.png`,
+  ],
+  [
+    'wf-s8',
+    '8. Credit pull',
+    'Consent to pull consumer/business credit.',
+    `${NDLA}/credit-pull.png`,
+  ],
+  [
+    'wf-s9',
+    '9. E-sign',
+    'Disclosures and signature.',
+    `${NDLA}/esign.png`,
+  ],
+  [
+    'wf-s10',
+    '10. Offer',
+    'Approved line / terms, or decline.',
+    `${NDLA}/offer.png`,
+  ],
+  [
+    'wf-s11',
+    '11. Success',
+    'Written decision. Access card / checking link next.',
+    `${NDLA}/success.png`,
+  ],
+];
+
+const blocRows = Math.max(4, blocWellsSteps.length);
+
+const blocBoard: BoardPage = {
+  id: 'board-bloc',
+  name: '4 · Chase vs Wells BLOC',
+  nodes: [
+    textBlock(
+      't-bloc',
+      ORIGIN_X,
+      28,
+      'Business line of credit apply — Chase (JPMorgan) vs Wells Fargo, stacked top to bottom. Live shots from Aug 2026. Wells steps 3–11 are the same NDLA apply screens (stopped before submitting identity).',
+      { w: 720, h: 56 },
+      16
+    ),
+    section(
+      's-chase',
+      blocColX(0),
+      ORIGIN_Y,
+      'Chase / JPMorgan',
+      '#1e2a4a',
+      BLOC_COL_W,
+      blocFrameH(blocRows)
+    ),
+    blocCard(
+      'ch-s0',
+      0,
+      0,
+      '0. Product',
+      'CTA is Find a branch — no Apply now.',
+      `${BLOC}/chase-01-loc.png`
+    ),
+    blocCard(
+      'ch-s1',
+      0,
+      1,
+      '1. How do I apply?',
+      'FAQ: call a relationship manager or visit a branch. Existing customers only.',
+      `${BLOC}/chase-02-bloc-faqs.png`
+    ),
+    blocCard(
+      'ch-s2',
+      0,
+      2,
+      '2. Sign in (the gate)',
+      'Any digital next step is Chase login. No guest apply wizard.',
+      `${BLOC}/chase-03-sign-in.png`
+    ),
+    textBlock(
+      't-chase-note',
+      blocColX(0) + INSET_X,
+      blocRowY(3),
+      'Chase BLOC is not an online guest flow. After “get started” you are in a branch or signed-in banker path. Fields they still ask in-application (from FAQ): housing payment, gross revenue, headcount, owner-since date, amount.',
+      { w: STEP_W, h: STEP_H },
+      15
+    ),
+    section(
+      's-wells',
+      blocColX(1),
+      ORIGIN_Y,
+      'Wells Fargo BusinessLine',
+      '#3d1515',
+      BLOC_COL_W,
+      blocFrameH(blocRows)
+    ),
+    ...blocWellsSteps.map(([id, heading, text, shot], i) =>
+      blocCard(id, 1, i, heading, text, shot)
+    ),
+  ],
+  edges: [
+    edge('ch-e1', 'ch-s0', 'ch-s1'),
+    edge('ch-e2', 'ch-s1', 'ch-s2'),
+    ...blocWellsSteps.slice(0, -1).map((_, i) =>
+      edge(`wf-e${i}`, blocWellsSteps[i][0], blocWellsSteps[i + 1][0])
+    ),
+  ],
+};
+
 export function howCursorBuildsWorkflow(): Workflow {
   const now = Date.parse('2026-08-22T15:00:00Z');
   return {
@@ -410,6 +601,7 @@ export function howCursorBuildsWorkflow(): Workflow {
     name: 'How Cursor builds here',
     createdAt: now,
     updatedAt: now,
-    pages: [loopBoard, promptBoard, exampleBoard],
+    pages: [loopBoard, promptBoard, exampleBoard, blocBoard],
+    versions: [],
   };
 }

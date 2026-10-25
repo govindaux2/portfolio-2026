@@ -121,7 +121,8 @@ function exampleNeedsRefresh(workflow: Workflow) {
   const ideas = workflow.pages
     .flatMap((p) => p.nodes)
     .find((n) => n.id === 'c-ideas');
-  return ideas?.height !== 400 || ideas?.position.y !== 128;
+  const hasBloc = workflow.pages.some((p) => p.id === 'board-bloc');
+  return ideas?.height !== 400 || ideas?.position.y !== 128 || !hasBloc;
 }
 
 function withExample(list: Workflow[], persist = true): Workflow[] {

@@ -1,0 +1,31 @@
+---
+description: Keep the live portfolio fast, stable, and searchable. Refactor when a change jitters, bloats, or breaks deploy.
+alwaysApply: true
+---
+
+# Site smooth (deploy-ready)
+
+Govinda is a designer, not a developer. Do not leave hidden runtime errors, mystery GPU stacks, or “it works on my machine” deps.
+
+## Performance
+
+- Home hero uses **one** cheap WebGL quad (`ShaderPlane` + `heroFrag`). Never stack `shaders/react` (Aurora / Mesh / FilmGrain) on the LCP hero.
+- `shaders/react` / WebGPU only below the fold, lazy, and only when in view (e.g. 3D stage).
+- Pause GL when offscreen **and** when the tab is hidden. Cap `dpr` (hero max 1.25). Silhouettes use MSAA, not extra DPR.
+- No animated film grain on full-viewport backgrounds — it jitters.
+- No new npm packages for a visual flourish. Prefer GLSL / CSS already in the repo.
+- If it stutters: remove layers, slow the clock, cut octaves. Do not add more effects.
+
+## Stability
+
+- One public path must load without extra installs after `npm install && npm run build`.
+- Lazy routes that fail must not white-screen silently — keep the existing Suspense fallback.
+- Do not ship features that need secrets, MCP, or a second GPU API on first paint.
+
+## Findable
+
+- Keep `index.html` title + description + og/twitter in sync with the hero line.
+- Keep `public/robots.txt` allowing crawlers.
+- Semantic `h1` on the home hero. Do not replace it with a div.
+
+When adding motion or 3D, re-read `.cursor/skills/site-smooth/SKILL.md` and refactor if this rule would fail.

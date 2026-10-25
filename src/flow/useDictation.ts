@@ -17,7 +17,7 @@ export function useDictation({
 }) {
   const [listening, setListening] = useState(false);
   const wantRef = useRef(false);
-  const recRef = useRef<ReturnType<typeof createSpeechRec>>();
+  const recRef = useRef<ReturnType<typeof createSpeechRec> | undefined>(undefined);
   const sessionRef = useRef({
     original: '',
     start: 0,

@@ -85,7 +85,7 @@ export function GlassWaitlistCanvas({
   return (
     <div className="glass-lab__gl" aria-hidden>
       <Canvas
-        dpr={[1, 1.75]}
+        dpr={[1, 1.25]}
         gl={{ antialias: false, powerPreference: 'high-performance', alpha: false }}
         orthographic
         camera={{ position: [0, 0, 1] }}
