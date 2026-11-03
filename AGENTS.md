@@ -41,4 +41,4 @@ npm run dev             # open http://localhost:5173/  (e.g. /flow)
 
 - `three.js` / React Three Fiber is lazy-loaded and produces a large chunk (~234 KB gzip). The `vite build` output warns about chunks larger than 500 KB and prints a direct-`eval` warning originating from the `lottie-web` dependency — both are expected and not build failures.
 - At runtime the console shows non-critical `THREE.Clock` deprecation warnings and WebGL-related warnings from the 3D/shader sections. These do not affect rendering.
-- The repo root contains many standalone `*.html` design-system files (e.g. `design-system-*.html`, `Agent-UI.html`); these are static references, not part of the Vite build.
+- Standalone exploratory HTML (design-system refs, archives, portfolio ideation) lives under `exploratory/` and `portfolio/ideation/`, not the Vite app. Open `exploratory/index.html` for a mobile tab hub that previews files on click. Active design-system docs: `exploratory/design-system/`. Legacy dumps: `exploratory/archive/`.

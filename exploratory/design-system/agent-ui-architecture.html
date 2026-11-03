@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Agent UI - Architecture</title>
+<style>
+:root{
+  --bg:#0d0f13; --panel:#11151b; --panel-2:#161b22; --line:#262b33; --line-2:#1c2128;
+  --text:#e9ecf1; --muted:#8b93a1; --dim:#6a7380;
+  --accent:#6ea8fe;
+  --human:#6ea8fe; --run:#3fa9f5; --tool:#31c48d; --gate:#f0a63f; --danger:#e5687f; --style:#9b8cff;
+  --hair:color-mix(in srgb,#fff 10%,transparent);
+  --tint:color-mix(in srgb,#fff 4%,transparent);
+  --font:ui-sans-serif,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --mono:ui-monospace,"SF Mono","JetBrains Mono",Menlo,Consolas,monospace;
+  --r:10px; --t:180ms; --ease:cubic-bezier(.22,.7,.28,1);
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);font:14px/1.5 var(--font)}
+button,a{font:inherit}
+button{cursor:pointer}
+
+.topnav{
+  position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:6px;flex-wrap:wrap;
+  padding:0 16px;min-height:48px;background:rgba(13,15,19,.92);backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--line);
+}
+.topnav .brand{font-size:12.5px;font-weight:650;margin-right:10px;letter-spacing:.01em}
+.topnav a{color:var(--muted);text-decoration:none;font-size:12.5px;padding:6px 10px;border-radius:7px}
+.topnav a:hover{background:#1a1e24;color:var(--text)}
+.topnav a.active{background:#243044;color:#cfe0ff}
+.topnav .sp{flex:1}
+
+.btn{
+  background:#1a1e24;border:1px solid var(--line);color:var(--text);
+  padding:7px 12px;border-radius:7px;font-size:12px;
+}
+.btn:hover{background:#222732;border-color:#39414e}
+.btn.primary{background:#243044;border-color:#3c5a86;color:#cfe0ff}
+.btn:disabled{opacity:.4;cursor:default}
+
+/* ---------- page ---------- */
+.page{
+  display:grid;grid-template-columns:minmax(0,1fr) 332px;
+  min-height:calc(100dvh - 48px);
+}
+.main{min-width:0;padding:28px 22px 80px;border-right:1px solid var(--line)}
+
+.mast{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:22px}
+.mast h1{margin:0;font-size:clamp(22px,2.6vw,32px);letter-spacing:-.03em;font-weight:650;line-height:1.1}
+.mast p{margin:6px 0 0;color:var(--muted);max-width:54ch;font-size:13.5px}
+.mast .acts{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.cap{
+  font-family:var(--mono);font-size:11.5px;color:var(--accent);min-height:1.4em;
+  letter-spacing:.01em;
+}
+
+.legend{display:flex;flex-wrap:wrap;gap:14px 18px;margin:0 0 18px;padding:0}
+.legend li{list-style:none;display:flex;align-items:center;gap:7px;font-size:11px;color:var(--dim);letter-spacing:.08em;text-transform:uppercase;font-family:var(--mono)}
+.sw{width:8px;height:8px;border-radius:2px}
+.sw.human{background:var(--human)} .sw.run{background:var(--run)} .sw.tool{background:var(--tool)}
+.sw.gate{background:var(--gate)} .sw.danger{background:var(--danger)} .sw.style{background:var(--style)}
+
+/* ---------- map ---------- */
+.map{
+  position:relative;
+  background:
+    radial-gradient(circle at 1px 1px, #1b2028 1px, transparent 0);
+  background-size:22px 22px;
+  border:1px solid var(--line);border-radius:14px;
+  padding:14px 14px 18px;overflow:hidden;
+}
+.map::before{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(180deg,rgba(13,15,19,.35),transparent 18%,transparent 82%,rgba(13,15,19,.5));
+}
+#wires{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible;z-index:1}
+#wires path{
+  fill:none;stroke:#39414e;stroke-width:1.4;
+  transition:stroke var(--t) var(--ease), opacity var(--t) var(--ease);
+}
+#wires path.on{stroke:var(--accent);stroke-width:1.8}
+#wires path.pulse{stroke:var(--accent);stroke-width:2;filter:drop-shadow(0 0 6px color-mix(in srgb,var(--accent) 50%,transparent))}
+#wires path.alt{stroke:#3a4556;stroke-dasharray:4 4}
+#wires path.danger{stroke:color-mix(in srgb,var(--danger) 55%,#39414e)}
+
+.band{position:relative;z-index:2;margin-bottom:10px}
+.band:last-child{margin-bottom:0}
+.band-h{
+  display:flex;align-items:baseline;justify-content:space-between;gap:10px;
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--dim);padding:4px 4px 8px;
+}
+.band-h b{font-weight:600;color:var(--muted)}
+.band-g{display:grid;gap:8px}
+.g5{grid-template-columns:repeat(5,minmax(0,1fr))}
+.g4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.loop{
+  display:grid;gap:8px;
+  grid-template-columns:repeat(8,minmax(0,1fr));
+  grid-template-areas:
+    "intent think plan observe gate mutate fan answer"
+    ".      .     .    .       reject reject reject .";
+}
+#n-intent{grid-area:intent} #n-think{grid-area:think} #n-plan{grid-area:plan}
+#n-observe{grid-area:observe} #n-gate{grid-area:gate} #n-mutate{grid-area:mutate}
+#n-fan{grid-area:fan} #n-answer{grid-area:answer} #n-reject{grid-area:reject}
+
+.node{
+  appearance:none;text-align:left;width:100%;
+  background:var(--panel);border:1px solid var(--line);border-radius:var(--r);
+  padding:10px 11px 11px;color:var(--text);position:relative;
+  box-shadow:inset 3px 0 0 var(--k, var(--muted));
+  transition:border-color var(--t) var(--ease), background var(--t) var(--ease), transform var(--t) var(--ease);
+}
+.node:hover{border-color:#3a4556;background:var(--panel-2)}
+.node:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.node.on{border-color:color-mix(in srgb,var(--k) 55%,var(--line));background:color-mix(in srgb,var(--k) 9%,var(--panel))}
+.node .k{display:block;font-family:var(--mono);font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--k);margin-bottom:4px}
+.node h3{margin:0;font-size:13px;font-weight:650;letter-spacing:-.01em}
+.node p{margin:4px 0 0;font-size:11.5px;color:var(--muted);line-height:1.4}
+.node[data-k=human]{--k:var(--human)} .node[data-k=run]{--k:var(--run)}
+.node[data-k=tool]{--k:var(--tool)} .node[data-k=gate]{--k:var(--gate)}
+.node[data-k=danger]{--k:var(--danger)} .node[data-k=style]{--k:var(--style)}
+
+/* ---------- inspector ---------- */
+#inspect{
+  position:sticky;top:48px;align-self:start;height:calc(100dvh - 48px);
+  padding:22px 18px 40px;overflow:auto;background:var(--bg);
+}
+#inspect .empty{color:var(--dim);font-size:13px;line-height:1.55;margin-top:8px}
+#inspect .k{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin:0 0 8px}
+#inspect h2{margin:0 0 8px;font-size:20px;letter-spacing:-.02em}
+#inspect .body{color:var(--muted);font-size:13.5px;line-height:1.6}
+#inspect .body p{margin:0 0 10px}
+#inspect .body p:last-child{margin:0}
+#inspect dl{margin:16px 0 0;display:grid;gap:0;border-top:1px solid var(--line)}
+#inspect dt{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);padding:12px 0 3px}
+#inspect dd{margin:0;font-size:13px;color:var(--text);line-height:1.5}
+#inspect code{font-family:var(--mono);font-size:12px;color:#cfe0ff;background:#1a2230;padding:1px 5px;border-radius:4px}
+
+/* ---------- timeline ---------- */
+.block{margin-top:36px}
+.block h2{margin:0 0 6px;font-size:16px;letter-spacing:-.015em}
+.block .why{margin:0 0 14px;color:var(--muted);font-size:13px;max-width:68ch}
+
+.timeline{
+  display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:1px;background:var(--line);
+  border:1px solid var(--line);border-radius:12px;overflow:hidden;
+}
+.tl{
+  background:var(--panel);padding:12px 12px 14px;min-height:118px;cursor:pointer;
+  transition:background var(--t) var(--ease);
+}
+.tl:hover,.tl.on{background:var(--panel-2)}
+.tl .n{font-family:var(--mono);font-size:10px;color:var(--dim);letter-spacing:.08em}
+.tl h3{margin:6px 0 4px;font-size:12.5px;font-weight:650}
+.tl p{margin:0;font-size:11.5px;color:var(--muted);line-height:1.4}
+.tl[data-gate] h3{color:var(--gate)}
+.tl[data-danger] h3{color:var(--danger)}
+
+/* ---------- matrix ---------- */
+table{width:100%;border-collapse:collapse;background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+th{text-align:left;font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);font-weight:600;padding:10px 12px;background:#161a20;border-bottom:1px solid var(--line)}
+td{padding:11px 12px;border-bottom:1px solid var(--line-2);font-size:13px;vertical-align:middle}
+tr:last-child td{border-bottom:none}
+td.cap b{display:block;font-weight:600;margin-bottom:2px}
+td.cap span{color:var(--muted);font-size:12px}
+.dot{display:inline-flex;align-items:center;justify-content:center;min-width:18px;font-size:12px;color:var(--dim)}
+.dot.y{color:var(--tool)} .dot.a{color:var(--gate);font-weight:700} .dot.d{color:var(--danger);font-weight:700} .dot.n{color:#3a424c}
+
+/* ---------- stack ---------- */
+.stack{display:grid;grid-template-columns:1.2fr .8fr;gap:12px}
+.nest{border:1px solid var(--line);border-radius:12px;padding:12px;background:var(--panel)}
+.nest + .nest, .nest .nest{margin-top:8px}
+.nest h3{margin:0 0 4px;font-size:13px}
+.nest p{margin:0;font-size:12px;color:var(--muted);line-height:1.45}
+.nest.l0{background:#141820}
+.nest.l1{background:#171c24}
+.nest.l2{background:#1a2029}
+.nest.l3{background:#1d242e}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.chip{font-family:var(--mono);font-size:10.5px;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:4px 8px}
+
+@media (max-width:1100px){
+  .g5,.g4,.loop{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-areas:none}
+  .loop .node{grid-area:auto}
+  .timeline{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .stack{grid-template-columns:1fr}
+}
+@media (max-width:860px){
+  .page{grid-template-columns:1fr}
+  .main{border-right:none;padding:20px 14px 200px}
+  #wires{display:none}
+  #inspect{
+    position:fixed;left:0;right:0;bottom:0;top:auto;height:auto;max-height:46dvh;z-index:40;
+    border-top:1px solid var(--line);background:rgba(13,15,19,.96);backdrop-filter:blur(12px);
+  }
+}
+@media (prefers-reduced-motion:reduce){
+  *{transition:none !important;animation:none !important}
+}
+
+  /* mobile tab strip */
+  .topnav{
+    overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;
+    overscroll-behavior-x:contain;flex-wrap:nowrap;gap:4px;
+  }
+  .topnav::-webkit-scrollbar{display:none}
+  .topnav a,.topnav .brand{
+    flex:0 0 auto;min-height:44px;display:inline-flex;align-items:center;
+  }
+  .topnav .hub{
+    color:#cfe0ff;background:#243044;border-radius:7px;font-weight:650;
+  }
+
+</style>
+</head>
+<body>
+
+<nav class="topnav">
+  <a class="hub" href="../index.html">Hub</a>
+  <span class="brand">Design System Kit</span>
+  <a href="design-system-agent-blueprint.html">Agent blueprint</a>
+  <a href="design-system-checklist.html">Build checklist</a>
+  <a href="design-system-components.html">Component gallery</a>
+  <a href="design-system-motion.html">Motion lab</a>
+  <a href="design-system-agent-ui.html">Agent UI</a>
+  <a href="agent-ui-architecture.html" class="active">Architecture</a>
+  <span class="sp"></span>
+  <a href="../archive/Agent-UI.html">Open live UI</a>
+</nav>
+
+<div class="page">
+  <div class="main">
+    <header class="mast">
+      <div>
+        <h1>Agent UI architecture</h1>
+        <p>How a human, a runtime, a set of tools, and a permission model share one conversation surface. Mapped from the live <a href="../archive/Agent-UI.html" style="color:var(--accent);text-decoration:none">Agent-UI.html</a> run, not a generic chatbot stack.</p>
+      </div>
+      <div class="acts">
+        <button class="btn primary" id="traceBtn" type="button">Trace a run</button>
+        <button class="btn" id="stopBtn" type="button" disabled>Stop</button>
+        <div class="cap" id="cap"></div>
+      </div>
+    </header>
+
+    <ul class="legend">
+      <li><i class="sw human"></i> Human</li>
+      <li><i class="sw run"></i> Runtime</li>
+      <li><i class="sw tool"></i> Tools</li>
+      <li><i class="sw gate"></i> Gate</li>
+      <li><i class="sw danger"></i> Destructive</li>
+      <li><i class="sw style"></i> Style system</li>
+    </ul>
+
+    <div class="map" id="map">
+      <svg id="wires"></svg>
+
+      <div class="band" data-band="context">
+        <div class="band-h"><b>Context</b><span>who talks to what</span></div>
+        <div class="band-g g5">
+          <button class="node" data-k="human" id="n-you" type="button"><span class="k">Human</span><h3>You</h3><p>Intent, approvals, overrides, style pins.</p></button>
+          <button class="node" data-k="run" id="n-agent" type="button"><span class="k">Product</span><h3>Agent UI</h3><p>One stream. Tools are rows. Writes wait.</p></button>
+          <button class="node" data-k="tool" id="n-ws" type="button"><span class="k">World</span><h3>Workspace</h3><p>Files, shell, git. Disk is the expensive side.</p></button>
+          <button class="node" data-k="tool" id="n-figma" type="button"><span class="k">MCP</span><h3>Figma</h3><p>search_design_system, then create only after a gate.</p></button>
+          <button class="node" data-k="style" id="n-studio" type="button"><span class="k">Chrome</span><h3>Style studio</h3><p>Preset, theme, hue, motion, reveal, export.</p></button>
+        </div>
+      </div>
+
+      <div class="band" data-band="shell">
+        <div class="band-h"><b>Shell</b><span>three panes, one locus of action</span></div>
+        <div class="band-g g4">
+          <button class="node" data-k="run" id="n-side" type="button"><span class="k">Pane</span><h3>Sidebar</h3><p>Chats, MCP status, context meter.</p></button>
+          <button class="node" data-k="run" id="n-stream" type="button"><span class="k">Pane</span><h3>Stream</h3><p>Turns append here. Stick to bottom, or jump.</p></button>
+          <button class="node" data-k="gate" id="n-pin" type="button"><span class="k">Gate UI</span><h3>Pin bar</h3><p>Allow / reject stay in reach while you scroll.</p></button>
+          <button class="node" data-k="run" id="n-art" type="button"><span class="k">Pane</span><h3>Artifact</h3><p>The thing being built, previewed beside the talk.</p></button>
+        </div>
+      </div>
+
+      <div class="band" data-band="loop">
+        <div class="band-h"><b>Turn loop</b><span>observe freely, mutate only with you</span></div>
+        <div class="loop">
+          <button class="node" data-k="human" id="n-intent" type="button"><span class="k">Start</span><h3>Intent</h3><p>Brief + attachments land as a user turn.</p></button>
+          <button class="node" data-k="run" id="n-think" type="button"><span class="k">Private</span><h3>Think</h3><p>Visible, then collapses to a time stamp.</p></button>
+          <button class="node" data-k="run" id="n-plan" type="button"><span class="k">Shared</span><h3>Plan</h3><p>Six steps. State ticks as work completes.</p></button>
+          <button class="node" data-k="tool" id="n-observe" type="button"><span class="k">No gate</span><h3>Observe</h3><p>Read, search, MCP lookup. Nothing is written.</p></button>
+          <button class="node" data-k="gate" id="n-gate" type="button"><span class="k">Needs you</span><h3>Approval</h3><p>The command is the largest thing in the block.</p></button>
+          <button class="node" data-k="tool" id="n-mutate" type="button"><span class="k">Allow</span><h3>Mutate</h3><p>Shell, file edit, publish. Status replaces the wait.</p></button>
+          <button class="node" data-k="tool" id="n-fan" type="button"><span class="k">Parallel</span><h3>Fan-out</h3><p>Independent checks run together, then merge.</p></button>
+          <button class="node" data-k="run" id="n-answer" type="button"><span class="k">Close</span><h3>Answer</h3><p>Prose, citations, artifact, composer idle.</p></button>
+          <button class="node" data-k="danger" id="n-reject" type="button"><span class="k">Reject</span><h3>Recover</h3><p>Nothing written. Agent takes the safer path.</p></button>
+        </div>
+      </div>
+
+      <div class="band" data-band="cross">
+        <div class="band-h"><b>Cross-cutting</b><span>the system under the stream</span></div>
+        <div class="band-g g4">
+          <button class="node" data-k="style" id="n-tokens" type="button"><span class="k">Tokens</span><h3>Globals + component layer</h3><p>Eleven surfaces, four knobs each, one accent.</p></button>
+          <button class="node" data-k="style" id="n-styles" type="button"><span class="k">Presets</span><h3>Four style systems</h3><p>Minimal, Aurora, Arcade, Editorial. Same parts.</p></button>
+          <button class="node" data-k="run" id="n-prim" type="button"><span class="k">Kit</span><h3>Stream primitives</h3><p>One row language for every tool call.</p></button>
+          <button class="node" data-k="run" id="n-ctrl" type="button"><span class="k">Control</span><h3>Play / pause / restart</h3><p>runId cancels the previous turn cleanly.</p></button>
+        </div>
+      </div>
+    </div>
+
+    <section class="block">
+      <h2>What the demo run actually does</h2>
+      <p class="why">Fourteen beats inside <code style="font-family:var(--mono);font-size:12px;color:#cfe0ff">runScript()</code>. Observe steps never stop. Write steps always stop. Destructive steps look different on purpose.</p>
+      <div class="timeline" id="timeline"></div>
+    </section>
+
+    <section class="block">
+      <h2>Permission model</h2>
+      <p class="why">The architecture is a trust model with a UI, not a chat with tools bolted on. Auto-approve is a countdown you can still stop, not a hidden skip.</p>
+      <table>
+        <thead>
+          <tr><th>Capability</th><th>Auto</th><th>Approve</th><th>Destructive</th><th>Blocked</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="cap"><b>Think, plan, stream</b><span>Private reasoning, shared plan, typed prose</span></td>
+            <td class="dot y">●</td><td class="dot n">-</td><td class="dot n">-</td><td class="dot n">-</td>
+          </tr>
+          <tr>
+            <td class="cap"><b>Read file / search / MCP lookup</b><span>tokens.json, Button anatomy, Figma variables</span></td>
+            <td class="dot y">●</td><td class="dot n">-</td><td class="dot n">-</td><td class="dot n">-</td>
+          </tr>
+          <tr>
+            <td class="cap"><b>Shell, low risk</b><span>npm run tokens:build</span></td>
+            <td class="dot n">-</td><td class="dot a">Ask</td><td class="dot n">-</td><td class="dot n">-</td>
+          </tr>
+          <tr>
+            <td class="cap"><b>File write</b><span>Edit Button.tsx. Diff is the proposal.</span></td>
+            <td class="dot n">-</td><td class="dot a">Ask</td><td class="dot n">-</td><td class="dot n">-</td>
+          </tr>
+          <tr>
+            <td class="cap"><b>Force-push / high-risk shell</b><span>git push --force origin main</span></td>
+            <td class="dot n">-</td><td class="dot n">-</td><td class="dot d">Ask</td><td class="dot n">-</td>
+          </tr>
+          <tr>
+            <td class="cap"><b>Skip quality verify</b><span>Not in this surface. Recovery is a new proposal.</span></td>
+            <td class="dot n">-</td><td class="dot n">-</td><td class="dot n">-</td><td class="dot d">No</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="block">
+      <h2>Style stack</h2>
+      <p class="why">Type does the hierarchy. Boxes are a last resort. Style systems only write default tokens, so the per-component editor can always win.</p>
+      <div class="stack">
+        <div class="nest l0">
+          <h3>Theme file</h3>
+          <p>Export / import JSON. Dark or light, one accent hue, motion speed, reveal grain.</p>
+          <div class="nest l1">
+            <h3>Style system</h3>
+            <p>Minimal, Aurora, Arcade, Editorial change radius, type, motion curve, and default surfaces. Never hard backgrounds that the editor cannot override.</p>
+            <div class="nest l2">
+              <h3>Global tokens</h3>
+              <p>Color ramps, type scale (nothing below 13px), uneven spacing, hairline / tint / wash.</p>
+              <div class="nest l3">
+                <h3>Component colour layer</h3>
+                <p>ask, op, code, user, prose, plan, fan, note, btn, composer, pin. Each exposes text, accent, line, box, plus radius, pad, shadow, sheen.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="nest">
+            <h3>Stream primitives</h3>
+            <p>Every operation is the same one-line row: icon, verb, target, status. Learn it once and the product is legible.</p>
+            <div class="chips">
+              <span class="chip">user</span><span class="chip">think</span><span class="chip">plan</span>
+              <span class="chip">prose</span><span class="chip">op / mcp</span><span class="chip">ask</span>
+              <span class="chip">fan</span><span class="chip">diff</span><span class="chip">terminal</span>
+              <span class="chip">note</span><span class="chip">citations</span><span class="chip">composer</span>
+            </div>
+          </div>
+          <div class="nest" style="margin-top:12px">
+            <h3>Locus of action</h3>
+            <p>While a decision is outstanding, the block keeps the detail and the pin bar takes the buttons. Auto-approve counts down in both places. Reject is always the same distance away.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <aside id="inspect">
+    <p class="k">Inspector</p>
+    <div id="inspectBody">
+      <h2>Select a node</h2>
+      <div class="empty">Click anything on the map, or press Trace a run to walk the live demo. Edges light up for whatever is in focus.</div>
+    </div>
+  </aside>
+</div>
+
+<script>
+const META = {
+  you:{k:'Human', t:'You',
+    b:'<p>You are not a spectator. You send the brief, pin colours, pause the run, and decide every write. The UI is built so the expensive decision is always the largest thing on screen.</p>',
+    d:{Role:'Operator', Touches:'Composer, pin bar, style studio, self-check', Never:'Silent auto-mutate'}},
+  agent:{k:'Product', t:'Agent UI',
+    b:'<p>A conversation surface for agentic work: streaming, thinking, tool calls, permissions, terminals, diffs, subagents, citations. Hierarchy comes from type, weight, colour and space, with a hairline rail where grouping actually needs help.</p>',
+    d:{File:'Agent-UI.html', Shell:'Sidebar + stream + optional artifact', Contract:'Observe freely. Mutate only with you.'}},
+  ws:{k:'World', t:'Workspace',
+    b:'<p>The disk is the expensive side of the architecture. Reads are free. Token builds and file edits wait. Git force-push is painted as danger so it cannot be mistaken for a normal command.</p>',
+    d:{Reads:'tokens.json, CHECKLIST.md', Writes:'Button.tsx, generated CSS variables', Rule:'Nothing is written until Allow'}},
+  figma:{k:'MCP', t:'Figma',
+    b:'<p>Tools are named like products, not like magic. <code>search_design_system</code> is an observe call. Creating components would be a later mutate, after the spec is on screen and a human has seen the plan.</p>',
+    d:{Server:'figma', Demo:'search_design_system { query: button }', Result:'No existing Button, safe to create'}},
+  studio:{k:'Chrome', t:'Style studio',
+    b:'<p>The live UI is also a theme lab. Presets restyle every component by rewriting tokens, not by swapping markup. Export writes a JSON file you can import back.</p>',
+    d:{Presets:'Minimal, Aurora, Arcade, Editorial', Knobs:'Theme, hue, motion, reveal grain', Output:'theme JSON'}},
+  side:{k:'Pane', t:'Sidebar',
+    b:'<p>Session memory at a glance: which chat is on, whether Figma MCP is connected, how much context is left. It is not where work happens.</p>',
+    d:{Contains:'Chat list, MCP row, context meter', Built by:'C.sidebar()'}},
+  stream:{k:'Pane', t:'Stream',
+    b:'<p>The only place a turn is told. Nodes append in order. If you scroll up, stick-to-bottom releases and Jump to latest appears. Approvals still reach you through the pin bar.</p>',
+    d:{Stick:'atBottom < 60px', Cancel:'runId mismatch throws cancelled', Reveal:'word / clause / sentence / instant'}},
+  pin:{k:'Gate UI', t:'Pin bar',
+    b:'<p>One locus of action. While <code>awaitApproval</code> is pending, the compact bar sits above the composer so Allow and Reject stay in reach no matter where you scrolled. The block keeps the command, the why, and the warning.</p>',
+    d:{Labels:'Needs you / Destructive', Auto:'3s countdown, still stoppable', Code:'awaitApproval()'}},
+  art:{k:'Pane', t:'Artifact',
+    b:'<p>The conversation explains. The artifact shows the thing. In the demo, Button intents and states land here after the write, with a contrast note, so the close of the loop is visible, not just described.</p>',
+    d:{Shown:'After mutate + fan-out', Class:'app.with-artifact'}},
+  intent:{k:'Start', t:'Intent',
+    b:'<p>A user turn with attachments. The demo brief is: add Button to the design system, tokens wired, all states, docs, publish to Figma, follow the checklist. That sentence is the whole job the rest of the loop is solving.</p>',
+    d:{Primitive:'C.userMsg', Attachments:'tokens.json, CHECKLIST.md'}},
+  think:{k:'Private', t:'Think',
+    b:'<p>Reasoning is shown, then collapsed. The point is not to perform thinking. It is to let you see that the agent read the constraint (tokens first, no invented names) before it proposed a plan.</p>',
+    d:{Open:'During stream', Closed:'Thought for 6s', Primitive:'C.thinking'}},
+  plan:{k:'Shared', t:'Plan',
+    b:'<p>Six steps, live ticks. The plan is a shared object, not a paragraph. Later tools call <code>setPlan</code> so you can see progress without reading the whole stream again.</p>',
+    d:{Steps:'Read tokens → precedents → spec → build → verify → publish', Primitive:'C.plan'}},
+  observe:{k:'No gate', t:'Observe',
+    b:'<p>Read file, web/corpus search, MCP lookup. These change what the agent knows, not what the world is. That is why they never raise the pin bar. If observe and mutate looked the same, trust would collapse.</p>',
+    d:{Demo:'fileRead, search, mcp search_design_system', Writes:'None'}},
+  gate:{k:'Needs you', t:'Approval',
+    b:'<p>The command is the largest thing in the block because it is the only thing you must read. Everything else recedes. An accent rail replaces a card. Destructive commands switch the rail and the pin label.</p>',
+    d:{Primitive:'C.bash / C.fileEdit + data-ask', Promise:'awaitApproval() blocks runScript', Decisions:'allow once / session / always / reject'}},
+  mutate:{k:'Allow', t:'Mutate',
+    b:'<p>After Allow, the tool runs in place: a terminal streams inside the same op, or a diff is marked applied. Status replaces the spinner. Reject never reaches this node.</p>',
+    d:{Low:'npm run tokens:build', Write:'src/components/Button.tsx', Finish:'finishOp(op, status)'}},
+  fan:{k:'Parallel', t:'Fan-out',
+    b:'<p>Accessibility audit, usage docs, and tests do not depend on each other, so they run as three rows with independent meters. This is the same pattern as the design-system agent worker fan-out, scaled down to a conversation.</p>',
+    d:{Primitive:'C.fanout', Merge:'All three to 100% before publish'}},
+  answer:{k:'Close', t:'Answer',
+    b:'<p>Final prose, citations, token/cost meta, and an idle composer. The plan is fully ticked. The artifact stays open. The run releases Play. If you Restart, a new <code>runId</code> cancels this turn.</p>',
+    d:{Primitives:'C.prose, C.citations, C.actions', Composer:'busy → idle'}},
+  reject:{k:'Reject', t:'Recover',
+    b:'<p>Reject is a first-class path, not an error. Force-push is refused, the agent says so, and it opens a branch instead. File-edit reject writes nothing and asks what to change. The architecture assumes you will say no.</p>',
+    d:{Force-push:'Branch + PR instead', File edit:'Nothing written', Token build:'Falls back, flags the checklist miss'}},
+  tokens:{k:'Tokens', t:'Globals + component layer',
+    b:'<p>Globals cover colour, type, space, motion. Then every component exposes the same four surfaces (text, accent, line, box) plus geometry. Defaults point back at globals, so anything you do not pin keeps following the theme slider.</p>',
+    d:{Surfaces:'ask, op, code, user, prose, plan, fan, note, btn, composer, pin', Rule:'Style systems write defaults, never hard backgrounds'}},
+  styles:{k:'Presets', t:'Four style systems',
+    b:'<p>Minimal, Aurora, Arcade, Editorial. Same components, different values: radius, type, motion curve, approval treatment, composer. The architecture of the UI does not change when the skin does.</p>',
+    d:{Attr:'data-style on <html>', Theme:'data-theme dark | light'}},
+  prim:{k:'Kit', t:'Stream primitives',
+    b:'<p>A small factory (<code>C.*</code>) builds every block. Catalogue sections and the live run share the same constructors, which is why the gallery and the demo cannot drift.</p>',
+    d:{Factory:'C.userMsg, C.prose, C.plan, C.op, C.mcp, C.ask, C.fanout…', Catalogue:'SECT_CMP maps section → editor target'}},
+  ctrl:{k:'Control', t:'Play / pause / restart',
+    b:'<p><code>runScript</code> owns the turn. Pause polls <code>pausePoint</code> without dropping state. Restart increments <code>runId</code> so the old promise chain throws cancelled and cannot re-enable Play under the new run.</p>',
+    d:{Entry:'startRun()', Pause:'paused flag + pausePoint(id)', Speed:'SPEED from the motion slider'}}
+};
+
+const EDGES = [
+  ['n-you','n-agent'],['n-you','n-studio'],
+  ['n-agent','n-ws'],['n-agent','n-figma'],
+  ['n-agent','n-side'],['n-agent','n-stream'],['n-agent','n-art'],
+  ['n-stream','n-pin'],
+  ['n-intent','n-think'],['n-think','n-plan'],['n-plan','n-observe'],
+  ['n-observe','n-gate'],['n-gate','n-mutate'],['n-mutate','n-fan'],['n-fan','n-answer'],
+  ['n-gate','n-reject','alt'],['n-reject','n-answer','danger'],
+  ['n-ws','n-observe','alt'],['n-figma','n-observe','alt'],
+  ['n-studio','n-tokens'],['n-tokens','n-styles'],['n-styles','n-prim'],['n-prim','n-stream'],
+  ['n-ctrl','n-intent'],['n-pin','n-gate']
+];
+
+const TRACE = [
+  {id:'intent', cap:'Your brief lands with tokens.json and CHECKLIST.md'},
+  {id:'stream', cap:'A skeleton holds the stream so layout does not jump'},
+  {id:'think', cap:'Thinking is visible, then collapses to a 6s stamp'},
+  {id:'plan', cap:'Six steps. The agent will stop before anything touches disk'},
+  {id:'observe', cap:'Read tokens, search Button anatomy, MCP lookup. No gate'},
+  {id:'gate', cap:'npm run tokens:build waits. Pin bar is the locus of action'},
+  {id:'mutate', cap:'Allow: terminal streams inside the same op'},
+  {id:'gate', cap:'File edit waits. The diff is the proposal'},
+  {id:'mutate', cap:'Allow: Button.tsx applied, plan ticks to verify'},
+  {id:'fan', cap:'A11y, docs, and tests run in parallel'},
+  {id:'gate', cap:'Force-push is painted destructive on purpose'},
+  {id:'reject', cap:'Reject recovers: branch + PR instead of rewriting main'},
+  {id:'art', cap:'Artifact pane shows Button intents, states, contrast'},
+  {id:'answer', cap:'Prose, citations, idle composer. Run complete'}
+];
+
+const STEPS = [
+  {n:'01', t:'Your message', p:'Brief + two attachments', id:'intent'},
+  {n:'02', t:'Skeleton', p:'Reserve space before tokens', id:'stream'},
+  {n:'03', t:'Think', p:'Tokens first, do not invent names', id:'think'},
+  {n:'04', t:'Plan', p:'Six steps, live ticks', id:'plan'},
+  {n:'05', t:'Read / search / MCP', p:'Observe only', id:'observe'},
+  {n:'06', t:'Spec', p:'Intents, sizes, states, slots', id:'plan'},
+  {n:'07', t:'Token build', p:'Low-risk shell, still asks', id:'gate', gate:1},
+  {n:'08', t:'Edit Button.tsx', p:'Diff is the proposal', id:'gate', gate:1},
+  {n:'09', t:'Fan-out', p:'A11y, docs, tests', id:'fan'},
+  {n:'10', t:'Force-push', p:'Painted as danger', id:'gate', danger:1},
+  {n:'11', t:'Recover', p:'Branch if you reject', id:'reject', danger:1},
+  {n:'12', t:'Artifact', p:'Live Button preview', id:'art'},
+  {n:'13', t:'Answer', p:'Citations + cost meta', id:'answer'},
+  {n:'14', t:'Idle', p:'Composer released', id:'ctrl'}
+];
+
+const map = document.getElementById('map');
+const svg = document.getElementById('wires');
+const inspect = document.getElementById('inspectBody');
+const cap = document.getElementById('cap');
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+let current = null, tracing = false, traceTok = 0;
+
+function box(el){
+  const r = el.getBoundingClientRect();
+  const m = map.getBoundingClientRect();
+  return {x:r.left-m.left+map.scrollLeft, y:r.top-m.top+map.scrollTop, w:r.width, h:r.height};
+}
+function port(A,B){
+  const ac={x:A.x+A.w/2,y:A.y+A.h/2}, bc={x:B.x+B.w/2,y:B.y+B.h/2};
+  const horiz = Math.abs(bc.x-ac.x) > Math.abs(bc.y-ac.y)+8;
+  if(horiz){
+    const right = bc.x>ac.x;
+    return {x1:right?A.x+A.w:A.x, y1:A.y+A.h/2, x2:right?B.x:B.x+B.w, y2:B.y+B.h/2, horiz:true};
+  }
+  const down = bc.y>ac.y;
+  return {x1:A.x+A.w/2, y1:down?A.y+A.h:A.y, x2:B.x+B.w/2, y2:down?B.y:B.y+B.h, horiz:false};
+}
+function draw(){
+  if(getComputedStyle(svg).display==='none') return;
+  const parts = ['<defs><marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#39414e"/></marker></defs>'];
+  EDGES.forEach(([a,b,kind],i)=>{
+    const A=document.getElementById(a), B=document.getElementById(b);
+    if(!A||!B) return;
+    const p=port(box(A),box(B));
+    const dx=Math.max(28,Math.abs(p.x2-p.x1)*0.4);
+    const dy=Math.max(22,Math.abs(p.y2-p.y1)*0.4);
+    const c1=p.horiz?`${p.x1+(p.x2>p.x1?dx:-dx)},${p.y1}`:`${p.x1},${p.y1+(p.y2>p.y1?dy:-dy)}`;
+    const c2=p.horiz?`${p.x2+(p.x2>p.x1?-dx:dx)},${p.y2}`:`${p.x2},${p.y2+(p.y2>p.y1?-dy:dy)}`;
+    const cls=['edge', kind||'', `e-${a}-${b}`].join(' ');
+    parts.push(`<path class="${cls}" data-a="${a}" data-b="${b}" d="M${p.x1},${p.y1} C${c1} ${c2} ${p.x2},${p.y2}" marker-end="url(#ar)"/>`);
+  });
+  svg.innerHTML = parts.join('');
+}
+function connected(id){
+  return EDGES.filter(([a,b])=>a===id||b===id).map(([a,b])=>a===id?b:a);
+}
+function paintFocus(id){
+  document.querySelectorAll('.node').forEach(n=>n.classList.toggle('on', n.id===id || connected(id).includes(n.id)));
+  document.querySelectorAll('#wires path').forEach(p=>{
+    const hit = p.dataset.a===id || p.dataset.b===id;
+    p.classList.toggle('on', hit);
+    p.classList.toggle('pulse', hit && current===id);
+  });
+  document.querySelectorAll('.tl').forEach(t=>t.classList.toggle('on', 'n-'+t.dataset.id === id));
+}
+function show(key){
+  const m = META[key]; if(!m) return;
+  current = 'n-'+key;
+  paintFocus(current);
+  inspect.innerHTML = `<p class="k">${m.k}</p><h2>${m.t}</h2><div class="body">${m.b}</div><dl>${
+    Object.entries(m.d).map(([k,v])=>`<dt>${k}</dt><dd>${v}</dd>`).join('')
+  }</dl>`;
+}
+function clearFocus(){
+  current=null;
+  document.querySelectorAll('.node.on,.tl.on').forEach(n=>n.classList.remove('on'));
+  document.querySelectorAll('#wires path').forEach(p=>p.classList.remove('on','pulse'));
+  inspect.innerHTML = `<h2>Select a node</h2><div class="empty">Click anything on the map, or press Trace a run to walk the live demo. Edges light up for whatever is in focus.</div>`;
+  cap.textContent='';
+}
+
+document.querySelectorAll('.node').forEach(n=>{
+  n.addEventListener('click',()=>show(n.id.slice(2)));
+});
+
+const tl = document.getElementById('timeline');
+STEPS.forEach(s=>{
+  const d=document.createElement('button');
+  d.className='tl'; d.type='button'; d.dataset.id=s.id;
+  if(s.gate) d.dataset.gate='1';
+  if(s.danger) d.dataset.danger='1';
+  d.innerHTML=`<span class="n">${s.n}</span><h3>${s.t}</h3><p>${s.p}</p>`;
+  d.addEventListener('click',()=>show(s.id));
+  tl.appendChild(d);
+});
+
+const traceBtn=document.getElementById('traceBtn');
+const stopBtn=document.getElementById('stopBtn');
+function wait(ms){ return new Promise(r=>setTimeout(r, reduce?0:ms)); }
+async function trace(){
+  const tok=++traceTok; tracing=true;
+  traceBtn.disabled=true; stopBtn.disabled=false;
+  for(const step of TRACE){
+    if(!tracing || tok!==traceTok) return;
+    show(step.id);
+    cap.textContent=step.cap;
+    await wait(1150);
+  }
+  tracing=false; traceBtn.disabled=false; stopBtn.disabled=true;
+  cap.textContent='Run complete. Click any node to keep inspecting.';
+}
+traceBtn.onclick=trace;
+stopBtn.onclick=()=>{ tracing=false; traceTok++; traceBtn.disabled=false; stopBtn.disabled=true; cap.textContent='Trace stopped.'; };
+
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') clearFocus(); });
+
+new ResizeObserver(draw).observe(map);
+addEventListener('resize', draw);
+requestAnimationFrame(draw);
+</script>
+</body>
+</html>
