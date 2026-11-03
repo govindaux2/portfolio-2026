@@ -38,20 +38,27 @@
 
   .topnav {
     position: sticky; top: 0; z-index: 50;
-    display: flex; align-items: center; gap: 4px; flex-wrap: wrap;
-    padding: 0 16px; min-height: 48px;
+    display: flex; align-items: center; gap: 4px; flex-wrap: nowrap;
+    padding: 0 12px; min-height: 48px;
     background: rgba(14,16,19,.92); backdrop-filter: blur(10px);
     border-bottom: 1px solid var(--line);
+    overflow-x: auto; -webkit-overflow-scrolling: touch;
+    scrollbar-width: none; overscroll-behavior-x: contain;
   }
+  .topnav::-webkit-scrollbar { display: none; }
   .topnav .brand {
-    font-size: 12.5px; font-weight: 650; margin-right: 10px; letter-spacing: .01em;
-    white-space: nowrap;
+    font-size: 12.5px; font-weight: 650; margin-right: 6px; letter-spacing: .01em;
+    white-space: nowrap; flex: 0 0 auto;
   }
   .topnav a {
     color: var(--muted); text-decoration: none; font-size: 12px;
-    padding: 6px 9px; border-radius: 7px; white-space: nowrap;
+    padding: 10px 12px; border-radius: 7px; white-space: nowrap;
+    flex: 0 0 auto; min-height: 44px; display: inline-flex; align-items: center;
   }
   .topnav a:hover { background: #1a1e24; color: var(--text); }
+  .topnav a.hub {
+    color: #cfe0ff; background: #243044; font-weight: 650;
+  }
 
   .wrap { max-width: 1040px; margin: 0 auto; padding: 36px 20px 100px; }
 
@@ -223,8 +230,9 @@
 </style>
 </head>
 <body>
-<nav class="topnav">
+<nav class="topnav" aria-label="Page sections">
   <div class="brand">Portfolio ideation</div>
+  <a class="hub" href="../../exploratory/index.html?group=ideation">Hub</a>
   <a href="#goal">Goal</a>
   <a href="#matrix">Compare</a>
   <a href="#approaches">Approaches</a>
@@ -722,7 +730,9 @@ Accepted cost: [what lost].</pre>
   <footer>
     Ideation only — not a locked design system. Lives at
     <span class="mono">portfolio/ideation/design-decision-approaches.html</span>.
-    Open locally or via static hosting; not part of the Vite route tree unless wired later.
+    Browse all exploratory HTML via the
+    <a href="../../exploratory/index.html" style="color:var(--accent)">Hub</a>
+    (mobile tabs · tap to preview).
   </footer>
 </main>
 </body>
