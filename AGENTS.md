@@ -36,6 +36,7 @@ npm run dev             # open http://localhost:5173/  (e.g. /flow)
 ### Working preferences
 
 - Do not create screen recordings unless they are genuinely necessary to prove a change (e.g. a tricky visual/interaction fix). Prefer skipping recordings otherwise.
+- Standalone HTML is a local file, for every agent. Put it in `local/<topic>/` with a `README.md` in that folder (purpose, who it is for, date, how to open the file with no server, and what each file is), and add a row to `local/README.md`. Do not put it in `public/`, do not add a Vite route, and do not leave it only on the cloud machine. Do not replace the repo-root `index.html`. The older root `design-system-*.html` files stay put because they link to each other by filename. The same rule is in `.cursor/rules/local-html.mdc`.
 
 ### Non-obvious notes
 

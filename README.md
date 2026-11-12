@@ -10,6 +10,12 @@ Personal portfolio showcasing clickable app prototypes, real-time GLSL shaders, 
 - Motion / Framer Motion (scroll reveals)
 - Geist Variable (self-hosted via Fontsource)
 
+## Local HTML
+
+Standalone pages live in [`local/`](local/README.md). They are files, not site routes. Open one by double-clicking its HTML after you pull. No server.
+
+The Hyderabad canvas-print research is [`local/canvas-prints/index.html`](local/canvas-prints/index.html).
+
 ## Commands
 
 ```bash
