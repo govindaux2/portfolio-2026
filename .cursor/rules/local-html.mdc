@@ -1,0 +1,19 @@
+---
+description: Standalone HTML lives in local/<topic>/ with a README. Never host it from a random path.
+alwaysApply: true
+---
+
+# Local HTML files
+
+A standalone HTML page is a file on disk. It is not a hosted route.
+
+Every agent does this, including cloud agents:
+
+1. Put the page in `local/<topic>/` in this repo. The folder name is short, lowercase, and says what the page is.
+2. Add `local/<topic>/README.md` in the same change. It must say: purpose, who it is for, the date, how to open it on a computer (the path, double-click the HTML, no server and no `npm`), and what each file in the folder is.
+3. Keep a one-line entry for that folder in `local/README.md`.
+4. Do not put the page in `public/`, do not add a Vite route, and do not leave it only on the cloud agent machine.
+5. Do not replace the repo-root `index.html`. That file is the Vite app.
+6. The older design-system HTML files at the repo root stay where they are. They link to each other by filename. New pages do not join that pile.
+
+Commit the folder on a branch and open a pull request so a `git pull` on the person's computer is how the file becomes local.
