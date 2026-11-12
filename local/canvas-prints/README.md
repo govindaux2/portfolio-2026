@@ -19,7 +19,7 @@ This folder is already on your computer once you have pulled the repo. No server
 1. In the repo, go to `local/canvas-prints/`.
 2. Double-click `index.html`, or drag it onto Chrome, Safari, or Firefox.
 
-The layout styles are inside the file, so the page still shows if the extra Tabler stylesheet does not load. Tabler is optional and loads from a CDN only when the browser can reach it.
+The layout styles are inside the file. It does not load a stylesheet from the internet, so the page is the same offline as online. If an editor preview stays white, that preview is not opening the file. Double-click `index.html` instead.
 
 ## Files
 
