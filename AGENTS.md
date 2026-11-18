@@ -52,4 +52,4 @@ npm run dev             # open http://localhost:5173/  (e.g. /flow)
 - `three.js` / React Three Fiber is lazy-loaded for the hero shader and any small 3D that follows (~234 KB gzip). Do not add the `shaders` package back onto Home — that second engine was ~709 KB gzip and loaded with the first page.
 - Lottie stays on the NDLA case page only (`/work/ndla-b2`). The direct-`eval` warning from `lottie-web` is expected there and is not a build failure.
 - At runtime the console shows non-critical `THREE.Clock` deprecation warnings and WebGL-related warnings from the 3D/shader sections. These do not affect rendering.
-- The repo root contains many standalone `*.html` design-system files (e.g. `design-system-*.html`, `Agent-UI.html`); these are static references, not part of the Vite build.
+- Standalone exploratory HTML (design-system refs, archives, portfolio ideation) lives under `exploratory/` and `portfolio/ideation/`, not the Vite app. Open `exploratory/index.html` for a mobile tab hub that previews files on click. Active design-system docs: `exploratory/design-system/`. Legacy dumps: `exploratory/archive/`.

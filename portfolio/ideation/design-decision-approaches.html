@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Ideation — Approaches for Articulating Design Decisions</title>
+<style>
+  :root {
+    --bg: #0e1013;
+    --panel: #14171c;
+    --panel2: #181c22;
+    --line: #262b33;
+    --line2: #1c2027;
+    --text: #e8eaed;
+    --muted: #8b93a1;
+    --dim: #6f7787;
+    --accent: #6ea8fe;
+    --accent-dim: #243044;
+    --good: #31c48d;
+    --warn: #f0a63f;
+    --hot: #e5687f;
+    --chip-a: #2a4a3a;
+    --chip-b: #3a2f1a;
+    --chip-c: #2a3348;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font: 14px/1.55 "IBM Plex Sans", ui-sans-serif, -apple-system, "Segoe UI", sans-serif;
+  }
+  code, .mono {
+    font-family: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+    font-size: 12.5px;
+  }
+
+  .topnav {
+    position: sticky; top: 0; z-index: 50;
+    display: flex; align-items: center; gap: 4px; flex-wrap: nowrap;
+    padding: 0 12px; min-height: 48px;
+    background: rgba(14,16,19,.92); backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--line);
+    overflow-x: auto; -webkit-overflow-scrolling: touch;
+    scrollbar-width: none; overscroll-behavior-x: contain;
+  }
+  .topnav::-webkit-scrollbar { display: none; }
+  .topnav .brand {
+    font-size: 12.5px; font-weight: 650; margin-right: 6px; letter-spacing: .01em;
+    white-space: nowrap; flex: 0 0 auto;
+  }
+  .topnav a {
+    color: var(--muted); text-decoration: none; font-size: 12px;
+    padding: 10px 12px; border-radius: 7px; white-space: nowrap;
+    flex: 0 0 auto; min-height: 44px; display: inline-flex; align-items: center;
+  }
+  .topnav a:hover { background: #1a1e24; color: var(--text); }
+  .topnav a.hub {
+    color: #cfe0ff; background: #243044; font-weight: 650;
+  }
+
+  .wrap { max-width: 1040px; margin: 0 auto; padding: 36px 20px 100px; }
+
+  h1 { font-size: 28px; margin: 0 0 8px; letter-spacing: -.02em; font-weight: 650; }
+  h2 {
+    font-size: 17px; margin: 0 0 6px; letter-spacing: -.01em;
+    display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap;
+  }
+  h2 .tag {
+    font-size: 10.5px; font-weight: 600; color: var(--dim);
+    text-transform: uppercase; letter-spacing: .1em;
+  }
+  h3 { font-size: 14px; margin: 0 0 6px; font-weight: 650; }
+  .lede { color: var(--muted); max-width: 68ch; margin: 0 0 28px; }
+  .lede strong { color: var(--text); font-weight: 600; }
+
+  section { margin-bottom: 44px; }
+  .why { color: var(--muted); font-size: 13px; margin: 0 0 16px; max-width: 78ch; }
+
+  .meta {
+    display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 22px;
+  }
+  .meta span {
+    font-size: 11.5px; color: var(--muted);
+    border: 1px solid var(--line); background: var(--panel);
+    padding: 5px 10px; border-radius: 7px;
+  }
+  .meta span b { color: var(--text); font-weight: 600; }
+
+  /* comparison matrix */
+  .matrix-wrap {
+    overflow-x: auto; border: 1px solid var(--line);
+    border-radius: 12px; background: var(--panel);
+  }
+  table.matrix { width: 100%; border-collapse: collapse; min-width: 760px; }
+  table.matrix th {
+    font-size: 10.5px; text-transform: uppercase; letter-spacing: .1em;
+    color: var(--dim); text-align: left; font-weight: 600;
+    padding: 10px 12px; background: #161a20; border-bottom: 1px solid var(--line);
+  }
+  table.matrix td {
+    padding: 11px 12px; border-bottom: 1px solid var(--line2);
+    vertical-align: top; font-size: 12.5px;
+  }
+  table.matrix tr:last-child td { border-bottom: none; }
+  table.matrix tr:hover td { background: #171b21; }
+  table.matrix td.name { font-weight: 600; white-space: nowrap; }
+  table.matrix td.name .src {
+    display: block; font-weight: 400; color: var(--dim); font-size: 11px; margin-top: 2px;
+  }
+
+  .fit {
+    display: inline-block; font-size: 10px; font-weight: 700;
+    letter-spacing: .06em; text-transform: uppercase;
+    padding: 2px 7px; border-radius: 5px;
+  }
+  .fit.high { background: rgba(49,196,141,.15); color: #7fe0bb; }
+  .fit.mid { background: rgba(240,166,63,.14); color: #f3c887; }
+  .fit.low { background: rgba(229,104,127,.12); color: #f0a0ae; }
+
+  /* approach cards */
+  .approaches { display: grid; gap: 14px; }
+  .approach {
+    border: 1px solid var(--line);
+    background: var(--panel);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .approach > header {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    gap: 12px; flex-wrap: wrap;
+    padding: 14px 16px 10px;
+    border-bottom: 1px solid var(--line2);
+    background: var(--panel2);
+  }
+  .approach > header .id {
+    font-size: 11px; color: var(--accent); font-weight: 650;
+    letter-spacing: .04em; margin-bottom: 4px;
+  }
+  .approach > header h3 { margin: 0; font-size: 15px; }
+  .pills { display: flex; flex-wrap: wrap; gap: 6px; }
+  .pill {
+    font-size: 10.5px; font-weight: 600; padding: 3px 8px; border-radius: 999px;
+    border: 1px solid var(--line); color: var(--muted); background: #1a1e24;
+  }
+  .pill.on-a { background: var(--chip-a); color: #9ed9bd; border-color: #355546; }
+  .pill.on-b { background: var(--chip-b); color: #e8c48a; border-color: #5a4824; }
+  .pill.on-c { background: var(--chip-c); color: #a8c4f0; border-color: #3a4a66; }
+
+  .approach .body { padding: 14px 16px 16px; display: grid; gap: 14px; }
+  @media (min-width: 800px) {
+    .approach .body { grid-template-columns: 1.2fr 1fr; }
+  }
+
+  .block label {
+    display: block; font-size: 10.5px; text-transform: uppercase;
+    letter-spacing: .1em; color: var(--dim); margin-bottom: 6px; font-weight: 650;
+  }
+  .block p, .block li { color: var(--muted); font-size: 13px; margin: 0; }
+  .block ul { margin: 0; padding-left: 18px; }
+  .block li { margin-bottom: 4px; }
+  .block li strong { color: var(--text); font-weight: 600; }
+
+  .template {
+    background: #10141a;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 12px 14px;
+    color: #c5cedb;
+    white-space: pre-wrap;
+    line-height: 1.5;
+  }
+
+  .vs {
+    display: grid; gap: 10px;
+  }
+  @media (min-width: 700px) {
+    .vs { grid-template-columns: 1fr 1fr; }
+  }
+  .vs .side {
+    border: 1px solid var(--line); border-radius: 10px;
+    padding: 12px 14px; background: #12161c;
+  }
+  .vs .side.bad { border-color: #3a2a30; }
+  .vs .side.good { border-color: #2a4038; }
+  .vs .side h4 {
+    margin: 0 0 6px; font-size: 11px; text-transform: uppercase;
+    letter-spacing: .1em; font-weight: 650;
+  }
+  .vs .side.bad h4 { color: var(--hot); }
+  .vs .side.good h4 { color: var(--good); }
+
+  .combo {
+    border: 1px dashed #334155;
+    border-radius: 12px;
+    padding: 16px 18px;
+    background: linear-gradient(180deg, #141a22 0%, #12161c 100%);
+  }
+  .combo ol { margin: 8px 0 0; padding-left: 20px; color: var(--muted); }
+  .combo li { margin-bottom: 8px; }
+  .combo li strong { color: var(--text); }
+
+  .rec {
+    border: 1px solid #3c5a86;
+    background: var(--accent-dim);
+    border-radius: 12px;
+    padding: 16px 18px;
+  }
+  .rec h3 { color: #cfe0ff; margin-bottom: 8px; }
+  .rec p { margin: 0 0 8px; color: #b7c9e6; }
+  .rec p:last-child { margin: 0; }
+
+  .refs {
+    columns: 1;
+    gap: 18px;
+  }
+  @media (min-width: 700px) { .refs { columns: 2; } }
+  .refs a {
+    display: block; color: var(--accent); text-decoration: none;
+    font-size: 12.5px; margin-bottom: 8px; break-inside: avoid;
+  }
+  .refs a:hover { text-decoration: underline; }
+  .refs a span { display: block; color: var(--dim); font-size: 11px; margin-top: 1px; }
+
+  footer {
+    margin-top: 40px; padding-top: 16px; border-top: 1px solid var(--line);
+    color: var(--dim); font-size: 12px;
+  }
+</style>
+</head>
+<body>
+<nav class="topnav" aria-label="Page sections">
+  <div class="brand">Portfolio ideation</div>
+  <a class="hub" href="../../exploratory/index.html?group=ideation">Hub</a>
+  <a href="#goal">Goal</a>
+  <a href="#matrix">Compare</a>
+  <a href="#approaches">Approaches</a>
+  <a href="#combos">Combos</a>
+  <a href="#recommend">Recommend</a>
+  <a href="#refs">Sources</a>
+</nav>
+
+<main class="wrap">
+  <h1>Approaches for articulating design decisions</h1>
+  <p class="lede">
+    Structured ideation for the hire-ready portfolio: different ways to show
+    <strong>judgment under constraint</strong>, not a process diary.
+    Use this to pick a narrative pattern per case study (Manufacturing → Nile → Kynder).
+  </p>
+
+  <div class="meta">
+    <span><b>Purpose</b> hiring / portfolio case studies</span>
+    <span><b>Lens</b> design decisions &amp; trade-offs</span>
+    <span><b>Status</b> ideation — not locked</span>
+    <span><b>Updated</b> 3 Nov 2026, Asia/Calcutta</span>
+  </div>
+
+  <section id="goal">
+    <h2>1. Goal <span class="tag">what “good” means</span></h2>
+    <p class="why">
+      Hiring managers cold-read in ~60 seconds. They hunt for: role clarity,
+      contested choices, rejected alternatives, constraints, and honest outcomes.
+      Final screens alone fail that scan.
+    </p>
+    <div class="vs">
+      <div class="side bad">
+        <h4>Avoid</h4>
+        <p class="muted" style="color:var(--muted);margin:0;font-size:13px">
+          Chronological UX-process dump · “I did research then wireframes” ·
+          metric invention · framework diagrams with no turning points
+        </p>
+      </div>
+      <div class="side good">
+        <h4>Aim for</h4>
+        <p style="color:var(--muted);margin:0;font-size:13px">
+          2–3 consequential decisions · named alternatives · accepted cost ·
+          evidence (or honest uncertainty) · what you’d revisit
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section id="matrix">
+    <h2>2. Approach matrix <span class="tag">pick by fit</span></h2>
+    <p class="why">
+      Fit score is relative to this portfolio’s AI-agent UX hire narrative
+      (Manufacturing first). High = strong default for M1–M8 case writing.
+    </p>
+    <div class="matrix-wrap">
+      <table class="matrix">
+        <thead>
+          <tr>
+            <th>Approach</th>
+            <th>Best for</th>
+            <th>Effort</th>
+            <th>Fit</th>
+            <th>Risk if overused</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="name">A. Expected vs My call<span class="src">Ben Roach</span></td>
+            <td>Principle-driven UI/IA choices</td>
+            <td>Low–med</td>
+            <td><span class="fit high">High</span></td>
+            <td>Feels formulaic if every paragraph uses it</td>
+          </tr>
+          <tr>
+            <td class="name">B. Rejected alternative<span class="src">MentorCruise / cold read</span></td>
+            <td>Callback-worthy “why not Y”</td>
+            <td>Low</td>
+            <td><span class="fit high">High</span></td>
+            <td>Thin if alternatives were never real</td>
+          </tr>
+          <tr>
+            <td class="name">C. Evidence → effect chain<span class="src">The Crit</span></td>
+            <td>Research-backed turning points</td>
+            <td>Med</td>
+            <td><span class="fit high">High</span></td>
+            <td>Forces fake research if evidence is thin</td>
+          </tr>
+          <tr>
+            <td class="name">D. Decision triangle<span class="src">DesignCase</span></td>
+            <td>Balancing user / biz / constraint</td>
+            <td>Low</td>
+            <td><span class="fit mid">Med</span></td>
+            <td>Abstract without a concrete UI beat</td>
+          </tr>
+          <tr>
+            <td class="name">E. PUXD 5-field log<span class="src">Practical UX</span></td>
+            <td>Working notes → paste into case</td>
+            <td>Med (ongoing)</td>
+            <td><span class="fit high">High</span></td>
+            <td>Too bureaucratic if pasted raw</td>
+          </tr>
+          <tr>
+            <td class="name">F. Contested call<span class="src">DesignCase anatomy</span></td>
+            <td>Competing priorities / real estate</td>
+            <td>Med</td>
+            <td><span class="fit high">High</span></td>
+            <td>Needs a real conflict; don’t invent drama</td>
+          </tr>
+          <tr>
+            <td class="name">G. Numbered decision series<span class="src">Roach / Amazon</span></td>
+            <td>Long / platform projects</td>
+            <td>High</td>
+            <td><span class="fit mid">Med</span></td>
+            <td>Too long for junior cold-read; prune hard</td>
+          </tr>
+          <tr>
+            <td class="name">H. Cold-read 4-block<span class="src">MentorCruise</span></td>
+            <td>Overall case study skeleton</td>
+            <td>Low</td>
+            <td><span class="fit high">High</span></td>
+            <td>Empty if Decisions block is just Process renamed</td>
+          </tr>
+          <tr>
+            <td class="name">I. Inverted pyramid<span class="src">Sarah Doody</span></td>
+            <td>Homepage + case openings</td>
+            <td>Low</td>
+            <td><span class="fit mid">Med</span></td>
+            <td>Headlines without receipts feel salesy</td>
+          </tr>
+          <tr>
+            <td class="name">J. What / How / Why<span class="src">IxDF</span></td>
+            <td>Annotating artifacts</td>
+            <td>Low</td>
+            <td><span class="fit mid">Med</span></td>
+            <td>Becomes caption spam on every wireframe</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="approaches">
+    <h2>3. Approach cards <span class="tag">mechanics + copy</span></h2>
+    <p class="why">Each card: when to use, structure, copy template, and a weak vs strong example.</p>
+
+    <div class="approaches">
+
+      <!-- A -->
+      <article class="approach" id="a">
+        <header>
+          <div>
+            <div class="id">Approach A</div>
+            <h3>Expected direction vs My call</h3>
+          </div>
+          <div class="pills">
+            <span class="pill on-a">UI / principle</span>
+            <span class="pill on-c">Scannable</span>
+            <span class="pill">Steal from Roach</span>
+          </div>
+        </header>
+        <div class="body">
+          <div class="block">
+            <label>When</label>
+            <p>You rejected the “industry default” (photo-rich humanitarian site, fancy custom system, agent that auto-acts) for a constraint-led choice.</p>
+            <label style="margin-top:12px">Structure</label>
+            <ul>
+              <li><strong>Context</strong> — constraint in one line</li>
+              <li><strong>Expected</strong> — what most teams would ship</li>
+              <li><strong>My call</strong> — what you chose + why</li>
+            </ul>
+          </div>
+          <div class="block">
+            <label>Copy template</label>
+            <pre class="template mono">Expected
+[Default / tempting direction]
+
+My call
+[Actual choice]
+Because [constraint / principle].</pre>
+          </div>
+        </div>
+        <div class="body" style="border-top:1px solid var(--line2); padding-top:0">
+          <div class="vs" style="grid-column:1/-1">
+            <div class="side bad">
+              <h4>Weak</h4>
+              <p style="margin:0;color:var(--muted);font-size:13px">“We kept the UI simple and accessible.”</p>
+            </div>
+            <div class="side good">
+              <h4>Strong (agent UX flavor)</h4>
+              <p style="margin:0;color:var(--muted);font-size:13px">Expected: fully autonomous agent that executes plant actions. My call: Insight → Action with explicit approval gates — because audit liability beats speed when a wrong run stops a line.</p>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- B -->
+      <article class="approach" id="b">
+        <header>
+          <div>
+            <div class="id">Approach B</div>
+            <h3>Rejected alternative (reasoning layer)</h3>
+          </div>
+          <div class="pills">
+            <span class="pill on-a">Hiring callback</span>
+            <span class="pill on-c">One sentence</span>
+            <span class="pill">Cold-read critical</span>
+          </div>
+        </header>
+        <div class="body">
+          <div class="block">
+            <label>When</label>
+            <p>Every major choice. Minimum one “what I didn’t do” per case study — this is what many portfolios skip.</p>
+            <label style="margin-top:12px">Structure</label>
+            <ul>
+              <li>Chose <strong>X</strong></li>
+              <li>Over <strong>Y</strong></li>
+              <li>Because <strong>Z constraint / evidence</strong></li>
+            </ul>
+          </div>
+          <div class="block">
+            <label>Copy template</label>
+            <pre class="template mono">I chose [X] over [Y]
+because [Z made Y wrong / premature / unsafe].
+The cost I accepted: [limitation].</pre>
+          </div>
+        </div>
+      </article>
+
+      <!-- C -->
+      <article class="approach" id="c">
+        <header>
+          <div>
+            <div class="id">Approach C</div>
+            <h3>Evidence → interpretation → decision → tradeoff → effect</h3>
+          </div>
+          <div class="pills">
+            <span class="pill on-a">Research-backed</span>
+            <span class="pill on-b">2–3 decisions max</span>
+            <span class="pill">The Crit</span>
+          </div>
+        </header>
+        <div class="body">
+          <div class="block">
+            <label>When</label>
+            <p>You have real signals (interviews, ops shadowing, logs, usability). Mark unknowns <span class="mono">[NEED INPUT]</span> rather than inventing lifts.</p>
+          </div>
+          <div class="block">
+            <label>Copy template</label>
+            <pre class="template mono">Evidence: [what we saw]
+Interpretation: [what it meant]
+Decision: [what we shipped]
+Tradeoff: [what we gave up]
+Effect: [observed / tested / unknown]</pre>
+          </div>
+        </div>
+      </article>
+
+      <!-- D -->
+      <article class="approach" id="d">
+        <header>
+          <div>
+            <div class="id">Approach D</div>
+            <h3>Decision triangle (user · business · constraint)</h3>
+          </div>
+          <div class="pills">
+            <span class="pill on-c">Strategic framing</span>
+            <span class="pill">DesignCase</span>
+          </div>
+        </header>
+        <div class="body">
+          <div class="block">
+            <label>When</label>
+            <p>Stakeholder fights (“just add chat”) need a crisp frame that shows you balanced three forces — useful in Manufacturing approval UX.</p>
+          </div>
+          <div class="block">
+            <label>Copy template</label>
+            <pre class="template mono">User need: …
+Business goal: …
+Constraint: …
+→ Decision: …</pre>
+          </div>
+        </div>
+      </article>
+
+      <!-- E -->
+      <article class="approach" id="e">
+        <header>
+          <div>
+            <div class="id">Approach E</div>
+            <h3>PUXD 5-field decision log</h3>
+          </div>
+          <div class="pills">
+            <span class="pill on-a">Working method</span>
+            <span class="pill on-b">During build</span>
+            <span class="pill">Then prune</span>
+          </div>
+        </header>
+        <div class="body">
+          <div class="block">
+            <label>Fields</label>
+            <ul>
+              <li><strong>Decision</strong> — plain statement</li>
+              <li><strong>Evidence / reasoning</strong> — what you knew then</li>
+              <li><strong>Alternatives rejected</strong> — and why</li>
+              <li><strong>Constraints</strong> — tech, policy, time, org</li>
+              <li><strong>Revisit when</strong> — conditions that reopen it</li>
+            </ul>
+          </div>
+          <div class="block">
+            <label>Portfolio use</label>
+            <p>Keep logs in phase markdown (<span class="mono">/portfolio/mfg</span>). Promote only the best 2–3 into the public case study; leave the rest as interview ammo.</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- F -->
+      <article class="approach" id="f">
+        <header>
+          <div>
+            <div class="id">Approach F</div>
+            <h3>Contested call (name the conflict)</h3>
+          </div>
+          <div class="pills">
+            <span class="pill on-a">Priority fights</span>
+            <span class="pill on-c">Interview gold</span>
+          </div>
+        </header>
+        <div class="body">
+          <div class="block">
+            <label>When</label>
+            <p>Multiple goods compete for one surface (speed vs audit, autonomy vs control, density vs glanceability).</p>
+          </div>
+          <div class="block">
+            <label>Copy template</label>
+            <pre class="template mono">Conflict: [A], [B], and [C] all wanted first place.
+Reasoning tool: [your hierarchy / principle].
+What tipped it: [evidence or constraint].
+Accepted cost: [what lost].</pre>
+          </div>
+        </div>
+      </article>
+
+      <!-- G -->
+      <article class="approach" id="g">
+        <header>
+          <div>
+            <div class="id">Approach G</div>
+            <h3>Numbered decision series</h3>
+          </div>
+          <div class="pills">
+            <span class="pill on-b">Long projects</span>
+            <span class="pill">Amazon-style</span>
+          </div>
+        </header>
+        <div class="body">
+          <div class="block">
+            <label>When</label>
+            <p>Platform / multi-month work where order of bets matters. Use sparingly — cold readers won’t finish Decision 08 of 08.</p>
+          </div>
+          <div class="block">
+            <label>Portfolio use</label>
+            <p>Show 3 numbered decisions on-page; collapse the rest behind “More decisions” or keep for live walkthrough.</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- H -->
+      <article class="approach" id="h">
+        <header>
+          <div>
+            <div class="id">Approach H</div>
+            <h3>Cold-read 4-block skeleton</h3>
+          </div>
+          <div class="pills">
+            <span class="pill on-a">Case study spine</span>
+            <span class="pill on-c">Default layout</span>
+          </div>
+        </header>
+        <div class="body">
+          <div class="block">
+            <label>Blocks</label>
+            <ul>
+              <li><strong>Problem</strong> — constraint you designed within</li>
+              <li><strong>Process</strong> — what you actually did (short)</li>
+              <li><strong>Decisions</strong> — what you chose not to do, and why</li>
+              <li><strong>Outcomes</strong> — what changed + how you know (or don’t)</li>
+            </ul>
+          </div>
+          <div class="block">
+            <label>Note</label>
+            <p>Aligns with FigJam “universal 10-section spine” — treat Decisions as the limelight section, not another process rename.</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- I + J compact -->
+      <article class="approach" id="i">
+        <header>
+          <div>
+            <div class="id">Approaches I &amp; J</div>
+            <h3>Inverted pyramid + What / How / Why captions</h3>
+          </div>
+          <div class="pills">
+            <span class="pill on-c">Page craft</span>
+            <span class="pill">Doody · IxDF</span>
+          </div>
+        </header>
+        <div class="body">
+          <div class="block">
+            <label>I — Inverted pyramid</label>
+            <p>Lead with outcome + role + one decision headline so recruiters stop skimming. Depth below for hiring managers.</p>
+          </div>
+          <div class="block">
+            <label>J — What / How / Why</label>
+            <p>Caption only artifacts that carry a turning point. Skip decorative galleries of every wireframe.</p>
+          </div>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <section id="combos">
+    <h2>4. Recommended combos <span class="tag">how to mix</span></h2>
+    <p class="why">Don’t use all ten on one page. Pick a skeleton + 1–2 decision formats.</p>
+
+    <div class="approaches" style="gap:12px">
+      <div class="combo">
+        <h3>Combo 1 — Default for Manufacturing (M1+)</h3>
+        <ol>
+          <li><strong>H</strong> Cold-read 4-block as page spine</li>
+          <li><strong>A + F</strong> Hero decision as Expected vs My call + contested approval gate</li>
+          <li><strong>B</strong> One explicit rejected path (full autonomy)</li>
+          <li><strong>C</strong> Only where evidence exists; else <span class="mono">[NEED INPUT]</span></li>
+        </ol>
+      </div>
+      <div class="combo">
+        <h3>Combo 2 — Nile (systems / triage)</h3>
+        <ol>
+          <li><strong>H</strong> spine + <strong>I</strong> impact-first opening</li>
+          <li><strong>D</strong> triangle for network vs client priority fights</li>
+          <li><strong>G</strong> optional short numbered series (3 max) for platform bets</li>
+        </ol>
+      </div>
+      <div class="combo">
+        <h3>Combo 3 — Kynder (draft → review → send)</h3>
+        <ol>
+          <li><strong>A</strong> Expected auto-send vs My call human review</li>
+          <li><strong>B + C</strong> rejected “parent blast without review” with research chain</li>
+          <li><strong>J</strong> caption prototype states that show the gate</li>
+        </ol>
+      </div>
+      <div class="combo">
+        <h3>Combo 4 — Working method (offline)</h3>
+        <ol>
+          <li>Keep <strong>E</strong> PUXD logs in phase folders while building</li>
+          <li>At publish time, promote 2–3 into public case; rest = interview kit</li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <section id="recommend">
+    <h2>5. Working recommendation <span class="tag">lock later</span></h2>
+    <div class="rec">
+      <h3>Proposed default for this portfolio</h3>
+      <p>
+        <strong>Spine:</strong> Cold-read 4-block (H).
+        <strong>Hero decision format:</strong> Expected vs My call (A) + Contested call (F).
+        <strong>Mandatory sentence:</strong> Rejected alternative (B) at least once per case.
+        <strong>Evidence:</strong> Chain (C) only with real or labeled proxy data — no invented production metrics.
+      </p>
+      <p>
+        Next step when ready: apply Combo 1 to Manufacturing M1 thesis copy, then bake into the case study HTML/React page.
+      </p>
+    </div>
+  </section>
+
+  <section id="refs">
+    <h2>6. Source map <span class="tag">where ideas came from</span></h2>
+    <div class="refs">
+      <a href="https://www.benroachdesign.com/work/irc">Ben Roach — IRC<span>Expected vs My call</span></a>
+      <a href="https://www.benroachdesign.com/work/amazon">Ben Roach — Amazon<span>Numbered decisions</span></a>
+      <a href="https://mentorcruise.com/blog/how-to-write-a-ux-case-study-that-passes-the-hiring-managers-cold-read/">MentorCruise cold read<span>Rejected alternatives · 4-block</span></a>
+      <a href="https://thecrit.co/resources/case-study-structure-guide">The Crit structure guide<span>Evidence → effect chain</span></a>
+      <a href="https://designcase.app/blog/justify-design-decisions-ux-case-study/">DesignCase — justify decisions<span>Decision triangle</span></a>
+      <a href="https://designcase.app/blog/anatomy-interview-ready-ux-case-study/">DesignCase — anatomy<span>Contested calls</span></a>
+      <a href="https://practicaluxdesign.com/articles/puxd-design-rationale-structure/">PUXD rationale structure<span>5-field log</span></a>
+      <a href="https://www.careerstrategylab.com/podcasts/design-ux-portfolio-recruiters-read-for-more-than-one-minute/">Sarah Doody<span>Inverted pyramid</span></a>
+      <a href="https://assets.interaction-design.org/literature/article/how-to-write-the-perfect-middle-part-of-your-ux-case-study">IxDF middle part<span>What / How / Why</span></a>
+      <a href="https://simonpan.com/work/uber/">Simon Pan — Uber<span>End-to-end narrative reference</span></a>
+    </div>
+  </section>
+
+  <footer>
+    Ideation only — not a locked design system. Lives at
+    <span class="mono">portfolio/ideation/design-decision-approaches.html</span>.
+    Browse all exploratory HTML via the
+    <a href="../../exploratory/index.html" style="color:var(--accent)">Hub</a>
+    (mobile tabs · tap to preview).
+  </footer>
+</main>
+</body>
+</html>

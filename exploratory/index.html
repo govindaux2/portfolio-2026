@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Exploratory file hub</title>
+<style>
+  :root {
+    --bg: #0e1013;
+    --panel: #14171c;
+    --line: #262b33;
+    --text: #e8eaed;
+    --muted: #8b93a1;
+    --dim: #6f7787;
+    --accent: #6ea8fe;
+    --accent-bg: #243044;
+    --safe-b: env(safe-area-inset-bottom, 0px);
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font: 14px/1.45 "IBM Plex Sans", ui-sans-serif, -apple-system, "Segoe UI", sans-serif;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .app-header {
+    flex: 0 0 auto;
+    border-bottom: 1px solid var(--line);
+    background: rgba(14,16,19,.96);
+    backdrop-filter: blur(10px);
+    z-index: 20;
+  }
+  .app-header .row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px 6px;
+  }
+  .brand { font-size: 13px; font-weight: 650; letter-spacing: .01em; white-space: nowrap; }
+  .brand span { color: var(--muted); font-weight: 500; }
+  .open-ext {
+    margin-left: auto;
+    font-size: 12px;
+    color: var(--accent);
+    text-decoration: none;
+    padding: 6px 10px;
+    border-radius: 8px;
+    border: 1px solid #3c5a86;
+    background: var(--accent-bg);
+    white-space: nowrap;
+  }
+  .open-ext[hidden] { display: none; }
+  .open-ext:active { opacity: .85; }
+
+  /* Category tabs — horizontal scroll on mobile */
+  .cat-tabs {
+    display: flex;
+    gap: 6px;
+    padding: 0 12px 10px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    overscroll-behavior-x: contain;
+  }
+  .cat-tabs::-webkit-scrollbar { display: none; }
+  .cat-tab {
+    flex: 0 0 auto;
+    appearance: none;
+    border: 1px solid var(--line);
+    background: #1a1e24;
+    color: var(--muted);
+    font: inherit;
+    font-size: 12.5px;
+    font-weight: 600;
+    padding: 8px 14px;
+    border-radius: 999px;
+    cursor: pointer;
+    min-height: 36px;
+  }
+  .cat-tab[aria-selected="true"] {
+    background: var(--accent-bg);
+    border-color: #3c5a86;
+    color: #cfe0ff;
+  }
+
+  .body {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+  }
+  @media (min-width: 900px) {
+    .body { flex-direction: row; }
+  }
+
+  /* File list */
+  .files {
+    flex: 0 0 auto;
+    max-height: 42%;
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+    border-bottom: 1px solid var(--line);
+    background: var(--panel);
+  }
+  @media (min-width: 900px) {
+    .files {
+      flex: 0 0 300px;
+      max-height: none;
+      height: 100%;
+      border-bottom: none;
+      border-right: 1px solid var(--line);
+    }
+  }
+  .files h2 {
+    margin: 0;
+    padding: 12px 14px 6px;
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: .12em;
+    color: var(--dim);
+    font-weight: 650;
+  }
+  .file-list { list-style: none; margin: 0; padding: 4px 8px 12px; }
+  .file-list li { margin: 0; }
+  .file-btn {
+    width: 100%;
+    text-align: left;
+    appearance: none;
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--text);
+    font: inherit;
+    padding: 12px 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    min-height: 48px;
+  }
+  .file-btn:hover, .file-btn:focus-visible {
+    background: #1a1e24;
+    outline: none;
+  }
+  .file-btn[aria-current="true"] {
+    background: var(--accent-bg);
+    border-color: #3c5a86;
+  }
+  .file-btn .title { display: block; font-weight: 600; font-size: 13.5px; }
+  .file-btn .meta { display: block; color: var(--muted); font-size: 11.5px; margin-top: 3px; }
+
+  .viewer-wrap {
+    flex: 1 1 auto;
+    min-height: 0;
+    position: relative;
+    background: #0a0c0f;
+  }
+  .viewer-empty {
+    position: absolute; inset: 0;
+    display: grid; place-items: center;
+    padding: 24px;
+    color: var(--muted);
+    text-align: center;
+    font-size: 13.5px;
+  }
+  .viewer-empty[hidden] { display: none; }
+  iframe {
+    width: 100%;
+    height: 100%;
+    border: 0;
+    background: #fff;
+  }
+
+  .mobile-hint {
+    display: none;
+    flex: 0 0 auto;
+    padding: 8px 12px calc(8px + var(--safe-b));
+    font-size: 11.5px;
+    color: var(--dim);
+    border-top: 1px solid var(--line);
+    background: #12151a;
+  }
+  @media (max-width: 899px) {
+    .mobile-hint { display: block; }
+  }
+</style>
+</head>
+<body>
+  <header class="app-header">
+    <div class="row">
+      <div class="brand">Exploratory <span>/ files</span></div>
+      <a class="open-ext" id="openExt" href="#" target="_blank" rel="noopener" hidden>Open full page</a>
+    </div>
+    <div class="cat-tabs" role="tablist" aria-label="File groups" id="catTabs"></div>
+  </header>
+
+  <div class="body">
+    <aside class="files" aria-label="Files in group">
+      <h2 id="filesHeading">Files</h2>
+      <ul class="file-list" id="fileList"></ul>
+    </aside>
+    <main class="viewer-wrap">
+      <div class="viewer-empty" id="empty">
+        Tap a file to preview it here.<br />Use “Open full page” for the standalone view.
+      </div>
+      <iframe id="viewer" title="File preview" hidden></iframe>
+    </main>
+  </div>
+  <div class="mobile-hint">Swipe category tabs · tap a file to load · “Open full page” for shareable URL</div>
+
+<script>
+const GROUPS = [
+  {
+    id: "ideation",
+    label: "Ideation",
+    files: [
+      {
+        title: "Design-decision approaches",
+        meta: "Portfolio narrative patterns · hiring",
+        href: "../portfolio/ideation/design-decision-approaches.html",
+      },
+    ],
+  },
+  {
+    id: "design-system",
+    label: "Design system",
+    files: [
+      {
+        title: "Agent blueprint",
+        meta: "design-system-agent-blueprint.html",
+        href: "design-system/design-system-agent-blueprint.html",
+      },
+      {
+        title: "Build checklist",
+        meta: "design-system-checklist.html",
+        href: "design-system/design-system-checklist.html",
+      },
+      {
+        title: "Component gallery",
+        meta: "design-system-components.html",
+        href: "design-system/design-system-components.html",
+      },
+      {
+        title: "Motion lab",
+        meta: "design-system-motion.html",
+        href: "design-system/design-system-motion.html",
+      },
+      {
+        title: "Neon grid studio",
+        meta: "design-system-neon-grid.html",
+        href: "design-system/design-system-neon-grid.html",
+      },
+      {
+        title: "Agent UI",
+        meta: "design-system-agent-ui.html",
+        href: "design-system/design-system-agent-ui.html",
+      },
+      {
+        title: "Architecture",
+        meta: "agent-ui-architecture.html",
+        href: "design-system/agent-ui-architecture.html",
+      },
+    ],
+  },
+  {
+    id: "archive",
+    label: "Archive",
+    files: [
+      {
+        title: "Agent UI (legacy live dump)",
+        meta: "Agent-UI.html",
+        href: "archive/Agent-UI.html",
+      },
+      {
+        title: "Shader flow",
+        meta: "shader-flow.html",
+        href: "archive/shader-flow.html",
+      },
+    ],
+  },
+  {
+    id: "dev",
+    label: "Dev",
+    files: [
+      {
+        title: "Figma bits",
+        meta: "public/dev/figma-bits.html",
+        href: "../public/dev/figma-bits.html",
+      },
+    ],
+  },
+];
+
+const catTabs = document.getElementById("catTabs");
+const fileList = document.getElementById("fileList");
+const filesHeading = document.getElementById("filesHeading");
+const viewer = document.getElementById("viewer");
+const empty = document.getElementById("empty");
+const openExt = document.getElementById("openExt");
+
+let activeGroup = GROUPS[0].id;
+let activeHref = "";
+
+function renderCats() {
+  catTabs.innerHTML = "";
+  GROUPS.forEach((g) => {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "cat-tab";
+    btn.role = "tab";
+    btn.id = `tab-${g.id}`;
+    btn.textContent = g.label;
+    btn.setAttribute("aria-selected", g.id === activeGroup ? "true" : "false");
+    btn.addEventListener("click", () => {
+      activeGroup = g.id;
+      renderCats();
+      renderFiles();
+    });
+    catTabs.appendChild(btn);
+  });
+}
+
+function renderFiles() {
+  const group = GROUPS.find((g) => g.id === activeGroup) || GROUPS[0];
+  filesHeading.textContent = group.label;
+  fileList.innerHTML = "";
+  group.files.forEach((f) => {
+    const li = document.createElement("li");
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "file-btn";
+    btn.setAttribute("aria-current", f.href === activeHref ? "true" : "false");
+    btn.innerHTML = `<span class="title"></span><span class="meta"></span>`;
+    btn.querySelector(".title").textContent = f.title;
+    btn.querySelector(".meta").textContent = f.meta;
+    btn.addEventListener("click", () => openFile(f.href));
+    li.appendChild(btn);
+    fileList.appendChild(li);
+  });
+}
+
+function openFile(href) {
+  activeHref = href;
+  viewer.hidden = false;
+  empty.hidden = true;
+  viewer.src = href;
+  openExt.hidden = false;
+  openExt.href = href;
+  renderFiles();
+  // On small screens, scroll viewer into view
+  if (window.matchMedia("(max-width: 899px)").matches) {
+    viewer.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }
+}
+
+// Deep-link: ?f=ideation/design-decision or ?group=archive
+const params = new URLSearchParams(location.search);
+const groupParam = params.get("group");
+const fileParam = params.get("f");
+if (groupParam && GROUPS.some((g) => g.id === groupParam)) {
+  activeGroup = groupParam;
+}
+renderCats();
+renderFiles();
+if (fileParam) {
+  const all = GROUPS.flatMap((g) => g.files.map((f) => ({ ...f, group: g.id })));
+  const match = all.find(
+    (f) => f.href.includes(fileParam) || f.title.toLowerCase().includes(fileParam.toLowerCase())
+  );
+  if (match) {
+    activeGroup = match.group;
+    renderCats();
+    renderFiles();
+    openFile(match.href);
+  }
+} else {
+  // Auto-open first ideation file so hub isn't empty
+  openFile(GROUPS[0].files[0].href);
+}
+</script>
+</body>
+</html>
