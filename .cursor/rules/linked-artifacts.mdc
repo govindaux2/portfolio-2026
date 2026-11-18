@@ -1,0 +1,15 @@
+---
+description: Every HTML demo/catalog must have hub + Back/Next nav — fix before other work
+alwaysApply: true
+---
+
+# Linked artifacts (do not skip)
+
+**Before** shipping or iterating any `preview/**/*.html` demo:
+
+1. Hub `index.html` = only primary chat URL.
+2. **Every** page starts with `<nav class="artifact-nav">` — Back · Here · Next (or disabled Next).
+3. No orphan pages. Hub cards link to every child.
+4. Skill: `~/.cursor/skills/linked-artifacts/SKILL.md` (+ `templates/artifact-nav.css`).
+
+If a page is missing nav and the user notices: **stop the visual task, add nav, then continue.**

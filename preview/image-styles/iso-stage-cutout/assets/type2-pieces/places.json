@@ -1,0 +1,33 @@
+{
+  "masterWidth": 2160,
+  "masterHeight": 2880,
+  "pieces": [
+    {
+      "id": "inbound",
+      "src": "inbound.png",
+      "left": 2.0,
+      "top": 0.0,
+      "width": 96.0,
+      "z": 3,
+      "seg": "stp"
+    },
+    {
+      "id": "ops",
+      "src": "ops.png",
+      "left": 2.0,
+      "top": 26.0,
+      "width": 96.0,
+      "z": 2,
+      "seg": "ptp"
+    },
+    {
+      "id": "make",
+      "src": "make.png",
+      "left": 2.0,
+      "top": 50.0,
+      "width": 96.0,
+      "z": 1,
+      "seg": "ptp"
+    }
+  ]
+}

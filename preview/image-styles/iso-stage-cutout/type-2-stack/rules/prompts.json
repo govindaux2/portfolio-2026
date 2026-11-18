@@ -1,0 +1,185 @@
+{
+  "styleId": "iso-stage-cutout",
+  "typeId": "type-2-stack",
+  "updated": "2026-11-18",
+  "figma": {
+    "fileUrl": "https://www.figma.com/design/iPAtvC4RljEgiFAMmrN17F",
+    "fileKey": "iPAtvC4RljEgiFAMmrN17F",
+    "note": "Hi-res masters + vector silhouette masks for G/H/I. Export polys/SVG; rasterize locally for true alpha."
+  },
+  "hardRules": [
+    "Stack layout = house floorplan / puzzle (rooms BESIDE each other). Never a vertical tower of slabs.",
+    "Phase 2 cutouts = AI Solo rooms OR Figma-masked master slices (user choice). Always true-alpha PNGs (corners alpha 0).",
+    "NEVER ship Figma MCP PNG exports as final cutouts — they flatten mask transparency to opaque gray. Rasterize polygon masks onto the master locally.",
+    "Void clear = edge-connected charcoal only. Do NOT globally knock all dark pixels (that eats inbound walls).",
+    "Phase 3 = Figma-like place editor: selection bbox with 8 resize handles + rotate handle (Shift+resize = aspect lock, Shift+rotate = 15° snap), Shift multi-select, layer icons, Flip H / Flip V for any selected piece (rooms + connectors; persist flipX/flipY), Lock = production places.json. No discrete free-rotate icon buttons — use bbox rotate + flips for iso connectors.",
+    "Unlock-only connector tray (bottom-left): catalog in assets/connectors/catalog.json. Hover = preview, drag onto stage (or +) places centered/at drop with selection+bbox active. − / Delete removes selected connectors only.",
+    "This Stack HTML is the reusable base layout for other projects — swap cutout/connector art + prompts; keep chrome, phases, place editor, connector tray.",
+    "Locked places download as places-{g|h|i}.json; agent writes that file into assets/cutouts/{cand}/places.json.",
+    "Draft placements autosave to localStorage key iso-stage-cutout.placeEditor.v1 — Lock is the production gate.",
+    "While locked: Solo-quality hover lift+tint. While unlocked: drag/layer + connector tray (no hover lift).",
+    "Zero padding inside the place frame. Stage aspect from places masterWidth/masterHeight."
+  ],
+  "lessonsLearned": [
+    {
+      "error": "Vertical tower masters (A–F)",
+      "cause": "Prompt allowed stacked slabs / list layout",
+      "fix": "Positives require L/courtyard/stagger adjacency; negatives ban vertical tower, equal air bands, pasted one-above-another"
+    },
+    {
+      "error": "Phase 3 placement not 100% as master",
+      "cause": "Regenerated Solo cutouts + approximate % places + frame padding",
+      "fix": "Hi-res master → Figma vector masks → local polygon rasterize → places from trimmed bbox; master underlay"
+    },
+    {
+      "error": "Phase 3 hover shows discolored empty box, no animation",
+      "cause": "Opaque charcoal/gray leftover in crop rect; CSS filter tints the whole box; hover lift removed or ineffective",
+      "fix": "True-alpha silhouettes (corners alpha 0); restore lift+scale+tint; dim underlay while hot"
+    },
+    {
+      "error": "Figma masked export still a solid box",
+      "cause": "Figma MCP / exportAsync PNG flattens transparency outside the mask to opaque gray (#E5E5E5)",
+      "fix": "Keep Figma for vector masks only; run figma_mask_rasterize.py to paint polys onto master pixels"
+    },
+    {
+      "error": "Inbound walls missing after knock",
+      "cause": "Aggressive global lum/chroma knock treated dark walls as charcoal",
+      "fix": "Edge-flood void from image edges only; keep interior dark grey walls"
+    },
+    {
+      "error": "Odd gaps / odd overlap in Stack art",
+      "cause": "AI exploded diagram or independent dioramas composited",
+      "fix": "One camera, one lighting; near-touching shared edges; negative: exploded axonometric, collage of separate renders"
+    },
+    {
+      "error": "Prompts missing on candidate thumbs",
+      "cause": "Rules icons only on phase headers",
+      "fix": "Every artifact with a prompt JSON entry gets a subtle rules icon (candidate + cutout room)"
+    },
+    {
+      "error": "User preferred AI Solo cutouts over master slices for Phase 2 thumbs",
+      "cause": "Master-slice / Figma-mask pieces looked wrong in Phase 2 preview and broke hover feel",
+      "fix": "Keep AI-generated Solo rooms in cutouts/ for Phase 2+3 preview when requested; park master masks in cutouts-master-bak/. Figma path stays for fidelity later."
+    },
+    {
+      "error": "Hard-coded places never matched what the designer wanted",
+      "cause": "Agent guessed % boxes instead of letting the designer place",
+      "fix": "Phase 3 place editor: drag + layer + Lock downloads production places.json; agent commits that file"
+    }
+  ],
+  "shared": {
+    "positive": "Ultra high-resolution crisp isometric digi-twin, soft studio lighting, pure flat solid #0a0c10 charcoal void, no text, no labels, no UI, no dashed boxes, no watermark, sharp edges for zoom, expanded open props, ONE shared camera and ONE lighting setup across the whole facility",
+    "negative": "vertical tower of three identical platforms, platforms stacked straight up like a list, large empty gaps between floors, exploded diagram with air between slabs, cutouts pasted one above another, odd mid-room crop, collage of separate renders, misaligned cameras per room, regenerated rooms that do not match a master crop, UI chrome, captions, watermarks, blurry, low-res"
+  },
+  "type": {
+    "positive": "ONE continuous facility laid out like rooms in a house / interlocking puzzle — platforms sit BESIDE each other (L-shape, courtyard, or staggered cluster), NOT in a vertical column. One or two complete rooms per platform. Slight careful overlap only where pieces share a wall or corner (puzzle tabs). Each room fully readable if isolated. Soft contact shadows. Digi-twin floorplan, not a skyscraper stack.",
+    "negative": "vertical list stack, three platforms centered one above the other, big vertical air bands, mid-room crops that destroy meaning, heavy pasted overlap, ladder of identical slabs, independent dioramas composited after the fact"
+  },
+  "efficiency": [
+    "Master first — 3 candidates; user pick",
+    "Phase 2 = AI Solo cutouts (hover feel) or Figma-masked master slices (fidelity)",
+    "Phase 3 = place editor → Lock → production places.json",
+    "Agent commits locked places-{cand}.json into assets/cutouts/{cand}/places.json",
+    "Figma path when seams need masks: polys → figma_mask_rasterize.py (never trust Figma PNG alpha)"
+  ],
+  "pipeline": [
+    "Phase 1: 3 floorplan masters; user pick; upscale ≥2880",
+    "Phase 2: true-alpha room cutouts (AI Solo or Figma-masked) into cutouts/{g,h,i}/",
+    "Phase 3: place editor — drag, layer, Lock downloads production places; hover tint only while locked"
+  ],
+  "phase2": {
+    "method": "ai_solo_cutouts | figma_vector_mask → figma_mask_rasterize",
+    "forbidden": "Do not ship Figma MCP PNG exports (opaque gray). Do not leave opaque charcoal/gray boxes. Do not globally knock dark walls.",
+    "positive": "True-alpha room PNGs (inbound/ops/make). AI Solo for working preview; Figma masks when master fidelity is required.",
+    "negative": "Figma-flattened gray boxes, untrimmed empty alpha boxes, UI labels",
+    "rooms": ["inbound", "ops", "make"],
+    "scripts": [
+      "~/.cursor/skills/iso-stage-cutout/scripts/figma_mask_rasterize.py",
+      "~/.cursor/skills/iso-stage-cutout/scripts/slice_from_master.py",
+      "~/.cursor/skills/iso-stage-cutout/scripts/cutout_bg.py"
+    ]
+  },
+  "phase3": {
+    "method": "place_editor_drag_layer_lock",
+    "positive": "Figma-like transform box on selection: 8 resize handles + rotation handle (free angle; Shift snaps 15°; Shift+resize locks ratio). Shift+click multi-select. Toolbar icons only (layer/lock/download/reset) with tooltips — no rotate icon buttons. places include width/height/rotate. Lock = production JSON + hover tint. Draft: iso-stage-cutout.placeEditor.v1",
+    "negative": "agent-guessed places without Lock, discrete rotate toolbar icons instead of bbox handle, drag while locked, hover lift while editing, missing resize/rotate handles, missing tooltips on icons",
+    "storageKey": "iso-stage-cutout.placeEditor.v1",
+    "css": {
+      "aspectRatio": "masterWidth / masterHeight",
+      "padding": "0",
+      "edit": "drag + layer; no hover lift",
+      "locked": "transform translateY + scale AND filter tint on true-alpha pieces"
+    }
+  },
+  "candidates": {
+    "A": { "status": "rejected", "title": "Vertical tower A", "note": "Rejected: vertical list." },
+    "B": { "status": "rejected", "title": "Vertical tower B", "note": "Rejected." },
+    "C": { "status": "rejected", "title": "Vertical tower C", "note": "Rejected." },
+    "D": { "status": "rejected", "title": "Stepped building", "note": "Rejected: still vertical." },
+    "E": { "status": "rejected", "title": "Seat-line story", "note": "Rejected: still vertical." },
+    "F": { "status": "rejected", "title": "Warehouse cutaway", "note": "Rejected: still vertical." },
+    "G": {
+      "status": "active",
+      "title": "L-plan house",
+      "note": "L-shaped adjacency; slight corner meet. Phase 2/3 = Figma masks of master-g only.",
+      "positive": "Isometric digi-twin seat plant as an L-shaped house floorplan. THREE raised platforms as rooms beside each other forming an L — NOT stacked vertically. Left: inbound trucks+cages. Upper-right: glass office. Lower: purple seat assembly. Slight puzzle-tab overlap at L corner. One camera, one lighting.",
+      "negative": "vertical tower, platforms one above the other, big gaps, mid-room crop, separate regenerations of rooms",
+      "cutouts": {
+        "inbound": {
+          "positive": "FIGMA MASK of master-g: inbound trucks + cages region only. Same pixels as master. True-alpha outside silhouette.",
+          "negative": "new Solo generation, office/assembly pixels, Figma gray box, padded empty border not in master"
+        },
+        "ops": {
+          "positive": "FIGMA MASK of master-g: glass ops office region only. Same pixels as master. True-alpha outside silhouette.",
+          "negative": "new Solo generation, trucks/seat line, Figma gray box, padded empty border not in master"
+        },
+        "make": {
+          "positive": "FIGMA MASK of master-g: purple seat assembly region only. Same pixels as master. True-alpha outside silhouette.",
+          "negative": "new Solo generation, office/trucks, Figma gray box, padded empty border not in master"
+        }
+      }
+    },
+    "H": {
+      "status": "active",
+      "title": "Courtyard cluster",
+      "note": "Three rooms around a dark courtyard. Phase 2/3 = Figma masks of master-h only.",
+      "positive": "Isometric digi-twin as courtyard house plan. THREE complete room-platforms nestled around a tiny charcoal courtyard — side-by-side neighbors, NOT a vertical column. Trucks; glass office; purple seat oval. Slight shared-edge overlap. One camera, one lighting.",
+      "negative": "vertical tower, centered stack, large air bands, cropped rooms, separate regenerations of rooms",
+      "cutouts": {
+        "inbound": {
+          "positive": "FIGMA MASK of master-h: trucks + cages region only. Same pixels as master. True-alpha outside silhouette.",
+          "negative": "new Solo generation, office/oval, Figma gray box, padded empty border not in master"
+        },
+        "ops": {
+          "positive": "FIGMA MASK of master-h: glass office + pallets region only. Same pixels as master. True-alpha outside silhouette.",
+          "negative": "new Solo generation, trucks/oval, Figma gray box, padded empty border not in master"
+        },
+        "make": {
+          "positive": "FIGMA MASK of master-h: purple seat oval region only. Same pixels as master. True-alpha outside silhouette.",
+          "negative": "new Solo generation, trucks/office, Figma gray box, padded empty border not in master"
+        }
+      }
+    },
+    "I": {
+      "status": "active",
+      "title": "Staggered puzzle",
+      "note": "Diagonal offset tiles; thin shared corners. Phase 2/3 = Figma masks of master-i only.",
+      "positive": "Isometric digi-twin as interlocking puzzle tiles. Platforms staggered on diagonal offset grid like house rooms sharing walls — NOT a vertical list. Receiving; office+staging; machinery+purple bins. Thin shared-corner overlaps only. One camera, one lighting.",
+      "negative": "vertical tower, three centered slabs, exploded gaps, mid-object crops, separate regenerations of rooms",
+      "cutouts": {
+        "inbound": {
+          "positive": "FIGMA MASK of master-i: warehouse receiving region only. Same pixels as master. True-alpha outside silhouette.",
+          "negative": "new Solo generation, office/machinery, Figma gray box, padded empty border not in master"
+        },
+        "ops": {
+          "positive": "FIGMA MASK of master-i: glass office + staging region only. Same pixels as master. True-alpha outside silhouette.",
+          "negative": "new Solo generation, trucks/machinery, Figma gray box, padded empty border not in master"
+        },
+        "make": {
+          "positive": "FIGMA MASK of master-i: machinery + purple bins region only. Same pixels as master. True-alpha outside silhouette.",
+          "negative": "new Solo generation, trucks/office, Figma gray box, padded empty border not in master"
+        }
+      }
+    }
+  }
+}

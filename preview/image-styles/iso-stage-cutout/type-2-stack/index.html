@@ -1,0 +1,1173 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Stage Cutout · Type 2 Stack</title>
+  <link rel="stylesheet" href="../../artifact-chrome.css?v=dividers" />
+  <style>
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font)}
+    .wrap{width:min(880px,calc(100% - 40px));margin:0 auto;padding:16px 0 80px}
+    .kicker{color:var(--accent);font-size:13px;margin:0 0 8px}
+    h1{font-size:clamp(26px,4vw,36px);letter-spacing:-.03em;margin:0}
+    p{color:var(--muted);line-height:1.5;max-width:42rem}
+    .thumbs{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:14px}
+    button.thumb .cap{padding:8px 0 0;font-size:12px;color:var(--muted);display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
+    button.thumb .cap .txt{min-width:0}
+    button.thumb .cap b{display:block;color:var(--text);font-size:13px;margin-bottom:2px}
+    button.thumb .cap .rules-ico{margin-top:1px}
+    .set{margin-top:20px;padding-top:16px;border-top:1px solid var(--line)}
+    .set:first-of-type{margin-top:14px;padding-top:0;border-top:0}
+    .set-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}
+    .set-head b{color:var(--text);font-size:13px}
+
+    .place-stage{
+      margin-top:10px;border-radius:0;border:0;border-top:1px solid var(--line);background:#0a0c10;
+      position:relative;overflow:visible;padding:0;
+    }
+    .place-stage.is-locked{
+      overflow:hidden;
+      outline:1px solid color-mix(in oklab, var(--accent) 35%, transparent);
+    }
+    .place-toolbar{
+      position:absolute;top:10px;right:10px;z-index:40;
+      display:flex;gap:4px;padding:4px;border-radius:10px;
+      background:rgba(8,10,14,.82);border:1px solid var(--line);
+      backdrop-filter:blur(10px);
+    }
+    .place-toolbar button{
+      width:32px;height:32px;padding:0;border:0;border-radius:8px;
+      background:transparent;color:var(--muted);cursor:pointer;
+      display:grid;place-items:center;
+    }
+    .place-toolbar button:hover{color:var(--text);background:rgba(255,255,255,.06)}
+    .place-toolbar button:disabled{opacity:.28;cursor:default;pointer-events:none}
+    .place-toolbar button.is-active{color:var(--accent);background:rgba(255,255,255,.08)}
+    .place-toolbar button svg{width:16px;height:16px;display:block}
+    .place-lock-pill{
+      position:absolute;top:10px;left:10px;z-index:40;
+      font-size:11px;letter-spacing:.04em;color:var(--accent);
+      padding:5px 8px;border-radius:999px;border:1px solid var(--line);
+      background:rgba(8,10,14,.82);opacity:0;pointer-events:none;
+      transition:opacity .2s ease;
+    }
+    .place-stage.is-locked .place-lock-pill{opacity:1}
+    .stack-frame{position:relative;width:100%;aspect-ratio:1600 / 1200;margin:0;padding:0;touch-action:none;overflow:visible}
+    .stack-frame .master-base{display:none}
+    .stack-frame .cutout{
+      position:absolute;padding:0;margin:0;border:0;background:transparent;cursor:grab;outline:none;
+      transform-origin:center center;will-change:transform,opacity,filter;
+      opacity:1;--rot:0deg;--flip-x:1;--flip-y:1;
+      transform:rotate(var(--rot)) scale(var(--flip-x), var(--flip-y));
+      transition:transform .2s ease,opacity .28s ease,filter .35s ease;
+    }
+    .stack-frame .cutout:active,.stack-frame .cutout.is-dragging{cursor:grabbing;transition:none;z-index:30!important}
+    .stack-frame .cutout.is-selected{outline:none}
+    .stack-frame .cutout img{
+      display:block;width:100%;height:100%;object-fit:contain;pointer-events:none;
+      filter:brightness(.92) saturate(.95);transition:filter .35s ease;
+    }
+    .place-stage:not(.is-locked) .stack-frame .cutout img{filter:brightness(1) saturate(1)}
+    /* Figma-like transform box */
+    .tf-box{
+      position:absolute;pointer-events:none;z-index:60;
+      border:1px solid var(--accent);box-sizing:border-box;
+      transform-origin:center center;display:none;
+    }
+    .tf-box.is-on{display:block}
+    .tf-box .tf-stem{
+      position:absolute;left:50%;bottom:100%;width:1px;height:22px;
+      background:var(--accent);transform:translateX(-50%);
+    }
+    .tf-box .tf-rot{
+      position:absolute;left:50%;bottom:calc(100% + 18px);width:12px;height:12px;
+      margin-left:-6px;border-radius:50%;
+      background:#0c0e12;border:1.5px solid var(--accent);
+      pointer-events:auto;cursor:grab;box-sizing:border-box;
+    }
+    .tf-box .tf-rot:active{cursor:grabbing}
+    .tf-box .tf-handle{
+      position:absolute;width:8px;height:8px;margin:-4px 0 0 -4px;
+      background:#0c0e12;border:1.5px solid var(--accent);border-radius:1px;
+      pointer-events:auto;box-sizing:border-box;
+    }
+    .tf-box .tf-handle.nw{left:0;top:0;cursor:nwse-resize}
+    .tf-box .tf-handle.n{left:50%;top:0;cursor:ns-resize}
+    .tf-box .tf-handle.ne{left:100%;top:0;cursor:nesw-resize}
+    .tf-box .tf-handle.e{left:100%;top:50%;cursor:ew-resize}
+    .tf-box .tf-handle.se{left:100%;top:100%;cursor:nwse-resize}
+    .tf-box .tf-handle.s{left:50%;top:100%;cursor:ns-resize}
+    .tf-box .tf-handle.sw{left:0;top:100%;cursor:nesw-resize}
+    .tf-box .tf-handle.w{left:0;top:50%;cursor:ew-resize}
+    .tf-angle{
+      position:absolute;left:50%;top:calc(100% + 10px);transform:translateX(-50%);
+      font:600 11px/1 var(--font);color:var(--accent);
+      background:rgba(8,10,14,.9);border:1px solid var(--line);border-radius:6px;
+      padding:3px 6px;white-space:nowrap;display:none;pointer-events:none;
+    }
+    .tf-box.is-rotating .tf-angle{display:block}
+    .place-stage.is-locked .tf-box{display:none!important}
+    /* Production hover (locked only) — keep rotation */
+    .place-stage.is-locked .stack-frame .cutout:hover,
+    .place-stage.is-locked .stack-frame .cutout.is-on{
+      opacity:1;
+      transform:translateY(-10px) rotate(var(--rot)) scale(calc(var(--flip-x) * 1.045), calc(var(--flip-y) * 1.045));
+      z-index:20!important;
+    }
+    .place-stage.is-locked .stack-frame.is-hot .cutout:not(.is-on):not(:hover){opacity:.32;filter:grayscale(.2)}
+    .place-stage.is-locked .stack-frame .cutout[data-seg="stp"]:hover img,
+    .place-stage.is-locked .stack-frame .cutout[data-seg="stp"].is-on img{
+      filter:brightness(1.18) saturate(1.15) sepia(.28) hue-rotate(170deg)
+    }
+    .place-stage.is-locked .stack-frame .cutout[data-seg="ptp"]:hover img,
+    .place-stage.is-locked .stack-frame .cutout[data-seg="ptp"].is-on img,
+    .place-stage.is-locked .stack-frame .cutout[data-seg="conn"]:hover img,
+    .place-stage.is-locked .stack-frame .cutout[data-seg="conn"].is-on img{
+      filter:brightness(1.18) saturate(1.2) sepia(.35) hue-rotate(-8deg)
+    }
+    /* Phase 2 thumbs sit on charcoal so alpha reads clean */
+    button.thumb.cut .img{aspect-ratio:4/3;background:#0a0c10;display:grid;place-items:center}
+    button.thumb.cut .img img{width:100%;height:100%;object-fit:contain}
+
+    /* Unlock-only connector tray (bottom-left) */
+    .conn-tray{
+      position:absolute;left:10px;bottom:10px;z-index:45;
+      display:flex;flex-direction:column;gap:8px;
+      width:min(220px,56%);padding:8px;
+      border-radius:12px;border:1px solid var(--line);
+      background:rgba(8,10,14,.88);backdrop-filter:blur(10px);
+      color:var(--muted);font:500 11px/1.3 var(--font);
+    }
+    .place-stage.is-locked .conn-tray{display:none}
+    .conn-tray .conn-label{color:var(--text);font-size:11px;letter-spacing:.02em}
+    .conn-chips{display:grid;grid-template-columns:repeat(5,1fr);gap:4px}
+    .conn-chip{
+      position:relative;display:grid;place-items:center;gap:2px;
+      padding:4px 2px 3px;border:1px solid transparent;border-radius:8px;
+      background:transparent;color:var(--muted);cursor:grab;font:inherit;
+    }
+    .conn-chip:hover,.conn-chip.is-active{border-color:var(--line);background:rgba(255,255,255,.05);color:var(--text)}
+    .conn-chip:active{cursor:grabbing}
+    .conn-chip .thumb{
+      width:100%;aspect-ratio:1;border-radius:4px;overflow:hidden;background:#06080c;
+      display:grid;place-items:center;
+    }
+    .conn-chip .thumb img{display:block;width:100%;height:100%;object-fit:contain;pointer-events:none}
+    .conn-chip .name{font-size:9px;line-height:1.1;text-align:center;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .conn-actions{display:flex;gap:4px;align-items:center}
+    .conn-actions button{
+      width:28px;height:28px;padding:0;border:0;border-radius:8px;
+      background:transparent;color:var(--muted);cursor:pointer;display:grid;place-items:center;
+    }
+    .conn-actions button:hover{color:var(--text);background:rgba(255,255,255,.06)}
+    .conn-actions button:disabled{opacity:.28;cursor:default;pointer-events:none}
+    .conn-actions button svg{width:14px;height:14px;display:block}
+    .conn-actions .hint{flex:1;font-size:10px;color:var(--muted);line-height:1.25}
+    .conn-preview{
+      position:absolute;left:0;bottom:calc(100% + 8px);z-index:46;
+      width:160px;padding:8px;border-radius:10px;border:1px solid var(--line);
+      background:rgba(8,10,14,.94);pointer-events:none;
+      opacity:0;transform:translateY(4px);transition:opacity .12s ease,transform .12s ease;
+    }
+    .conn-preview.is-on{opacity:1;transform:translateY(0)}
+    .conn-preview .pv-img{aspect-ratio:16/10;background:#06080c;border-radius:6px;overflow:hidden;display:grid;place-items:center}
+    .conn-preview .pv-img img{display:block;width:100%;height:100%;object-fit:contain}
+    .conn-preview .pv-cap{margin-top:6px;color:var(--text);font-size:11px}
+    .stack-frame.is-drop-target{outline:1px dashed color-mix(in oklab, var(--accent) 55%, transparent);outline-offset:-2px}
+    .stack-frame .cutout[data-kind="connector"]{z-index:1}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <nav class="artifact-nav" aria-label="Artifact">
+      <div class="nav-left">
+        <a class="nav-ico" href="../../" aria-label="Home" title="Home" data-tip="Home">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 10.5 12 4l8 6.5V20a1 1 0 0 1-1 1h-5v-6H10v6H5a1 1 0 0 1-1-1v-9.5Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>
+        </a>
+        <a class="nav-ico" href="../" aria-label="Back" title="Back" data-tip="Back">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M15 6 9 12l6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+        <div class="crumbs" aria-label="Breadcrumb">
+          <a href="../../">Image styles</a>
+          <span class="sep">/</span>
+          <a href="../">Stage Cutout</a>
+          <span class="sep">/</span>
+          <span class="now">Stack</span>
+        </div>
+      </div>
+      <div class="nav-right">
+        <button type="button" class="rules-ico" data-open-rules
+          data-rules-src="rules/prompts.json"
+          data-rules-title="Rules" data-tip="Rules"
+          aria-label="Rules" title="Rules">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 4h10a2 2 0 0 1 2 2v14l-3-2-3 2-3-2-3 2V6a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.7"/><path d="M9 9h6M9 13h6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+        </button>
+      </div>
+    </nav>
+
+    <p class="kicker">Type · Stack</p>
+    <h1>Type 2 · Stack</h1>
+    <p>Rooms beside each other. <strong style="color:var(--text)">3 phases</strong>. Click a master to open it here.</p>
+
+    <div class="sections">
+      <div class="section">
+        <div class="card-head">
+          <div class="step">Phase 1 of 3</div>
+          <button type="button" class="rules-ico" data-open-rules
+            data-rules-src="rules/prompts.json"
+            data-rules-title="Phase 1 rules" data-tip="Phase 1 rules"
+            data-phase-note="Pick one natural floorplan master (G/H/I). No cutting until confirmed."
+            aria-label="Phase 1 rules" title="Rules">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 4h10a2 2 0 0 1 2 2v14l-3-2-3 2-3-2-3 2V6a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.7"/><path d="M9 9h6M9 13h6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+          </button>
+        </div>
+        <strong class="title">Align on the master</strong>
+        <div class="desc">Click a candidate to preview. Reply G / H / I when sure.</div>
+        <div class="thumbs" aria-label="Master candidates">
+          <button type="button" class="thumb" data-lightbox-open
+            data-full="assets/masters/master-g.jpg"
+            data-title="G · L-plan"
+            data-note="House L · rooms beside each other"
+            data-rules-src="rules/prompts.json"
+            data-rules-title="Candidate G"
+            data-candidate="G">
+            <div class="img"><img src="assets/masters/master-g.jpg" width="432" height="576" alt="Master G" /></div>
+            <div class="cap">
+              <div class="txt"><b>G · L-plan</b>House L</div>
+              <span class="rules-ico" role="button" tabindex="0" data-open-rules
+                data-rules-src="rules/prompts.json"
+                data-rules-title="G prompts" data-tip="G prompts"
+                data-candidate="G"
+                aria-label="G prompts" title="Prompts">
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 4h10a2 2 0 0 1 2 2v14l-3-2-3 2-3-2-3 2V6a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.7"/><path d="M9 9h6M9 13h6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+              </span>
+            </div>
+          </button>
+          <button type="button" class="thumb" data-lightbox-open
+            data-full="assets/masters/master-h.jpg"
+            data-title="H · Courtyard"
+            data-note="Three rooms around a dark courtyard"
+            data-rules-src="rules/prompts.json"
+            data-rules-title="Candidate H"
+            data-candidate="H">
+            <div class="img"><img src="assets/masters/master-h.jpg" width="432" height="576" alt="Master H" /></div>
+            <div class="cap">
+              <div class="txt"><b>H · Courtyard</b>Cluster</div>
+              <span class="rules-ico" role="button" tabindex="0" data-open-rules
+                data-rules-src="rules/prompts.json"
+                data-rules-title="H prompts" data-tip="H prompts"
+                data-candidate="H"
+                aria-label="H prompts" title="Prompts">
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 4h10a2 2 0 0 1 2 2v14l-3-2-3 2-3-2-3 2V6a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.7"/><path d="M9 9h6M9 13h6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+              </span>
+            </div>
+          </button>
+          <button type="button" class="thumb" data-lightbox-open
+            data-full="assets/masters/master-i.jpg"
+            data-title="I · Puzzle"
+            data-note="Staggered tiles · thin shared corners"
+            data-rules-src="rules/prompts.json"
+            data-rules-title="Candidate I"
+            data-candidate="I">
+            <div class="img"><img src="assets/masters/master-i.jpg" width="432" height="576" alt="Master I" /></div>
+            <div class="cap">
+              <div class="txt"><b>I · Puzzle</b>Staggered</div>
+              <span class="rules-ico" role="button" tabindex="0" data-open-rules
+                data-rules-src="rules/prompts.json"
+                data-rules-title="I prompts" data-tip="I prompts"
+                data-candidate="I"
+                aria-label="I prompts" title="Prompts">
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 4h10a2 2 0 0 1 2 2v14l-3-2-3 2-3-2-3 2V6a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.7"/><path d="M9 9h6M9 13h6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+              </span>
+            </div>
+          </button>
+        </div>
+      </div>
+
+      <div class="section" id="phase-2">
+        <div class="card-head">
+          <div class="step">Phase 2 of 3</div>
+          <button type="button" class="rules-ico" data-open-rules
+            data-rules-src="rules/prompts.json"
+            data-rules-title="Phase 2 rules" data-tip="Phase 2 rules"
+            data-phase-note="Cutouts for G / H / I: inbound · ops · make. Reality check each room."
+            aria-label="Phase 2 rules" title="Rules">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 4h10a2 2 0 0 1 2 2v14l-3-2-3 2-3-2-3 2V6a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.7"/><path d="M9 9h6M9 13h6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+          </button>
+        </div>
+        <strong class="title">Align on cutouts</strong>
+        <div class="desc">AI room cutouts per candidate (not master slices). Click to preview.</div>
+
+        <div class="set">
+          <div class="set-head">
+            <b>G · L-plan</b>
+            <span class="rules-ico" role="button" tabindex="0" data-open-rules
+              data-rules-src="rules/prompts.json" data-rules-title="G cutout prompts" data-tip="G cutout prompts" data-candidate="G"
+              aria-label="G cutout prompts" title="Prompts">
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 4h10a2 2 0 0 1 2 2v14l-3-2-3 2-3-2-3 2V6a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.7"/><path d="M9 9h6M9 13h6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+            </span>
+          </div>
+          <div class="thumbs">
+            <button type="button" class="thumb cut" data-lightbox-open data-full="assets/cutouts/g/inbound.png?v=ai-cutouts-1" data-title="G · inbound" data-note="Trucks + cages" data-rules-src="rules/prompts.json" data-rules-title="G · inbound" data-candidate="G" data-cutout="inbound">
+              <div class="img"><img src="assets/cutouts/g/inbound.png?v=ai-cutouts-1" width="576" height="432" alt="G inbound cutout" /></div>
+              <div class="cap"><div class="txt"><b>Inbound</b>Trucks</div>
+                <span class="rules-ico" role="button" tabindex="0" data-open-rules data-rules-src="rules/prompts.json" data-rules-title="Inbound prompts" data-tip="Inbound prompts" data-candidate="G" data-cutout="inbound" aria-label="Inbound prompts" title="Prompts"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 4h10a2 2 0 0 1 2 2v14l-3-2-3 2-3-2-3 2V6a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.7"/><path d="M9 9h6M9 13h6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span>
+              </div>
+            </button>
+            <button type="button" class="thumb cut" data-lightbox-open data-full="assets/cutouts/g/ops.png?v=ai-cutouts-1" data-title="G · ops" data-note="Glass office" data-rules-src="rules/prompts.json" data-rules-title="G · ops" data-candidate="G" data-cutout="ops">
+              <div class="img"><img src="assets/cutouts/g/ops.png?v=ai-cutouts-1" width="576" height="432" alt="G ops cutout" /></div>
+              <div class="cap"><div class="txt"><b>Ops</b>Office</div>
+                <span class="rules-ico" role="button" tabindex="0" data-open-rules data-rules-src="rules/prompts.json" data-rules-title="Ops prompts" data-tip="Ops prompts" data-candidate="G" data-cutout="ops" aria-label="Ops prompts" title="Prompts"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 4h10a2 2 0 0 1 2 2v14l-3-2-3 2-3-2-3 2V6a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.7"/><path d="M9 9h6M9 13h6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span>
+              </div>
+            </button>
+            <button type="button" class="thumb cut" data-lightbox-open data-full="assets/cutouts/g/make.png?v=ai-cutouts-1" data-title="G · make" data-note="Seat assembly" data-rules-src="rules/prompts.json" data-rules-title="G · make" data-candidate="G" data-cutout="make">
+              <div class="img"><img src="assets/cutouts/g/make.png?v=ai-cutouts-1" width="576" height="432" alt="G make cutout" /></div>
+              <div class="cap"><div class="txt"><b>Make</b>Seats</div>
+                <span class="rules-ico" role="button" tabindex="0" data-open-rules data-rules-src="rules/prompts.json" data-rules-title="Make prompts" data-tip="Make prompts" data-candidate="G" data-cutout="make" aria-label="Make prompts" title="Prompts"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 4h10a2 2 0 0 1 2 2v14l-3-2-3 2-3-2-3 2V6a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.7"/><path d="M9 9h6M9 13h6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span>
+              </div>
+            </button>
+          </div>
+        </div>
+
+        <div class="set">
+          <div class="set-head">
+            <b>H · Courtyard</b>
+            <span class="rules-ico" role="button" tabindex="0" data-open-rules
+              data-rules-src="rules/prompts.json" data-rules-title="H cutout prompts" data-tip="H cutout prompts" data-candidate="H"
+              aria-label="H cutout prompts" title="Prompts">
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 4h10a2 2 0 0 1 2 2v14l-3-2-3 2-3-2-3 2V6a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.7"/><path d="M9 9h6M9 13h6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+            </span>
+          </div>
+          <div class="thumbs">
+            <button type="button" class="thumb cut" data-lightbox-open data-full="assets/cutouts/h/inbound.png?v=ai-cutouts-1" data-title="H · inbound" data-note="Trucks + cages" data-rules-src="rules/prompts.json" data-rules-title="H · inbound" data-candidate="H" data-cutout="inbound">
+              <div class="img"><img src="assets/cutouts/h/inbound.png?v=ai-cutouts-1" width="576" height="432" alt="H inbound cutout" /></div>
+              <div class="cap"><div class="txt"><b>Inbound</b>Trucks</div>
+                <span class="rules-ico" role="button" tabindex="0" data-open-rules data-rules-src="rules/prompts.json" data-rules-title="Inbound prompts" data-tip="Inbound prompts" data-candidate="H" data-cutout="inbound" aria-label="Inbound prompts" title="Prompts"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 4h10a2 2 0 0 1 2 2v14l-3-2-3 2-3-2-3 2V6a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.7"/><path d="M9 9h6M9 13h6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span>
+              </div>
+            </button>
+            <button type="button" class="thumb cut" data-lightbox-open data-full="assets/cutouts/h/ops.png?v=ai-cutouts-1" data-title="H · ops" data-note="Office + pallets" data-rules-src="rules/prompts.json" data-rules-title="H · ops" data-candidate="H" data-cutout="ops">
+              <div class="img"><img src="assets/cutouts/h/ops.png?v=ai-cutouts-1" width="576" height="432" alt="H ops cutout" /></div>
+              <div class="cap"><div class="txt"><b>Ops</b>Office</div>
+                <span class="rules-ico" role="button" tabindex="0" data-open-rules data-rules-src="rules/prompts.json" data-rules-title="Ops prompts" data-tip="Ops prompts" data-candidate="H" data-cutout="ops" aria-label="Ops prompts" title="Prompts"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 4h10a2 2 0 0 1 2 2v14l-3-2-3 2-3-2-3 2V6a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.7"/><path d="M9 9h6M9 13h6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span>
+              </div>
+            </button>
+            <button type="button" class="thumb cut" data-lightbox-open data-full="assets/cutouts/h/make.png?v=ai-cutouts-1" data-title="H · make" data-note="Purple seat oval" data-rules-src="rules/prompts.json" data-rules-title="H · make" data-candidate="H" data-cutout="make">
+              <div class="img"><img src="assets/cutouts/h/make.png?v=ai-cutouts-1" width="576" height="432" alt="H make cutout" /></div>
+              <div class="cap"><div class="txt"><b>Make</b>Oval</div>
+                <span class="rules-ico" role="button" tabindex="0" data-open-rules data-rules-src="rules/prompts.json" data-rules-title="Make prompts" data-tip="Make prompts" data-candidate="H" data-cutout="make" aria-label="Make prompts" title="Prompts"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 4h10a2 2 0 0 1 2 2v14l-3-2-3 2-3-2-3 2V6a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.7"/><path d="M9 9h6M9 13h6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span>
+              </div>
+            </button>
+          </div>
+        </div>
+
+        <div class="set">
+          <div class="set-head">
+            <b>I · Puzzle</b>
+            <span class="rules-ico" role="button" tabindex="0" data-open-rules
+              data-rules-src="rules/prompts.json" data-rules-title="I cutout prompts" data-tip="I cutout prompts" data-candidate="I"
+              aria-label="I cutout prompts" title="Prompts">
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 4h10a2 2 0 0 1 2 2v14l-3-2-3 2-3-2-3 2V6a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.7"/><path d="M9 9h6M9 13h6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+            </span>
+          </div>
+          <div class="thumbs">
+            <button type="button" class="thumb cut" data-lightbox-open data-full="assets/cutouts/i/inbound.png?v=ai-cutouts-1" data-title="I · inbound" data-note="Warehouse receiving" data-rules-src="rules/prompts.json" data-rules-title="I · inbound" data-candidate="I" data-cutout="inbound">
+              <div class="img"><img src="assets/cutouts/i/inbound.png?v=ai-cutouts-1" width="576" height="432" alt="I inbound cutout" /></div>
+              <div class="cap"><div class="txt"><b>Inbound</b>Racking</div>
+                <span class="rules-ico" role="button" tabindex="0" data-open-rules data-rules-src="rules/prompts.json" data-rules-title="Inbound prompts" data-tip="Inbound prompts" data-candidate="I" data-cutout="inbound" aria-label="Inbound prompts" title="Prompts"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 4h10a2 2 0 0 1 2 2v14l-3-2-3 2-3-2-3 2V6a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.7"/><path d="M9 9h6M9 13h6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span>
+              </div>
+            </button>
+            <button type="button" class="thumb cut" data-lightbox-open data-full="assets/cutouts/i/ops.png?v=ai-cutouts-1" data-title="I · ops" data-note="Office + staging" data-rules-src="rules/prompts.json" data-rules-title="I · ops" data-candidate="I" data-cutout="ops">
+              <div class="img"><img src="assets/cutouts/i/ops.png?v=ai-cutouts-1" width="576" height="432" alt="I ops cutout" /></div>
+              <div class="cap"><div class="txt"><b>Ops</b>Staging</div>
+                <span class="rules-ico" role="button" tabindex="0" data-open-rules data-rules-src="rules/prompts.json" data-rules-title="Ops prompts" data-tip="Ops prompts" data-candidate="I" data-cutout="ops" aria-label="Ops prompts" title="Prompts"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 4h10a2 2 0 0 1 2 2v14l-3-2-3 2-3-2-3 2V6a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.7"/><path d="M9 9h6M9 13h6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span>
+              </div>
+            </button>
+            <button type="button" class="thumb cut" data-lightbox-open data-full="assets/cutouts/i/make.png?v=ai-cutouts-1" data-title="I · make" data-note="Machinery + bins" data-rules-src="rules/prompts.json" data-rules-title="I · make" data-candidate="I" data-cutout="make">
+              <div class="img"><img src="assets/cutouts/i/make.png?v=ai-cutouts-1" width="576" height="432" alt="I make cutout" /></div>
+              <div class="cap"><div class="txt"><b>Make</b>Machines</div>
+                <span class="rules-ico" role="button" tabindex="0" data-open-rules data-rules-src="rules/prompts.json" data-rules-title="Make prompts" data-tip="Make prompts" data-candidate="I" data-cutout="make" aria-label="Make prompts" title="Prompts"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 4h10a2 2 0 0 1 2 2v14l-3-2-3 2-3-2-3 2V6a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.7"/><path d="M9 9h6M9 13h6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span>
+              </div>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="section" id="phase-3">
+        <div class="card-head">
+          <div class="step">Phase 3 of 3</div>
+          <button type="button" class="rules-ico" data-open-rules
+            data-rules-src="rules/prompts.json"
+            data-rules-title="Phase 3 rules" data-tip="Phase 3 rules"
+            data-phase-note="Place editor: drag rooms + connector tray (unlock only). Drag ramps from bottom-left onto stage. Lock = production places.json."
+            aria-label="Phase 3 rules" title="Rules">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 4h10a2 2 0 0 1 2 2v14l-3-2-3 2-3-2-3 2V6a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.7"/><path d="M9 9h6M9 13h6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+          </button>
+        </div>
+        <strong class="title">Place per master</strong>
+        <div class="desc">Drag · Shift multi-select · Figma-style resize/rotate · layer · Lock.</div>
+
+        <div class="set">
+          <div class="set-head">
+            <b>G · L-plan</b>
+            <span class="rules-ico" role="button" tabindex="0" data-open-rules
+              data-rules-src="rules/prompts.json" data-rules-title="G place prompts" data-tip="G place prompts" data-candidate="G"
+              data-phase-note="Drag rooms, Bring forward / Send back, Lock writes production places for G."
+              aria-label="G place prompts" title="Prompts">
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 4h10a2 2 0 0 1 2 2v14l-3-2-3 2-3-2-3 2V6a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.7"/><path d="M9 9h6M9 13h6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+            </span>
+          </div>
+          <div class="place-stage" data-candidate="G" data-place="assets/cutouts/g/places.json" data-base="assets/cutouts/g/" data-master="assets/cutouts/g/master.jpg"></div>
+        </div>
+
+        <div class="set">
+          <div class="set-head">
+            <b>H · Courtyard</b>
+            <span class="rules-ico" role="button" tabindex="0" data-open-rules
+              data-rules-src="rules/prompts.json" data-rules-title="H place prompts" data-tip="H place prompts" data-candidate="H"
+              data-phase-note="Drag rooms, Bring forward / Send back, Lock writes production places for H."
+              aria-label="H place prompts" title="Prompts">
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 4h10a2 2 0 0 1 2 2v14l-3-2-3 2-3-2-3 2V6a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.7"/><path d="M9 9h6M9 13h6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+            </span>
+          </div>
+          <div class="place-stage" data-candidate="H" data-place="assets/cutouts/h/places.json" data-base="assets/cutouts/h/" data-master="assets/cutouts/h/master.jpg"></div>
+        </div>
+
+        <div class="set">
+          <div class="set-head">
+            <b>I · Puzzle</b>
+            <span class="rules-ico" role="button" tabindex="0" data-open-rules
+              data-rules-src="rules/prompts.json" data-rules-title="I place prompts" data-tip="I place prompts" data-candidate="I"
+              data-phase-note="Drag rooms, Bring forward / Send back, Lock writes production places for I."
+              aria-label="I place prompts" title="Prompts">
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 4h10a2 2 0 0 1 2 2v14l-3-2-3 2-3-2-3 2V6a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.7"/><path d="M9 9h6M9 13h6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+            </span>
+          </div>
+          <div class="place-stage" data-candidate="I" data-place="assets/cutouts/i/places.json" data-base="assets/cutouts/i/" data-master="assets/cutouts/i/master.jpg"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="../../artifact-chrome.js"></script>
+  <script>
+    (function () {
+      var STORE = 'iso-stage-cutout.placeEditor.v1';
+      function ico(paths) {
+        return '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true">' + paths + '</svg>';
+      }
+      var ICO = {
+        forward: ico('<path d="M12 19V5M12 5l-5 5M12 5l5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>'),
+        back: ico('<path d="M12 5v14M12 19l-5-5M12 19l5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>'),
+        lock: ico('<rect x="5" y="11" width="14" height="9" rx="2" stroke="currentColor" stroke-width="1.7"/><path d="M8 11V8a4 4 0 0 1 8 0v3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>'),
+        unlock: ico('<rect x="5" y="11" width="14" height="9" rx="2" stroke="currentColor" stroke-width="1.7"/><path d="M8 11V8a4 4 0 0 1 7.5-1.9" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>'),
+        download: ico('<path d="M12 4v10M12 14l-4-4M12 14l4-4M5 19h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>'),
+        reset: ico('<path d="M4 12a8 8 0 1 0 2.3-5.7M4 5v4h4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>'),
+        plus: ico('<path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>'),
+        minus: ico('<path d="M5 12h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>'),
+        flipH: ico('<path d="M12 4v16M5 8l3 4-3 4M19 8l-3 4 3 4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>'),
+        flipV: ico('<path d="M4 12h16M8 5l4 3 4-3M8 19l4-3 4 3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>')
+      };
+      var CONN_URL = 'assets/connectors/catalog.json';
+      var CONN_VER = '?v=conn-1';
+      function resolveSrc(src, base) {
+        if (!src) return '';
+        if (src.indexOf('assets/') === 0) {
+          return src + (src.indexOf('/connectors/') !== -1 ? CONN_VER : '?v=ai-cutouts-1');
+        }
+        if (/^(https?:|\/)/.test(src)) return src;
+        return (base || '') + src + '?v=ai-cutouts-1';
+      }
+      function loadStore() {
+        try { return JSON.parse(localStorage.getItem(STORE) || '{}') || {}; }
+        catch (e) { return {}; }
+      }
+      function saveStore(all) { localStorage.setItem(STORE, JSON.stringify(all)); }
+      function downloadPlaces(candidate, data) {
+        var blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        var a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'places-' + candidate.toLowerCase() + '.json';
+        a.click();
+        setTimeout(function () { URL.revokeObjectURL(a.href); }, 500);
+      }
+      function normDeg(d) {
+        var r = ((d % 360) + 360) % 360;
+        if (r > 180) r -= 360;
+        return Math.round(r * 10) / 10;
+      }
+      function snap15(d) { return Math.round(d / 15) * 15; }
+
+      function mountPlace(el) {
+        var url = el.getAttribute('data-place');
+        var base = el.getAttribute('data-base') || '';
+        var candidate = (el.getAttribute('data-candidate') || 'X').toUpperCase();
+        var storeKey = candidate;
+
+        Promise.all([
+          fetch(url).then(function (r) { return r.json(); }),
+          fetch(CONN_URL).then(function (r) { return r.json(); }).catch(function () { return { connectors: [] }; })
+        ]).then(function (pair) {
+          var fileData = pair[0];
+          var catalog = pair[1] || { connectors: [] };
+          var connTypes = catalog.connectors || [];
+          var connById = {};
+          connTypes.forEach(function (c) { connById[c.id] = c; });
+
+          var all = loadStore();
+          var saved = all[storeKey] || null;
+          var data = saved && saved.places ? JSON.parse(JSON.stringify(saved.places)) : JSON.parse(JSON.stringify(fileData));
+          var locked = !!(saved && saved.locked);
+          var selected = [];
+          var gesture = null;
+          var skipClick = false;
+          var activeConn = (connTypes[0] && connTypes[0].id) || 'short';
+
+          var frame = document.createElement('div');
+          frame.className = 'stack-frame';
+          if (data.masterWidth && data.masterHeight) {
+            frame.style.aspectRatio = data.masterWidth + ' / ' + data.masterHeight;
+          }
+
+          var pill = document.createElement('div');
+          pill.className = 'place-lock-pill';
+          pill.textContent = 'Locked · production';
+
+          var bar = document.createElement('div');
+          bar.className = 'place-toolbar';
+          bar.setAttribute('role', 'toolbar');
+          bar.setAttribute('aria-label', candidate + ' place tools');
+
+          function tip(node, text) {
+            if (window.ImageStylesChrome && ImageStylesChrome.setTip) ImageStylesChrome.setTip(node, text);
+            else {
+              node.setAttribute('aria-label', text);
+              node.setAttribute('title', text);
+              node.setAttribute('data-tip', text);
+            }
+          }
+          function mkBtn(name, title, html, parent) {
+            var b = document.createElement('button');
+            b.type = 'button';
+            b.setAttribute('data-act', name);
+            tip(b, title);
+            b.innerHTML = html;
+            (parent || bar).appendChild(b);
+            return b;
+          }
+          var btnForward = mkBtn('forward', 'Bring forward', ICO.forward);
+          var btnBack = mkBtn('back', 'Send back', ICO.back);
+          var btnFlipH = mkBtn('flip-h', 'Flip horizontal', ICO.flipH);
+          var btnFlipV = mkBtn('flip-v', 'Flip vertical', ICO.flipV);
+          var btnLock = mkBtn('lock', 'Lock for production', ICO.lock);
+          var btnDl = mkBtn('download', 'Download places.json', ICO.download);
+          var btnReset = mkBtn('reset', 'Reset places', ICO.reset);
+
+          /* Connector tray — unlock only */
+          var tray = document.createElement('div');
+          tray.className = 'conn-tray';
+          tray.setAttribute('aria-label', 'Connectors');
+          var trayLabel = document.createElement('div');
+          trayLabel.className = 'conn-label';
+          trayLabel.textContent = 'Connectors';
+          tray.appendChild(trayLabel);
+          var chips = document.createElement('div');
+          chips.className = 'conn-chips';
+          tray.appendChild(chips);
+          var actions = document.createElement('div');
+          actions.className = 'conn-actions';
+          var btnAdd = mkBtn('add-conn', 'Add connector in center', ICO.plus, actions);
+          var btnDel = mkBtn('del-conn', 'Remove selected connector', ICO.minus, actions);
+          var hint = document.createElement('div');
+          hint.className = 'hint';
+          hint.textContent = 'Drag onto stage';
+          actions.appendChild(hint);
+          tray.appendChild(actions);
+          var preview = document.createElement('div');
+          preview.className = 'conn-preview';
+          preview.innerHTML = '<div class="pv-img"><img alt=""></div><div class="pv-cap"></div>';
+          tray.appendChild(preview);
+          var pvImg = preview.querySelector('img');
+          var pvCap = preview.querySelector('.pv-cap');
+
+          function showPreview(c) {
+            if (!c) { preview.classList.remove('is-on'); return; }
+            pvImg.src = resolveSrc(c.src, '');
+            pvCap.textContent = c.label;
+            preview.classList.add('is-on');
+          }
+          function setActiveConn(id) {
+            activeConn = id;
+            Array.prototype.forEach.call(chips.querySelectorAll('.conn-chip'), function (chip) {
+              chip.classList.toggle('is-active', chip.getAttribute('data-conn') === id);
+            });
+          }
+          connTypes.forEach(function (c) {
+            var chip = document.createElement('button');
+            chip.type = 'button';
+            chip.className = 'conn-chip' + (c.id === activeConn ? ' is-active' : '');
+            chip.setAttribute('data-conn', c.id);
+            chip.draggable = true;
+            tip(chip, c.label + ' · drag onto stage');
+            chip.innerHTML = '<span class="thumb"><img src="' + resolveSrc(c.src, '') + '" alt=""></span><span class="name">' + c.label.split(' ')[0] + '</span>';
+            chip.addEventListener('mouseenter', function () { showPreview(c); });
+            chip.addEventListener('mouseleave', function () { preview.classList.remove('is-on'); });
+            chip.addEventListener('focus', function () { showPreview(c); });
+            chip.addEventListener('blur', function () { preview.classList.remove('is-on'); });
+            chip.addEventListener('click', function () { setActiveConn(c.id); });
+            chip.addEventListener('dragstart', function (ev) {
+              if (locked) { ev.preventDefault(); return; }
+              setActiveConn(c.id);
+              ev.dataTransfer.setData('application/x-iso-connector', c.id);
+              ev.dataTransfer.setData('text/plain', c.id);
+              ev.dataTransfer.effectAllowed = 'copy';
+              try {
+                var img = chip.querySelector('img');
+                if (img) ev.dataTransfer.setDragImage(img, img.clientWidth / 2, img.clientHeight / 2);
+              } catch (err) {}
+            });
+            chips.appendChild(chip);
+          });
+
+          /* Figma-like transform box */
+          var tf = document.createElement('div');
+          tf.className = 'tf-box';
+          tf.innerHTML =
+            '<div class="tf-stem"></div>' +
+            '<button type="button" class="tf-rot" data-tf="rot" aria-label="Rotate" title="Rotate · Shift snaps 15°" data-tip="Rotate · Shift snaps 15°"></button>' +
+            '<span class="tf-angle" data-tf-angle>0°</span>' +
+            'nw,n,ne,e,se,s,sw,w'.split(',').map(function (h) {
+              return '<button type="button" class="tf-handle ' + h + '" data-tf="' + h + '" aria-label="Resize ' + h + '" title="Resize · Shift locks ratio" data-tip="Resize · Shift locks ratio"></button>';
+            }).join('');
+          frame.appendChild(tf);
+          var tfAngle = tf.querySelector('[data-tf-angle]');
+
+          function pieces() { return Array.prototype.slice.call(frame.querySelectorAll('.cutout')); }
+          function selectedPieces() { return selected.slice(); }
+          function getRot(btn) { return parseFloat(btn.getAttribute('data-rotate') || '0') || 0; }
+          function getFlip(btn) {
+            return {
+              flipX: btn.getAttribute('data-flip-x') === '1',
+              flipY: btn.getAttribute('data-flip-y') === '1'
+            };
+          }
+          function applyXf(btn) {
+            var r = getRot(btn);
+            var f = getFlip(btn);
+            btn.style.setProperty('--rot', r + 'deg');
+            btn.style.setProperty('--flip-x', f.flipX ? '-1' : '1');
+            btn.style.setProperty('--flip-y', f.flipY ? '-1' : '1');
+          }
+          function setRot(btn, deg) {
+            btn.setAttribute('data-rotate', String(normDeg(deg)));
+            applyXf(btn);
+          }
+          function setFlip(btn, flipX, flipY) {
+            btn.setAttribute('data-flip-x', flipX ? '1' : '0');
+            btn.setAttribute('data-flip-y', flipY ? '1' : '0');
+            applyXf(btn);
+          }
+          function readBox(btn) {
+            var f = getFlip(btn);
+            return {
+              left: parseFloat(btn.style.left) || 0,
+              top: parseFloat(btn.style.top) || 0,
+              width: parseFloat(btn.style.width) || 40,
+              height: parseFloat(btn.style.height) || 40,
+              rotate: getRot(btn),
+              flipX: f.flipX,
+              flipY: f.flipY
+            };
+          }
+          function writeBox(btn, box) {
+            btn.style.left = box.left.toFixed(2) + '%';
+            btn.style.top = box.top.toFixed(2) + '%';
+            btn.style.width = Math.max(6, box.width).toFixed(2) + '%';
+            btn.style.height = Math.max(6, box.height).toFixed(2) + '%';
+            if (box.rotate != null) setRot(btn, box.rotate || 0);
+            var cur = getFlip(btn);
+            var nextX = Object.prototype.hasOwnProperty.call(box, 'flipX') ? !!box.flipX : cur.flipX;
+            var nextY = Object.prototype.hasOwnProperty.call(box, 'flipY') ? !!box.flipY : cur.flipY;
+            setFlip(btn, nextX, nextY);
+          }
+          function pieceData(btn) {
+            var b = readBox(btn);
+            var out = {
+              id: btn.getAttribute('data-id'),
+              src: btn.getAttribute('data-src'),
+              left: Math.round(b.left * 100) / 100,
+              top: Math.round(b.top * 100) / 100,
+              width: Math.round(b.width * 100) / 100,
+              height: Math.round(b.height * 100) / 100,
+              z: parseInt(btn.style.zIndex, 10) || 1,
+              rotate: b.rotate,
+              seg: btn.getAttribute('data-seg') || 'ptp'
+            };
+            var kind = btn.getAttribute('data-kind');
+            if (kind) out.kind = kind;
+            var type = btn.getAttribute('data-conn-type');
+            if (type) out.connType = type;
+            if (b.flipX) out.flipX = true;
+            if (b.flipY) out.flipY = true;
+            if (!out.rotate) delete out.rotate;
+            return out;
+          }
+          function flipSelected(axis) {
+            if (locked || !selected.length) return;
+            selected.forEach(function (btn) {
+              var f = getFlip(btn);
+              if (axis === 'x') setFlip(btn, !f.flipX, f.flipY);
+              else setFlip(btn, f.flipX, !f.flipY);
+            });
+            layoutTf();
+            persist(false);
+          }
+          function syncFlipBtns() {
+            var on = !locked && selected.length > 0;
+            btnFlipH.disabled = !on;
+            btnFlipV.disabled = !on;
+          }
+          function nextConnId(typeId) {
+            var max = 0;
+            var re = new RegExp('^(?:conn-)?' + typeId + '-(\\d+)$', 'i');
+            pieces().forEach(function (p) {
+              var m = (p.getAttribute('data-id') || '').match(re);
+              if (m) max = Math.max(max, parseInt(m[1], 10));
+            });
+            return 'conn-' + typeId + '-' + (max + 1);
+          }
+          function syncDelBtn() {
+            var hasConn = selected.some(function (p) { return p.getAttribute('data-kind') === 'connector'; });
+            btnDel.disabled = locked || !hasConn;
+          }
+          function collectPlaces() {
+            return {
+              candidate: candidate,
+              masterWidth: data.masterWidth || 1600,
+              masterHeight: data.masterHeight || 1200,
+              method: 'place-editor-figma-bbox',
+              locked: locked,
+              lockedAt: locked ? (new Date()).toISOString() : null,
+              pieces: pieces().map(pieceData).sort(function (a, b) { return a.z - b.z; })
+            };
+          }
+          function persist(alsoDownload) {
+            var places = collectPlaces();
+            var store = loadStore();
+            store[storeKey] = { locked: locked, places: places, updatedAt: (new Date()).toISOString() };
+            saveStore(store);
+            if (alsoDownload) downloadPlaces(candidate, places);
+          }
+
+          function selectionBounds() {
+            if (!selected.length) return null;
+            if (selected.length === 1) {
+              var b = readBox(selected[0]);
+              return { left: b.left, top: b.top, width: b.width, height: b.height, rotate: b.rotate, mode: 'single' };
+            }
+            /* multi: axis-aligned union (unrotated envelope) */
+            var minL = Infinity, minT = Infinity, maxR = -Infinity, maxB = -Infinity;
+            selected.forEach(function (btn) {
+              var x = readBox(btn);
+              minL = Math.min(minL, x.left);
+              minT = Math.min(minT, x.top);
+              maxR = Math.max(maxR, x.left + x.width);
+              maxB = Math.max(maxB, x.top + x.height);
+            });
+            return { left: minL, top: minT, width: maxR - minL, height: maxB - minT, rotate: 0, mode: 'multi' };
+          }
+          function layoutTf() {
+            var b = selectionBounds();
+            if (!b || locked) {
+              tf.classList.remove('is-on');
+              return;
+            }
+            tf.classList.add('is-on');
+            tf.style.left = b.left + '%';
+            tf.style.top = b.top + '%';
+            tf.style.width = b.width + '%';
+            tf.style.height = b.height + '%';
+            tf.style.transform = 'rotate(' + (b.rotate || 0) + 'deg)';
+            tfAngle.textContent = (b.rotate || 0) + '°';
+          }
+          function syncSelectionUi() {
+            pieces().forEach(function (p) {
+              p.classList.toggle('is-selected', selected.indexOf(p) !== -1);
+            });
+            layoutTf();
+            syncDelBtn();
+            syncFlipBtns();
+          }
+          function selectPiece(btn, additive) {
+            if (locked) return;
+            if (additive) {
+              var i = selected.indexOf(btn);
+              if (i === -1) selected.push(btn);
+              else selected.splice(i, 1);
+            } else selected = [btn];
+            syncSelectionUi();
+          }
+
+          function setLocked(next) {
+            locked = next;
+            el.classList.toggle('is-locked', locked);
+            btnLock.innerHTML = locked ? ICO.unlock : ICO.lock;
+            tip(btnLock, locked ? 'Unlock to edit' : 'Lock for production');
+            btnLock.classList.toggle('is-active', locked);
+            [btnForward, btnBack, btnReset, btnAdd, btnFlipH, btnFlipV].forEach(function (b) { b.disabled = locked; });
+            pieces().forEach(function (p) {
+              p.style.cursor = locked ? 'pointer' : 'grab';
+              if (locked) p.classList.remove('is-selected', 'is-dragging');
+            });
+            if (locked) {
+              selected = [];
+              frame.classList.remove('is-hot');
+              pieces().forEach(function (p) { p.classList.remove('is-on'); });
+              preview.classList.remove('is-on');
+            }
+            layoutTf();
+            syncDelBtn();
+            syncFlipBtns();
+            persist(false);
+          }
+          function bumpZ(dir) {
+            if (locked || !selected.length) return;
+            var zs = pieces().map(function (p) { return parseInt(p.style.zIndex, 10) || 1; });
+            var max = Math.max.apply(null, zs);
+            var min = Math.min.apply(null, zs);
+            selected.forEach(function (btn, idx) {
+              btn.style.zIndex = String(dir > 0 ? max + 1 + idx : Math.max(1, min - 1 - idx));
+            });
+            pieces().sort(function (a, b) {
+              return (parseInt(a.style.zIndex, 10) || 1) - (parseInt(b.style.zIndex, 10) || 1);
+            }).forEach(function (p, i) { p.style.zIndex = String(i + 1); });
+            persist(false);
+          }
+
+          function framePct(ev) {
+            var rect = frame.getBoundingClientRect();
+            return {
+              x: ((ev.clientX - rect.left) / rect.width) * 100,
+              y: ((ev.clientY - rect.top) / rect.height) * 100,
+              w: rect.width,
+              h: rect.height
+            };
+          }
+
+          function bindPiece(btn) {
+            btn.addEventListener('pointerdown', function (ev) {
+              if (locked) return;
+              if (ev.button != null && ev.button !== 0) return;
+              if (ev.shiftKey) selectPiece(btn, true);
+              else if (selected.indexOf(btn) === -1) selectPiece(btn, false);
+              var group = selected.indexOf(btn) !== -1 ? selectedPieces() : [btn];
+              group.forEach(function (g) { g.classList.add('is-dragging'); });
+              gesture = {
+                kind: 'move',
+                lead: btn,
+                group: group.map(function (g) { return { btn: g, box: readBox(g) }; }),
+                start: framePct(ev),
+                moved: false
+              };
+              btn.setPointerCapture(ev.pointerId);
+              ev.preventDefault();
+              ev.stopPropagation();
+            });
+            btn.addEventListener('click', function (ev) {
+              if (!locked) {
+                if (skipClick) { skipClick = false; ev.preventDefault(); return; }
+                selectPiece(btn, ev.shiftKey);
+                return;
+              }
+              var on = btn.classList.toggle('is-on');
+              if (on) {
+                pieces().forEach(function (other) { if (other !== btn) other.classList.remove('is-on'); });
+                frame.classList.add('is-hot');
+              } else frame.classList.toggle('is-hot', !!frame.querySelector('.cutout.is-on'));
+            });
+          }
+          function createPiece(p, opts) {
+            opts = opts || {};
+            var btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'cutout';
+            btn.setAttribute('data-seg', p.seg || (p.kind === 'connector' ? 'conn' : 'ptp'));
+            btn.setAttribute('data-id', p.id);
+            btn.setAttribute('data-src', p.src);
+            if (p.kind) btn.setAttribute('data-kind', p.kind);
+            if (p.connType) btn.setAttribute('data-conn-type', p.connType);
+            tip(btn, 'Place · ' + (p.label || p.id) + ' · drag · handles to resize/rotate');
+            writeBox(btn, {
+              left: p.left != null ? p.left : 40,
+              top: p.top != null ? p.top : 40,
+              width: p.width || 40,
+              height: p.height != null ? p.height : 40,
+              rotate: p.rotate || 0,
+              flipX: !!p.flipX,
+              flipY: !!p.flipY
+            });
+            var zs = pieces().map(function (x) { return parseInt(x.style.zIndex, 10) || 1; });
+            var nextZ = p.z || ((zs.length ? Math.max.apply(null, zs) : 0) + 1);
+            btn.style.zIndex = String(nextZ);
+            var img = document.createElement('img');
+            img.src = resolveSrc(p.src, base);
+            img.alt = p.id;
+            btn.appendChild(img);
+            bindPiece(btn);
+            frame.appendChild(btn);
+            if (opts.select) {
+              selected = [btn];
+              syncSelectionUi();
+            }
+            return btn;
+          }
+          function addConnector(typeId, at) {
+            if (locked) return null;
+            var c = connById[typeId] || connById[activeConn] || connTypes[0];
+            if (!c) return null;
+            var w = c.defaultWidth || 20;
+            var h = c.defaultHeight || 14;
+            var left = at && at.x != null ? at.x - w / 2 : 50 - w / 2;
+            var top = at && at.y != null ? at.y - h / 2 : 50 - h / 2;
+            return createPiece({
+              id: nextConnId(c.id),
+              src: c.src,
+              kind: 'connector',
+              connType: c.id,
+              label: c.label,
+              left: left,
+              top: top,
+              width: w,
+              height: h,
+              seg: 'conn',
+              z: 50
+            }, { select: true });
+          }
+          function removeSelectedConnectors() {
+            if (locked) return;
+            var gone = false;
+            selected.slice().forEach(function (p) {
+              if (p.getAttribute('data-kind') !== 'connector') return;
+              if (p.parentNode) p.parentNode.removeChild(p);
+              gone = true;
+            });
+            if (!gone) return;
+            selected = selected.filter(function (p) { return p.parentNode; });
+            syncSelectionUi();
+            persist(false);
+          }
+
+          /* Existing pieces from places.json / draft */
+          (data.pieces || []).slice().sort(function (a, b) { return (a.z || 0) - (b.z || 0); }).forEach(function (p) {
+            createPiece(p);
+          });
+
+          frame.addEventListener('dragover', function (ev) {
+            if (locked) return;
+            if ([].slice.call(ev.dataTransfer.types || []).indexOf('application/x-iso-connector') === -1 &&
+                [].slice.call(ev.dataTransfer.types || []).indexOf('text/plain') === -1) return;
+            ev.preventDefault();
+            ev.dataTransfer.dropEffect = 'copy';
+            frame.classList.add('is-drop-target');
+          });
+          frame.addEventListener('dragleave', function () { frame.classList.remove('is-drop-target'); });
+          frame.addEventListener('drop', function (ev) {
+            frame.classList.remove('is-drop-target');
+            if (locked) return;
+            ev.preventDefault();
+            var typeId = ev.dataTransfer.getData('application/x-iso-connector') || ev.dataTransfer.getData('text/plain');
+            if (!typeId || !connById[typeId]) return;
+            var pct = framePct(ev);
+            addConnector(typeId, { x: pct.x, y: pct.y });
+            persist(false);
+          });
+          btnAdd.addEventListener('click', function () {
+            addConnector(activeConn, null);
+            persist(false);
+          });
+          btnDel.addEventListener('click', removeSelectedConnectors);
+          el.addEventListener('keydown', function (ev) {
+            if (locked) return;
+            if (ev.key === 'Delete' || ev.key === 'Backspace') {
+              if (selected.some(function (p) { return p.getAttribute('data-kind') === 'connector'; })) {
+                ev.preventDefault();
+                removeSelectedConnectors();
+              }
+            }
+          });
+          if (!el.hasAttribute('tabindex')) el.setAttribute('tabindex', '0');
+
+          /* Transform box gestures */
+          tf.addEventListener('pointerdown', function (ev) {
+            if (locked || !selected.length) return;
+            var handle = ev.target.closest('[data-tf]');
+            if (!handle) return;
+            var kind = handle.getAttribute('data-tf');
+            var bounds = selectionBounds();
+            if (!bounds) return;
+            var start = framePct(ev);
+            var snaps = selected.map(function (btn) { return { btn: btn, box: readBox(btn) }; });
+            gesture = {
+              kind: kind === 'rot' ? 'rotate' : 'resize',
+              handle: kind,
+              bounds: bounds,
+              snaps: snaps,
+              start: start,
+              cx: bounds.left + bounds.width / 2,
+              cy: bounds.top + bounds.height / 2,
+              startAngle: Math.atan2(start.y - (bounds.top + bounds.height / 2), start.x - (bounds.left + bounds.width / 2)),
+              startRot: bounds.rotate || 0,
+              moved: false,
+              shift: false
+            };
+            if (kind === 'rot') tf.classList.add('is-rotating');
+            handle.setPointerCapture(ev.pointerId);
+            ev.preventDefault();
+            ev.stopPropagation();
+          });
+
+          function onPointerMove(ev) {
+            if (!gesture || locked) return;
+            var cur = framePct(ev);
+            var dx = cur.x - gesture.start.x;
+            var dy = cur.y - gesture.start.y;
+            if (Math.abs(dx) + Math.abs(dy) > 0.15) gesture.moved = true;
+            gesture.shift = !!ev.shiftKey;
+
+            if (gesture.kind === 'move') {
+              gesture.group.forEach(function (g) {
+                writeBox(g.btn, {
+                  left: g.box.left + dx,
+                  top: g.box.top + dy,
+                  width: g.box.width,
+                  height: g.box.height,
+                  rotate: g.box.rotate
+                });
+              });
+              layoutTf();
+              return;
+            }
+
+            if (gesture.kind === 'rotate') {
+              var ang = Math.atan2(cur.y - gesture.cy, cur.x - gesture.cx);
+              var delta = (ang - gesture.startAngle) * (180 / Math.PI);
+              var next = gesture.startRot + delta;
+              if (gesture.shift) next = snap15(next);
+              next = normDeg(next);
+              if (selected.length === 1) {
+                setRot(selected[0], next);
+              } else {
+                /* rotate each around group center */
+                var rad = (next - gesture.startRot) * Math.PI / 180;
+                var cos = Math.cos(rad), sin = Math.sin(rad);
+                gesture.snaps.forEach(function (g) {
+                  var bx = g.box.left + g.box.width / 2;
+                  var by = g.box.top + g.box.height / 2;
+                  var rx = gesture.cx + (bx - gesture.cx) * cos - (by - gesture.cy) * sin;
+                  var ry = gesture.cy + (bx - gesture.cx) * sin + (by - gesture.cy) * cos;
+                  writeBox(g.btn, {
+                    left: rx - g.box.width / 2,
+                    top: ry - g.box.height / 2,
+                    width: g.box.width,
+                    height: g.box.height,
+                    rotate: normDeg(g.box.rotate + (next - gesture.startRot))
+                  });
+                });
+              }
+              tfAngle.textContent = next + '°';
+              layoutTf();
+              return;
+            }
+
+            if (gesture.kind === 'resize') {
+              var b0 = gesture.bounds;
+              var left = b0.left, top = b0.top, width = b0.width, height = b0.height;
+              var h = gesture.handle;
+              if (h.indexOf('e') !== -1) width = Math.max(6, b0.width + dx);
+              if (h.indexOf('s') !== -1) height = Math.max(6, b0.height + dy);
+              if (h.indexOf('w') !== -1) {
+                width = Math.max(6, b0.width - dx);
+                left = b0.left + (b0.width - width);
+              }
+              if (h.indexOf('n') !== -1) {
+                height = Math.max(6, b0.height - dy);
+                top = b0.top + (b0.height - height);
+              }
+              if (gesture.shift && b0.width > 0 && b0.height > 0) {
+                var ratio = b0.width / b0.height;
+                if (Math.abs(dx) > Math.abs(dy)) height = width / ratio;
+                else width = height * ratio;
+                if (h.indexOf('w') !== -1) left = b0.left + b0.width - width;
+                if (h.indexOf('n') !== -1) top = b0.top + b0.height - height;
+              }
+              var sx = width / b0.width;
+              var sy = height / b0.height;
+              gesture.snaps.forEach(function (g) {
+                var relL = (g.box.left - b0.left) / b0.width;
+                var relT = (g.box.top - b0.top) / b0.height;
+                var relW = g.box.width / b0.width;
+                var relH = g.box.height / b0.height;
+                writeBox(g.btn, {
+                  left: left + relL * width,
+                  top: top + relT * height,
+                  width: Math.max(6, relW * width),
+                  height: Math.max(6, relH * height),
+                  rotate: g.box.rotate
+                });
+              });
+              layoutTf();
+            }
+          }
+          function onPointerUp(ev) {
+            if (!gesture) return;
+            pieces().forEach(function (p) { p.classList.remove('is-dragging'); });
+            tf.classList.remove('is-rotating');
+            skipClick = gesture.moved;
+            gesture = null;
+            layoutTf();
+            if (!locked) persist(false);
+          }
+          frame.addEventListener('pointermove', onPointerMove);
+          frame.addEventListener('pointerup', onPointerUp);
+          frame.addEventListener('pointercancel', onPointerUp);
+          frame.addEventListener('pointerdown', function (ev) {
+            if (locked) return;
+            if (ev.target === frame) {
+              selected = [];
+              syncSelectionUi();
+            }
+          });
+
+          btnForward.addEventListener('click', function () { bumpZ(1); });
+          btnBack.addEventListener('click', function () { bumpZ(-1); });
+          btnFlipH.addEventListener('click', function () { flipSelected('x'); });
+          btnFlipV.addEventListener('click', function () { flipSelected('y'); });
+          btnLock.addEventListener('click', function () {
+            var next = !locked;
+            setLocked(next);
+            if (next) persist(true);
+          });
+          btnDl.addEventListener('click', function () { downloadPlaces(candidate, collectPlaces()); });
+          btnReset.addEventListener('click', function () {
+            if (locked) return;
+            var store = loadStore();
+            delete store[storeKey];
+            saveStore(store);
+            location.hash = '#phase-3';
+            location.reload();
+          });
+
+          el.innerHTML = '';
+          el.appendChild(pill);
+          el.appendChild(bar);
+          el.appendChild(frame);
+          el.appendChild(tray);
+          setLocked(locked);
+        }).catch(function () {
+          el.textContent = 'Could not load places.';
+        });
+      }
+      document.querySelectorAll('[data-place]').forEach(mountPlace);
+    })();
+  </script>
+</body>
+</html>

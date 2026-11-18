@@ -1,0 +1,42 @@
+{
+  "styleId": "iso-stage-cutout",
+  "typeId": "type-2-stack",
+  "note": "Universal connector tray. Swap PNGs for other projects; keep the same catalog shape + place-editor tray.",
+  "connectors": [
+    {
+      "id": "short",
+      "label": "Short ramp",
+      "src": "assets/connectors/short.png",
+      "defaultWidth": 20,
+      "defaultHeight": 14
+    },
+    {
+      "id": "long",
+      "label": "Long bridge",
+      "src": "assets/connectors/long.png",
+      "defaultWidth": 28,
+      "defaultHeight": 16
+    },
+    {
+      "id": "wide",
+      "label": "Wide pad",
+      "src": "assets/connectors/wide.png",
+      "defaultWidth": 24,
+      "defaultHeight": 18
+    },
+    {
+      "id": "stairs",
+      "label": "Stairs",
+      "src": "assets/connectors/stairs.png",
+      "defaultWidth": 16,
+      "defaultHeight": 18
+    },
+    {
+      "id": "mesh",
+      "label": "Mesh bridge",
+      "src": "assets/connectors/mesh.png",
+      "defaultWidth": 22,
+      "defaultHeight": 16
+    }
+  ]
+}

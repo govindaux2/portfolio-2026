@@ -1,0 +1,39 @@
+{
+  "candidate": "I",
+  "masterWidth": 2160,
+  "masterHeight": 2880,
+  "method": "figma-polygon-mask-on-master-hard",
+  "figmaFile": "https://www.figma.com/design/iPAtvC4RljEgiFAMmrN17F",
+  "pieces": [
+    {
+      "id": "ops",
+      "src": "ops.png",
+      "left": 30.0,
+      "top": 31.9792,
+      "width": 45.9722,
+      "height": 33.9931,
+      "z": 3,
+      "seg": "ptp"
+    },
+    {
+      "id": "inbound",
+      "src": "inbound.png",
+      "left": 3.9815,
+      "top": 1.9792,
+      "width": 58.0093,
+      "height": 40.0,
+      "z": 2,
+      "seg": "stp"
+    },
+    {
+      "id": "make",
+      "src": "make.png",
+      "left": 41.9907,
+      "top": 53.9931,
+      "width": 53.9815,
+      "height": 40.1042,
+      "z": 1,
+      "seg": "ptp"
+    }
+  ]
+}

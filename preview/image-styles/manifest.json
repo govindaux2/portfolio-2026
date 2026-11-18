@@ -1,0 +1,24 @@
+{
+  "kind": "image-styles-hub",
+  "updated": "2026-11-18",
+  "purpose": "Catalog of reusable image-generation styles. Each style is its own artifact folder. Tomorrow’s new style = new folder + new HTML — do not mash into an existing style.",
+  "how_agent_reads": [
+    "Open this manifest first",
+    "Ask user which styleId",
+    "Read that style’s manifest.json",
+    "Ask which typeId",
+    "Read that type’s manifest.json + rules/prompts.json",
+    "Follow that type’s phases in order; stop at each gate"
+  ],
+  "styles": [
+    {
+      "id": "iso-stage-cutout",
+      "label": "Stage Cutout",
+      "path": "iso-stage-cutout/",
+      "manifest": "iso-stage-cutout/manifest.json",
+      "thumb": "iso-stage-cutout/type-2-stack/assets/type-thumb.jpg",
+      "skill": "iso-stage-cutout",
+      "status": "active"
+    }
+  ]
+}

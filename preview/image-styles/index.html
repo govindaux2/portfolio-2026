@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Image styles</title>
+  <link rel="stylesheet" href="artifact-chrome.css?v=dividers" />
+  <style>
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font)}
+    .wrap{width:min(960px,calc(100% - 40px));margin:0 auto;padding:16px 0 80px}
+    .kicker{color:var(--accent);font-size:13px;margin:0 0 8px}
+    h1{font-size:clamp(28px,4vw,40px);letter-spacing:-.03em;margin:0}
+    p{color:var(--muted);line-height:1.5;max-width:44rem}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <nav class="artifact-nav" aria-label="Artifact">
+      <div class="nav-left">
+        <a class="nav-ico" href="./" aria-label="Home" title="Home" data-tip="Home">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 10.5 12 4l8 6.5V20a1 1 0 0 1-1 1h-5v-6H10v6H5a1 1 0 0 1-1-1v-9.5Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>
+        </a>
+        <div class="crumbs" aria-label="Breadcrumb">
+          <span class="now">Image styles</span>
+        </div>
+      </div>
+    </nav>
+
+    <p class="kicker">Style catalog</p>
+    <h1>Image styles</h1>
+    <p>Pick a style. Types and phases live inside each style.</p>
+
+    <div class="sections">
+      <a class="list-row" href="iso-stage-cutout/">
+        <div class="thumb">
+          <img src="iso-stage-cutout/type-2-stack/assets/type-thumb.jpg" width="864" height="648" alt="Stage Cutout thumbnail" />
+        </div>
+        <div class="body">
+          <p class="tag">Active</p>
+          <strong>Stage Cutout</strong>
+          <span class="desc">Solo · Stack</span>
+        </div>
+      </a>
+    </div>
+  </div>
+  <script src="artifact-chrome.js"></script>
+</body>
+</html>

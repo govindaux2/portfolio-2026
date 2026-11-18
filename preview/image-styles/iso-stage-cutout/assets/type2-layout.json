@@ -1,0 +1,42 @@
+{
+  "master": "type2-master.png",
+  "width": 2160,
+  "height": 2880,
+  "density": "expanded",
+  "sourceNote": "Native AI ~864x1152; LANCZOS to 2160x2880. Prefer native 2k+ next gen.",
+  "pieces": [
+    {
+      "id": "inbound",
+      "seg": "stp",
+      "z": 3,
+      "box": [
+        0.02,
+        0.0,
+        0.96,
+        0.38
+      ]
+    },
+    {
+      "id": "ops",
+      "seg": "ptp",
+      "z": 2,
+      "box": [
+        0.02,
+        0.26,
+        0.96,
+        0.4
+      ]
+    },
+    {
+      "id": "make",
+      "seg": "ptp",
+      "z": 1,
+      "box": [
+        0.02,
+        0.5,
+        0.96,
+        0.48
+      ]
+    }
+  ]
+}

@@ -22,3 +22,4 @@ src/flow/sync/workflows.json
 *.njsproj
 *.sln
 *.sw?
+.venv-img/

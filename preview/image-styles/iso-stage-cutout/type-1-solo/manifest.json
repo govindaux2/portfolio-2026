@@ -1,0 +1,23 @@
+{
+  "kind": "image-type",
+  "styleId": "iso-stage-cutout",
+  "id": "type-1-solo",
+  "label": "Type 1 · Solo",
+  "updated": "2026-11-18",
+  "summary": "One raised platform, one complete room on the shared stage. Hover tints cutout pixels only.",
+  "prompts": "rules/prompts.json",
+  "code": {
+    "hover_tint": "CSS filter + lift on PNG alpha cutout; no frames",
+    "stage": "one shared charcoal stage (#0a0c10) with light grid",
+    "build": "index.html is the live build (Phase 1 of 1)"
+  },
+  "phases": [
+    {
+      "id": "live-build",
+      "label": "Phase 1 of 1 · Live stage",
+      "path": "index.html",
+      "gate": "Solo is the live build — no multi-phase gate",
+      "status": "open"
+    }
+  ]
+}

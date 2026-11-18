@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Type 1 Solo · Phase 1 · Master</title>
+  <style>
+    :root{--bg:#06070a;--text:#f0f0ec;--muted:#96968f;--accent:#c6f24e;--line:#2a2d34;--font:"DM Sans","Segoe UI",system-ui,sans-serif}
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font)}
+    .wrap{width:min(900px,calc(100% - 40px));margin:0 auto;padding:36px 0 80px}
+    .artifact-nav{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;justify-content:space-between;
+      padding:12px 0 20px;border-bottom:1px solid var(--line);margin-bottom:24px;font-size:13px;color:var(--muted)}
+    .artifact-nav a,.artifact-nav button.linkish{color:var(--accent);text-decoration:none;background:none;border:0;padding:0;font:inherit;cursor:pointer}
+    .artifact-nav a:hover,.artifact-nav button.linkish:hover{text-decoration:underline}
+    .artifact-nav .here{color:var(--text)}
+    .artifact-nav .disabled{opacity:.4;pointer-events:none}
+    h1{font-size:clamp(26px,4vw,36px);letter-spacing:-.03em;margin:0}
+    p{color:var(--muted);max-width:42rem;line-height:1.5}
+    .kicker{color:var(--accent);font-size:13px;margin:0 0 8px}
+    .gate{margin:16px 0;padding:16px 0;border:0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:transparent;font-size:14px;color:var(--muted)}
+    .gate strong{color:var(--text)}
+    figure{margin:24px 0 0;border:0;border-radius:0;overflow:visible;background:transparent}
+    figcaption{padding:10px 0 0;font-size:13px;color:var(--muted);line-height:1.4}
+    figcaption strong{display:block;color:var(--text);font-size:15px;margin-bottom:4px}
+    img{display:block;width:100%;height:auto;background:#0a0c10}
+    .rules-scrim{position:fixed;inset:0;background:rgba(0,0,0,.45);opacity:0;pointer-events:none;transition:opacity .2s ease;z-index:40}
+    .rules-scrim.open{opacity:1;pointer-events:auto}
+    .rules-drawer{
+      position:fixed;top:0;right:0;height:100%;width:min(420px,92vw);z-index:50;
+      background:#0c0e12;border-left:1px solid var(--line);padding:20px 18px 40px;
+      transform:translateX(105%);transition:transform .25s ease;overflow:auto;
+    }
+    .rules-drawer.open{transform:translateX(0)}
+    .rules-drawer h2{font-size:18px;margin:0 0 8px}
+    .rules-drawer h3{font-size:13px;color:var(--accent);margin:18px 0 6px;font-weight:600}
+    .rules-drawer pre{
+      white-space:pre-wrap;word-break:break-word;font-size:12px;line-height:1.45;
+      color:#c5cad3;background:#080a0e;border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin:0
+    }
+    .rules-drawer .close{float:right;background:none;border:0;color:var(--accent);font:inherit;cursor:pointer}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <nav class="artifact-nav" aria-label="Artifact">
+      <a href="./">← Type 1 · Solo</a>
+      <span class="here">Type 1 · Phase 1 of 3 · Master</span>
+      <span style="display:flex;gap:14px;align-items:center">
+        <button type="button" class="linkish" data-open-rules>Rules &amp; prompts</button>
+        <span class="disabled">Next · Cutout (after OK)</span>
+      </span>
+    </nav>
+
+    <p class="kicker">Type 1 · Solo · Phase 1</p>
+    <h1>Confirm the Solo plate</h1>
+    <p>One complete room on one platform. Reality check: if isolated, the room still makes sense.</p>
+    <p class="gate"><strong>Continue:</strong> reply OK (or ask for a new Solo candidate). No cutting until you confirm.</p>
+
+    <figure>
+      <img src="../assets/type1-solo.png" width="1280" height="720" alt="Type 1 Solo master reference" />
+      <figcaption><strong>Current Solo reference</strong> Single island baseline. Replace when a new master is approved.</figcaption>
+    </figure>
+  </div>
+
+  <div class="rules-scrim" data-rules-scrim hidden></div>
+  <aside class="rules-drawer" data-rules-drawer aria-hidden="true" aria-label="Generation rules and prompts">
+    <button type="button" class="close" data-close-rules>Close</button>
+    <h2>Rules &amp; prompts</h2>
+    <div data-rules-body>Loading…</div>
+  </aside>
+
+  <script>
+    (function () {
+      var drawer = document.querySelector('[data-rules-drawer]');
+      var scrim = document.querySelector('[data-rules-scrim]');
+      var body = document.querySelector('[data-rules-body]');
+      function open() {
+        scrim.hidden = false; scrim.classList.add('open');
+        drawer.classList.add('open'); drawer.setAttribute('aria-hidden', 'false');
+      }
+      function close() {
+        scrim.classList.remove('open'); drawer.classList.remove('open');
+        drawer.setAttribute('aria-hidden', 'true');
+        setTimeout(function () { scrim.hidden = true; }, 200);
+      }
+      document.querySelector('[data-open-rules]').addEventListener('click', open);
+      document.querySelector('[data-close-rules]').addEventListener('click', close);
+      scrim.addEventListener('click', close);
+
+      fetch('../assets/rules/stage-cutout-prompts.json').then(function (r) { return r.json(); }).then(function (data) {
+        function block(title, text) {
+          return '<h3>' + title + '</h3><pre>' + (text || '') + '</pre>';
+        }
+        body.innerHTML =
+          block('Shared · positive', data.shared.positive) +
+          block('Shared · negative', data.shared.negative) +
+          block(data.types.solo.label + ' · positive', data.types.solo.positive) +
+          block(data.types.solo.label + ' · negative', data.types.solo.negative);
+      }).catch(function () { body.textContent = 'Could not load prompts JSON.'; });
+    })();
+  </script>
+</body>
+</html>

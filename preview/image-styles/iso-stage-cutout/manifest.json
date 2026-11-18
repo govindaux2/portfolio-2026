@@ -1,0 +1,33 @@
+{
+  "kind": "image-style",
+  "id": "iso-stage-cutout",
+  "label": "Stage Cutout",
+  "updated": "2026-11-18",
+  "hub": "../",
+  "skill": "iso-stage-cutout",
+  "summary": "Isometric digi-twin cutouts on one shared dark stage; hover tints cutout pixels.",
+  "how_agent_reads": [
+    "This style home lists TYPES only — never promote phases to the style home",
+    "Ask Solo or Stack",
+    "Enter that type folder; follow its phases + prompts.json"
+  ],
+  "types": [
+    {
+      "id": "type-1-solo",
+      "label": "Type 1 · Solo",
+      "path": "type-1-solo/",
+      "manifest": "type-1-solo/manifest.json",
+      "thumb": "type-1-solo/assets/solo-thumb.png",
+      "phases": 1
+    },
+    {
+      "id": "type-2-stack",
+      "label": "Type 2 · Stack",
+      "path": "type-2-stack/",
+      "manifest": "type-2-stack/manifest.json",
+      "thumb": "type-2-stack/assets/type-thumb.jpg",
+      "note": "Floorplan puzzle (rooms beside each other), not a vertical tower",
+      "phases": 3
+    }
+  ]
+}

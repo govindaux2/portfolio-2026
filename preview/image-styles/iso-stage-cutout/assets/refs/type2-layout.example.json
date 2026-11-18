@@ -1,0 +1,11 @@
+{
+  "master": "type2-master.png",
+  "width": 2048,
+  "height": 2732,
+  "density": "expanded",
+  "pieces": [
+    { "id": "inbound", "seg": "stp", "z": 3, "box": [0.04, 0.02, 0.92, 0.36] },
+    { "id": "ops",     "seg": "ptp", "z": 2, "box": [0.04, 0.30, 0.92, 0.38] },
+    { "id": "make",    "seg": "ptp", "z": 1, "box": [0.04, 0.58, 0.92, 0.40] }
+  ]
+}

@@ -1,0 +1,61 @@
+{
+  "style": "Stage Cutout",
+  "updated": "2026-11-18",
+  "shared": {
+    "positive": "Ultra high-resolution crisp isometric digi-twin, soft studio lighting, pure flat solid #0a0c10 charcoal void, no text, no labels, no UI, no dashed boxes, no watermark, sharp edges for zoom, expanded open props (not crowded), one shared camera and lighting",
+    "negative": "vertical tower of three identical platforms, platforms stacked straight up like a list, large empty gaps between floors, exploded diagram with air between slabs, three disconnected floating islands, cutouts pasted one above another, odd mid-room crop, collage of separate renders, misaligned cameras per room, UI chrome, captions, watermarks, blurry, low-res, perspective vanishing-point photo"
+  },
+  "types": {
+    "solo": {
+      "label": "Type 1 · Solo",
+      "positive": "ONE raised gray platform only, single complete room/chapter of the plant, big readable props, generous floor air on the platform, soft shadow under platform edge — reality check: the whole room stays meaningful if isolated",
+      "negative": "multiple platforms, stacked floors, second room visible, cropped mid-machine"
+    },
+    "stack": {
+      "label": "Type 2 · Stack master (floorplan puzzle)",
+      "positive": "ONE continuous facility laid out like rooms in a house / interlocking puzzle on the dark stage — platforms sit BESIDE each other (L-shape, courtyard, or staggered cluster), NOT in a vertical column. One or two complete rooms per platform. Slight careful overlap only where pieces share a wall or corner (puzzle tabs). Each room fully readable. Soft contact shadows. Digi-twin floorplan, not a skyscraper stack.",
+      "negative": "vertical list stack, three platforms centered one above the other, big vertical air bands, floating separated islands, mid-room crops that destroy meaning, heavy pasted overlap, duplicate rooms stacked, ladder of identical slabs"
+    }
+  },
+  "pipeline": [
+    "Phase 1: generate 3 floorplan-puzzle masters (not towers); user picks ONE",
+    "Phase 2: slice along room seams that pass reality check — each piece stays a complete room",
+    "Phase 3: place from places.json so pieces reassemble the master with slight shared-edge overlap; hover tint"
+  ],
+  "efficiency": [
+    "Master must already look like a house floorplan / puzzle — never a vertical tower",
+    "Always emit 3 typed candidates before slicing; stop for user pick",
+    "Reality check every seam: if cropping a side/bottom makes the room lose meaning, move the seam",
+    "Overlap = thin shared wall/corner only — managed carefully, not odd pasted stacks",
+    "Store positive+negative per type and per candidate in this JSON; Phase 1 sidebar reads it"
+  ],
+  "candidates": {
+    "A": { "status": "rejected", "title": "Vertical tower A", "note": "Rejected: vertical list / odd overlap.", "positive": "(legacy tower)", "negative": "same as shared+stack" },
+    "B": { "status": "rejected", "title": "Vertical tower B", "note": "Rejected: isolated slices.", "positive": "(legacy tower)", "negative": "same as shared+stack" },
+    "C": { "status": "rejected", "title": "Vertical tower C", "note": "Rejected: three separate slabs.", "positive": "(legacy tower)", "negative": "same as shared+stack" },
+    "D": { "status": "rejected", "title": "Stepped building", "note": "Rejected: still vertical cascade, not floorplan adjacency.", "positive": "(legacy)", "negative": "same as shared+stack" },
+    "E": { "status": "rejected", "title": "Seat-line story", "note": "Rejected: still vertical.", "positive": "(legacy)", "negative": "same as shared+stack" },
+    "F": { "status": "rejected", "title": "Warehouse cutaway", "note": "Rejected: still vertical.", "positive": "(legacy)", "negative": "same as shared+stack" },
+    "G": {
+      "status": "active",
+      "title": "L-plan house",
+      "note": "L-shaped adjacency: receiving + office wing + assembly wing; slight corner overlap.",
+      "positive": "Isometric digi-twin seat plant as an L-shaped house floorplan on charcoal void. THREE raised gray platforms arranged as rooms beside each other forming an L — NOT stacked vertically. Left wing: complete inbound room (white trucks + wire cages). Upper-right wing: complete glass ops office room. Lower-right / base: complete purple seat assembly room. Platforms almost touch at the L corner with slight puzzle-tab overlap and soft contact shadows. Each room fully readable if cut alone. One camera, one lighting.",
+      "negative": "vertical tower, platforms one above the other, big gaps, mid-room crop, pasted collage"
+    },
+    "H": {
+      "status": "active",
+      "title": "Courtyard cluster",
+      "note": "Three rooms around a small dark courtyard; neighbors share edges lightly.",
+      "positive": "Isometric digi-twin seat plant as a courtyard house plan. THREE complete room-platforms nestled around a tiny charcoal courtyard — side-by-side and diagonal neighbors, NOT a vertical column. Room 1: trucks + cages. Room 2: glass office + pallets. Room 3: purple seat oval + workers. Slight careful overlap only on shared edges like puzzle pieces. Soft shadows. Each room stays meaningful if isolated.",
+      "negative": "vertical tower, centered stack, large air bands, odd pasted overlap, cropped rooms"
+    },
+    "I": {
+      "status": "active",
+      "title": "Staggered puzzle",
+      "note": "Diagonal stagger like interlocking puzzle tiles; 1–2 rooms per piece.",
+      "positive": "Isometric digi-twin facility as interlocking puzzle tiles on charcoal. Platforms staggered on the diagonal / offset grid like house rooms sharing walls — NOT aligned as a vertical list. Top-left tile: warehouse receiving (trucks + racking) as one complete room. Mid tile overlapping slightly: glass office beside staging. Bottom-right tile: machinery + purple bins assembly as one complete room. Thin shared-corner overlaps only. One continuous facility plan, one camera.",
+      "negative": "vertical tower, three centered slabs, exploded gaps, mid-object crops, collage"
+    }
+  }
+}

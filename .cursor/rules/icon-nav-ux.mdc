@@ -1,0 +1,32 @@
+---
+description: Icon-first UX for nav and controls; tooltips on every icon; breadcrumbs; subtle agent prompt icons
+alwaysApply: true
+---
+
+# Icon-first UX (strict)
+
+Unless Govinda explicitly asks for text labels:
+
+- Navigation controls are **icons only** (Home, Back, Close) — no text buttons like “Home” / “Back”.
+- Sticky top bar: icon Home + icon Back + **breadcrumbs** for place.
+- Breadcrumb segments that are links use **link color** plus a small **link icon** after the label.
+- In-content links: link color + link icon after the context — not plain green text buttons.
+- Toolbars / place editors / chrome actions: **icons only** (drag tools, layer, rotate, lock, download, reset, etc.).
+
+## Tooltips (required on every icon)
+
+- Every icon control **must** expose a short human tooltip: `aria-label` + `title` + `data-tip` (same string).
+- Tooltips name the action, not the glyph (“Bring forward”, “Lock for production”, “Prompts · G inbound”).
+- Use the shared chrome tip style (`.ico-tip` / `[data-tip]`) so hover/focus shows a readable tip — do not ship bare icons with no tip.
+- When lock/state toggles an icon, update `aria-label`, `title`, and `data-tip` together.
+
+## Rules / prompts icons
+
+- Show a prompt/rules icon **only** where a prompt JSON or phase note actually exists.
+- Keep it **subtle** (low contrast) — agent affordance, not primary UI.
+- Do not scatter rules icons on every card for decoration.
+- Still give each rules icon a tooltip (e.g. “Prompts · Phase 2”).
+
+## Image pickers
+
+- Prefer lightbox/pop-up on thumbnail click over an extra inner page when the candidates are already visible.

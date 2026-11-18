@@ -1,0 +1,22 @@
+/* Sticky Home / Back — every image-styles page */
+.artifact-nav{
+  position:sticky;top:0;z-index:30;
+  display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center;justify-content:space-between;
+  margin:0 0 24px;padding:10px 0;
+  border-bottom:1px solid #2a2d34;
+  background:rgba(6,7,10,.92);
+  backdrop-filter:saturate(1.2) blur(8px);
+  -webkit-backdrop-filter:saturate(1.2) blur(8px);
+  font:500 13px/1.3 "DM Sans","Segoe UI",system-ui,sans-serif;color:#96968f;
+}
+.artifact-nav .nav-left,
+.artifact-nav .nav-right{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.artifact-nav .nav-btn{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:7px 12px;border-radius:999px;border:1px solid #2a2d34;
+  background:#101218;color:#c6f24e;text-decoration:none;
+}
+.artifact-nav .nav-btn:hover{border-color:#4a4d55;background:#14161c}
+.artifact-nav .nav-btn[aria-current="page"]{border-color:#c6f24e;color:#f0f0ec}
+.artifact-nav .here{color:#f0f0ec;font-weight:600}
+.artifact-nav .disabled{opacity:.4;pointer-events:none}

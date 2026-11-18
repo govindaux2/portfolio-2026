@@ -1,0 +1,38 @@
+{
+  "candidate": "G",
+  "masterWidth": 1600,
+  "masterHeight": 1200,
+  "method": "ai-generated-solo-rooms",
+  "pieces": [
+    {
+      "id": "inbound",
+      "src": "inbound.png",
+      "left": 2,
+      "top": 8,
+      "width": 48,
+      "height": 55,
+      "z": 2,
+      "seg": "stp"
+    },
+    {
+      "id": "ops",
+      "src": "ops.png",
+      "left": 48,
+      "top": 2,
+      "width": 48,
+      "height": 48,
+      "z": 3,
+      "seg": "ptp"
+    },
+    {
+      "id": "make",
+      "src": "make.png",
+      "left": 28,
+      "top": 48,
+      "width": 58,
+      "height": 50,
+      "z": 1,
+      "seg": "ptp"
+    }
+  ]
+}

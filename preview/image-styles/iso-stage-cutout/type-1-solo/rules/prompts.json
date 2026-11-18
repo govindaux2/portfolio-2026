@@ -1,0 +1,16 @@
+{
+  "styleId": "iso-stage-cutout",
+  "typeId": "type-1-solo",
+  "updated": "2026-11-18",
+  "shared": {
+    "positive": "Ultra high-resolution crisp isometric digi-twin, soft studio lighting, pure flat solid #0a0c10 charcoal void, no text, no labels, no UI, no dashed boxes, no watermark, sharp edges for zoom, expanded open props",
+    "negative": "multiple platforms, stacked floors, vertical tower, UI chrome, captions, watermarks, blurry, low-res, mid-room crop that destroys meaning"
+  },
+  "type": {
+    "positive": "ONE raised gray platform only, single complete room/chapter of the plant, big readable props, generous floor air on the platform, soft shadow under platform edge — reality check: the whole room stays meaningful if isolated",
+    "negative": "second platform, stacked decks, second room visible, cropped mid-machine"
+  },
+  "pipeline": [
+    "Phase 1 of 1: live Solo build on shared stage — hover tint on cutout pixels (this page)"
+  ]
+}

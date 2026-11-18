@@ -1,0 +1,41 @@
+{
+  "kind": "image-type",
+  "styleId": "iso-stage-cutout",
+  "id": "type-2-stack",
+  "label": "Type 2 · Stack",
+  "updated": "2026-11-18",
+  "summary": "Floorplan puzzle: rooms beside each other with slight shared-edge overlap. Not a vertical tower.",
+  "prompts": "rules/prompts.json",
+  "code": {
+    "pipeline": "master → layout.json → slice_from_master.py → places.json",
+    "hover_tint": "CSS filter on PNG alpha; siblings dim when one is hot",
+    "stage": "one shared charcoal stage (#0a0c10)",
+    "scripts": [
+      "~/.cursor/skills/iso-stage-cutout/scripts/slice_from_master.py",
+      "~/.cursor/skills/iso-stage-cutout/scripts/cutout_bg.py"
+    ]
+  },
+  "phases": [
+    {
+      "id": "phase-1-masters",
+      "label": "Phase 1 · Masters",
+      "path": "phase-1-masters.html",
+      "gate": "User picks one natural floorplan master (G/H/I active)",
+      "status": "open"
+    },
+    {
+      "id": "phase-2-cutouts",
+      "label": "Phase 2 · Cutouts",
+      "path": "index.html#phase-2",
+      "gate": "Cutouts for G/H/I: inbound · ops · make",
+      "status": "open"
+    },
+    {
+      "id": "phase-3-place",
+      "label": "Phase 3 · Place",
+      "path": "index.html#phase-3",
+      "gate": "places.json reassembles each candidate; hover tint",
+      "status": "open"
+    }
+  ]
+}
