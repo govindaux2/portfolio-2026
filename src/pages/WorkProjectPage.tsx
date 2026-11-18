@@ -121,6 +121,48 @@ function readLayout(slug: string, names: readonly string[]): Layout {
   }
 }
 
+function RailIcon({ name }: { name: string }) {
+  const common = {
+    fill: 'none',
+    stroke: 'currentColor',
+    strokeWidth: 1.6,
+    strokeLinecap: 'round' as const,
+    strokeLinejoin: 'round' as const,
+  };
+  return (
+    <svg className="work-project-rail-icon" viewBox="0 0 20 20" aria-hidden="true">
+      {name === 'overview' && (
+        <>
+          <rect x="3.5" y="3.5" width="5.5" height="5.5" rx="1" {...common} />
+          <rect x="11" y="3.5" width="5.5" height="5.5" rx="1" {...common} />
+          <rect x="3.5" y="11" width="5.5" height="5.5" rx="1" {...common} />
+          <rect x="11" y="11" width="5.5" height="5.5" rx="1" {...common} />
+        </>
+      )}
+      {name === 'case' && (
+        <>
+          <path d="M6 3.5h5.2L16 8.2V16.5H6Z" {...common} />
+          <path d="M11 3.8V8h4.2" {...common} />
+        </>
+      )}
+      {name === 'system' && (
+        <>
+          <circle cx="6" cy="6" r="2" {...common} />
+          <circle cx="14" cy="8" r="2" {...common} />
+          <circle cx="8" cy="14" r="2" {...common} />
+        </>
+      )}
+      {name === 'artifact' && (
+        <>
+          <path d="M3.5 7.2 10 4l6.5 3.2L10 10.4Z" {...common} />
+          <path d="M3.5 10.2 10 13.4l6.5-3.2" {...common} />
+          <path d="M3.5 13.2 10 16.4l6.5-3.2" {...common} />
+        </>
+      )}
+    </svg>
+  );
+}
+
 export function WorkProjectPage() {
   const { slug, doc: docId } = useParams();
   const stageRef = useRef<HTMLDivElement>(null);
@@ -141,6 +183,13 @@ export function WorkProjectPage() {
   const [layout, setLayout] = useState<Layout>(() => (slug ? readLayout(slug, names) : { order: [], hidden: [] }));
   const [sectionsOpen, setSectionsOpen] = useState(false);
   const [dragging, setDragging] = useState<string | null>(null);
+  const [railOpen, setRailOpen] = useState(() => {
+    try {
+      return localStorage.getItem('work.rail.v1') !== 'closed';
+    } catch {
+      return true;
+    }
+  });
   layoutRef.current = layout;
 
   const visible = (() => {
@@ -335,7 +384,10 @@ export function WorkProjectPage() {
   if (docId && !activeDoc) return <Navigate to={`/work/${slug}`} replace />;
 
   return (
-    <div className={activeDoc ? 'work-project is-doc' : 'work-project'} ref={pageRef}>
+    <div
+      className={['work-project', activeDoc ? 'is-doc' : '', railOpen ? '' : 'is-rail-collapsed'].filter(Boolean).join(' ')}
+      ref={pageRef}
+    >
       <Nav variant="inner" />
       <div className="work-project-stage" ref={stageRef}>
         {activeDoc ? (
@@ -398,6 +450,31 @@ export function WorkProjectPage() {
         )}
       </div>
       <aside className="work-project-rail">
+        <button
+          type="button"
+          className="work-project-rail-toggle"
+          aria-expanded={railOpen}
+          aria-label={railOpen ? 'Collapse side rail' : 'Expand side rail'}
+          title={railOpen ? 'Collapse side rail' : 'Expand side rail'}
+          onClick={() => {
+            const next = !railOpen;
+            setRailOpen(next);
+            try {
+              localStorage.setItem('work.rail.v1', next ? 'open' : 'closed');
+            } catch {
+              /* ignore */
+            }
+          }}
+        >
+          <svg viewBox="0 0 20 20" aria-hidden="true">
+            {railOpen ? (
+              <path d="M7.5 4.5 13 10l-5.5 5.5" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+            ) : (
+              <path d="M12.5 4.5 7 10l5.5 5.5" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+            )}
+          </svg>
+          <span className="work-project-rail-tip">{railOpen ? 'Collapse' : 'Expand'}</span>
+        </button>
         <div className="work-project-rail-head">
           <p className="work-project-kicker">Recent work</p>
           <p className={'tile' in project ? 'work-project-client is-tile' : 'work-project-client'}>
@@ -410,8 +487,11 @@ export function WorkProjectPage() {
                 to={`/work/${slug}`}
                 className={!activeDoc ? 'work-project-case-study is-here' : 'work-project-case-study'}
                 aria-current={!activeDoc ? 'page' : undefined}
+                title="Overview"
               >
-                Overview
+                <RailIcon name="overview" />
+                <span className="work-project-rail-label">Overview</span>
+                <span className="work-project-rail-tip">Overview</span>
               </Link>
               {docs.map((item) => {
                 const here = activeDoc?.id === item.id;
@@ -423,9 +503,12 @@ export function WorkProjectPage() {
                     to={`/work/${slug}/${item.id}`}
                     className={here ? `${base} is-here` : base}
                     aria-current={here ? 'page' : undefined}
+                    title={item.label}
                   >
+                    <RailIcon name={artifact ? 'artifact' : item.id} />
                     {artifact ? <span className="work-project-artifact-mark">Artifact</span> : null}
-                    <span>{item.label}</span>
+                    <span className="work-project-rail-label">{item.label}</span>
+                    <span className="work-project-rail-tip">{item.label}</span>
                   </Link>
                 );
               })}

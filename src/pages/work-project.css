@@ -239,6 +239,167 @@
   border-radius: 20px;
 }
 
+.work-project.is-rail-collapsed {
+  grid-template-columns: minmax(0, 1fr) 40px;
+}
+
+.work-project-rail-toggle {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  z-index: 3;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  color: #a39c92;
+  background: transparent;
+  border: 0;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.work-project-rail-toggle svg {
+  width: 18px;
+  height: 18px;
+}
+
+.work-project-rail-toggle:hover,
+.work-project-rail-toggle:focus-visible {
+  color: #f3efe6;
+  background: rgb(243 239 230 / 8%);
+  outline: none;
+}
+
+.work-project-rail-icon {
+  width: 18px;
+  height: 18px;
+  flex: none;
+}
+
+.work-project-case-study,
+.work-project-artifact {
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+}
+
+.work-project.is-rail-collapsed .work-project-kicker,
+.work-project.is-rail-collapsed .work-project-client,
+.work-project.is-rail-collapsed .work-project-rail-scroll,
+.work-project.is-rail-collapsed .work-project-dots,
+.work-project.is-rail-collapsed .work-sections,
+.work-project.is-rail-collapsed .work-project-rail-label,
+.work-project.is-rail-collapsed .work-project-artifact-mark {
+  display: none;
+}
+
+.work-project.is-rail-collapsed .work-project-rail-toggle {
+  top: 10px;
+  left: 6px;
+  width: 28px;
+  height: 28px;
+}
+
+.work-project.is-rail-collapsed .work-project-rail-head {
+  align-items: center;
+  gap: 0;
+  padding: 46px 0 8px;
+}
+
+.work-project.is-rail-collapsed .work-project-doc-links {
+  align-items: center;
+  gap: 2px;
+  width: 100%;
+  margin: 0;
+}
+
+.work-project.is-rail-collapsed .work-project-case-study,
+.work-project.is-rail-collapsed .work-project-artifact {
+  display: grid;
+  grid-template-columns: 28px;
+  grid-template-rows: 28px;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  margin: 0;
+  padding: 0;
+  column-gap: 0;
+  row-gap: 0;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  line-height: 0;
+}
+
+.work-project.is-rail-collapsed .work-project-case-study .work-project-rail-icon,
+.work-project.is-rail-collapsed .work-project-artifact .work-project-rail-icon {
+  grid-row: 1;
+  grid-column: 1;
+  justify-self: center;
+  align-self: center;
+  display: block;
+}
+
+.work-project.is-rail-collapsed .work-project-case-study.is-here,
+.work-project.is-rail-collapsed .work-project-artifact.is-here,
+.work-project.is-rail-collapsed .work-project-artifact:hover,
+.work-project.is-rail-collapsed .work-project-artifact:focus-visible {
+  border: 0;
+  background: transparent;
+  box-shadow: inset 0 0 0 1px rgb(243 239 230 / 28%);
+}
+
+.work-project.is-rail-collapsed .work-project-rail-icon,
+.work-project.is-rail-collapsed .work-project-rail-toggle svg {
+  width: 16px;
+  height: 16px;
+}
+
+.work-project-rail-tip {
+  position: absolute;
+  top: 50%;
+  right: calc(100% + 8px);
+  translate: 4px -50%;
+  padding: 5px 8px;
+  color: #f3efe6;
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: 0;
+  text-transform: none;
+  white-space: nowrap;
+  background: #141210;
+  border-radius: 999px;
+  box-shadow: 0 8px 20px rgb(0 0 0 / 28%);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.16s var(--ease-out), translate 0.16s var(--ease-out);
+}
+
+.work-project-rail-toggle,
+.work-project-case-study,
+.work-project-artifact {
+  position: relative;
+}
+
+.work-project-rail-toggle:hover .work-project-rail-tip,
+.work-project-rail-toggle:focus-visible .work-project-rail-tip,
+.work-project-case-study:hover .work-project-rail-tip,
+.work-project-case-study:focus-visible .work-project-rail-tip,
+.work-project-artifact:hover .work-project-rail-tip,
+.work-project-artifact:focus-visible .work-project-rail-tip {
+  translate: 0 -50%;
+  opacity: 1;
+}
+
+.work-project:not(.is-rail-collapsed) .work-project-rail-tip {
+  display: none;
+}
+
 .work-project-rail {
   z-index: 2;
   position: relative;
@@ -436,10 +597,11 @@
 }
 
 .work-project-artifact {
-  display: inline-flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 6px;
+  display: grid;
+  grid-template-columns: 18px minmax(0, 1fr);
+  column-gap: 10px;
+  row-gap: 2px;
+  align-items: center;
   margin: 4px 0 0;
   padding: 12px 14px;
   border: 1px solid rgb(243 239 230 / 18%);
@@ -453,6 +615,10 @@
   line-height: 1.3;
   text-decoration: none;
   cursor: pointer;
+}
+
+.work-project-artifact .work-project-rail-icon {
+  grid-row: 1 / span 2;
 }
 
 .work-project-artifact-mark {
@@ -713,6 +879,29 @@ html[data-theme='light'] .work-project-stage {
 html[data-theme='light'] .work-project-rail {
   background: #f7f1e8;
   border-left-color: rgb(44 40 36 / 12%);
+}
+
+html[data-theme='light'] .work-project.is-rail-collapsed .work-project-case-study.is-here,
+html[data-theme='light'] .work-project.is-rail-collapsed .work-project-artifact.is-here,
+html[data-theme='light'] .work-project.is-rail-collapsed .work-project-artifact:hover,
+html[data-theme='light'] .work-project.is-rail-collapsed .work-project-artifact:focus-visible {
+  background: transparent;
+  box-shadow: inset 0 0 0 1px rgb(44 40 36 / 28%);
+}
+
+html[data-theme='light'] .work-project-rail-tip {
+  color: #f7f1e8;
+  background: #2c2824;
+}
+
+html[data-theme='light'] .work-project-rail-toggle {
+  color: #6b655c;
+}
+
+html[data-theme='light'] .work-project-rail-toggle:hover,
+html[data-theme='light'] .work-project-rail-toggle:focus-visible {
+  color: #1c1916;
+  background: rgb(44 40 36 / 6%);
 }
 
 html[data-theme='light'] .work-project-kicker {
