@@ -1,0 +1,463 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>QAD · How a leather car seat is made</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --ink: #1a1a1a;
+      --mute: #5f5f5f;
+      --line: #d6d6d6;
+      --paper: #f7f6f3;
+      --cell: #ffffff;
+      --font: "IBM Plex Sans", "Helvetica Neue", sans-serif;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; background: #eceae6; color: var(--ink); font-family: var(--font); }
+    body { min-height: 100vh; }
+
+    .shell { max-width: 1180px; margin: 0 auto; padding: 40px 20px 88px; }
+
+    .kicker {
+      margin: 0 0 8px;
+      font: 500 12px/1 var(--font);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--mute);
+    }
+    h1 {
+      margin: 0;
+      font: 500 36px/1.15 var(--font);
+      letter-spacing: -0.03em;
+      max-width: 22ch;
+    }
+    .lede {
+      margin: 12px 0 0;
+      max-width: 58ch;
+      font: 400 16px/1.5 var(--font);
+      color: #444;
+    }
+
+    .glance {
+      margin: 24px 0 16px;
+      padding: 16px 18px;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      font: 400 15px/1.45 var(--font);
+      color: #333;
+      max-width: 70ch;
+    }
+    .glance strong { font-weight: 600; }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr 1fr;
+      grid-auto-rows: minmax(120px, auto);
+      border-top: 1px solid #bdbdbd;
+      border-left: 1px solid #bdbdbd;
+      background: #fff;
+    }
+    .cell {
+      border-right: 1px solid #bdbdbd;
+      border-bottom: 1px solid #bdbdbd;
+      padding: 20px 20px 18px;
+      background: var(--cell);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .step {
+      margin: 0;
+      font: 600 12px/1 var(--font);
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--mute);
+    }
+    .cell h2 {
+      margin: 0;
+      font: 500 22px/1.2 var(--font);
+      letter-spacing: -0.02em;
+    }
+    .cell p {
+      margin: 0;
+      font: 400 14px/1.45 var(--font);
+      color: #333;
+      max-width: 42ch;
+    }
+    .cell ul {
+      margin: 0;
+      padding: 0 0 0 18px;
+      display: grid;
+      gap: 6px;
+    }
+    .cell li {
+      font: 400 14px/1.4 var(--font);
+      color: #2a2a2a;
+    }
+    .meta {
+      margin-top: auto;
+      padding-top: 8px;
+      border-top: 1px solid #ececec;
+      display: grid;
+      gap: 6px;
+      font: 400 13px/1.4 var(--font);
+      color: #444;
+    }
+    .meta b {
+      font-weight: 600;
+      color: #111;
+    }
+
+    .people {
+      display: flex; flex-wrap: wrap; gap: 6px;
+    }
+    .people span {
+      background: #f2f1ee;
+      border: 1px solid #e0ded8;
+      border-radius: 999px;
+      padding: 5px 10px;
+      font: 500 12px/1.2 var(--font);
+      color: #222;
+    }
+
+    .c-intro { grid-column: 1 / 3; }
+    .c-order { grid-column: 3; grid-row: span 2; }
+    .c-1 { grid-column: 1 / 3; }
+    .c-2 { grid-column: 1; }
+    .c-3 { grid-column: 2; }
+    .c-note { grid-column: 1 / 4; background: #f7f6f3; }
+    .c-4 { grid-column: 1; }
+    .c-5 { grid-column: 2; }
+    .c-roles { grid-column: 3; grid-row: span 2; }
+    .c-6 { grid-column: 1 / 3; }
+    .c-7 { grid-column: 1; }
+    .c-8 { grid-column: 2; }
+    .c-delay { grid-column: 3; background: #111; color: #f4f4f4; }
+    .c-delay p, .c-delay li, .c-delay .meta { color: #ddd; }
+    .c-delay h2 { color: #fff; }
+    .c-delay .step { color: #aaa; }
+    .c-delay .people span {
+      background: #222;
+      border-color: #444;
+      color: #eee;
+    }
+    .c-delay .meta { border-top-color: #333; }
+    .c-delay .meta b { color: #fff; }
+
+    .order-list {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      display: grid;
+      gap: 10px;
+    }
+    .order-list li {
+      display: grid;
+      grid-template-columns: 28px 1fr;
+      gap: 8px;
+      align-items: start;
+      font: 400 13px/1.35 var(--font);
+      color: #2a2a2a;
+    }
+    .order-list span {
+      display: inline-flex;
+      width: 22px; height: 22px;
+      align-items: center;
+      justify-content: center;
+      border-radius: 99px;
+      background: #111;
+      color: #fff;
+      font: 600 11px/1 var(--font);
+    }
+    .order-list em {
+      font-style: normal;
+      color: var(--mute);
+      font-size: 12px;
+    }
+
+    .role-block { display: grid; gap: 14px; }
+    .role-block article { display: grid; gap: 4px; }
+    .role-block h3 {
+      margin: 0;
+      font: 600 14px/1.25 var(--font);
+    }
+    .role-block p {
+      margin: 0;
+      font: 400 13px/1.4 var(--font);
+      color: #444;
+      max-width: none;
+    }
+
+    .foot {
+      margin-top: 18px;
+      display: flex; flex-wrap: wrap; gap: 12px 18px;
+      justify-content: space-between;
+      font: 400 12px/1.4 var(--font);
+      color: var(--mute);
+    }
+    .foot a { color: #111; }
+
+    @media (max-width: 860px) {
+      .grid { grid-template-columns: 1fr; }
+      .c-intro, .c-order, .c-1, .c-2, .c-3, .c-note,
+      .c-4, .c-5, .c-roles, .c-6, .c-7, .c-8, .c-delay {
+        grid-column: auto;
+        grid-row: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <p class="kicker">Example · one product through a plant</p>
+    <h1>How a leather car seat is made</h1>
+    <p class="lede">A front-left leather seat is built from three parts: a sewn leather cover, a foam cushion, and a metal frame. Those parts are made in different rooms, then put together.</p>
+
+    <p class="glance"><strong>In one glance:</strong> Leather is checked, cut, and sewn into a cover. At the same time, foam is molded and the frame is built. All three meet at assembly. Then the seat is checked and shipped. If the leather arrives late, cutting and sewing stop — and assembly waits even if foam and frame are ready.</p>
+
+    <div class="grid">
+      <article class="cell c-intro">
+        <p class="step">What we are following</p>
+        <h2>One front-left leather seat</h2>
+        <p>Same shape every time. The leather itself varies — scars and colour have to be checked before cutting. Foam and frame can be prepared in other rooms while the cover is still being sewn.</p>
+        <div class="people">
+          <span>Cover line</span>
+          <span>Foam bay</span>
+          <span>Frame bay</span>
+          <span>Assembly</span>
+        </div>
+      </article>
+
+      <article class="cell c-order">
+        <p class="step">Order of work</p>
+        <h2>Read top to bottom</h2>
+        <ol class="order-list">
+          <li><span>1</span><div>Receive and check leather hides<br><em>then</em></div></li>
+          <li><span>2</span><div>Cut leather panels<br><em>then</em></div></li>
+          <li><span>3</span><div>Sew panels into a cover<br><em>meanwhile</em></div></li>
+          <li><span>4</span><div>Mold the foam cushion<br><em>and</em></div></li>
+          <li><span>5</span><div>Build the metal frame<br><em>then</em></div></li>
+          <li><span>6</span><div>Put cover, foam, and frame together<br><em>then</em></div></li>
+          <li><span>7</span><div>Final quality check<br><em>then</em></div></li>
+          <li><span>8</span><div>Pack and ship</div></li>
+        </ol>
+      </article>
+
+      <article class="cell c-1">
+        <p class="step">Step 1 · Receiving</p>
+        <h2>Leather arrives and gets checked</h2>
+        <p>Hides come in from the supplier. Someone measures thickness, looks for scars and colour problems, and only releases good leather to cutting.</p>
+        <ul>
+          <li>Unload the batch and record it</li>
+          <li>Inspect each hide</li>
+          <li>Send approved leather to the cutting room</li>
+        </ul>
+        <div class="people">
+          <span>Receiving</span>
+          <span>Leather QC</span>
+        </div>
+        <div class="meta">
+          <div><b>Needs:</b> raw hides, batch paperwork</div>
+          <div><b>Gives next step:</b> approved leather</div>
+        </div>
+      </article>
+
+      <article class="cell c-2">
+        <p class="step">Step 2 · Cutting</p>
+        <h2>Leather is cut into panels</h2>
+        <p>Seat patterns are laid on the hide so waste stays low and damaged spots are avoided. Machines or people cut the panels for one cover.</p>
+        <ul>
+          <li>Place patterns on the hide</li>
+          <li>Cut each panel</li>
+          <li>Group panels into one cover kit</li>
+        </ul>
+        <div class="people">
+          <span>Cutter</span>
+          <span>Nesting tech</span>
+        </div>
+        <div class="meta">
+          <div><b>Needs:</b> approved leather, patterns</div>
+          <div><b>Gives next step:</b> cut panel kit</div>
+        </div>
+      </article>
+
+      <article class="cell c-3">
+        <p class="step">Step 3 · Sewing</p>
+        <h2>Panels are sewn into a cover</h2>
+        <p>The flat panels are stitched into a three-dimensional seat cover. Stitch quality matters here, including seams that must open correctly for an airbag.</p>
+        <ul>
+          <li>Sew the panels together</li>
+          <li>Add inserts and finishing details</li>
+          <li>Send the finished cover to assembly</li>
+        </ul>
+        <div class="people">
+          <span>Sew operators</span>
+          <span>Line lead</span>
+        </div>
+        <div class="meta">
+          <div><b>Needs:</b> cut panels, thread, inserts</div>
+          <div><b>Gives next step:</b> finished leather cover</div>
+        </div>
+      </article>
+
+      <article class="cell c-note">
+        <p class="step">Important</p>
+        <h2>Foam and frame are made at the same time as the cover</h2>
+        <p>They do not wait for sewing to finish. But assembly cannot start until the cover, the foam, and the frame are all there.</p>
+      </article>
+
+      <article class="cell c-4">
+        <p class="step">Step 4 · Foam bay</p>
+        <h2>Foam cushions are molded</h2>
+        <p>Liquid foam is poured into heated molds. When it cures, you get the cushion and backrest shapes for the seat.</p>
+        <ul>
+          <li>Set the mold and mix</li>
+          <li>Pour, cure, and remove the pad</li>
+          <li>Trim and send pads to assembly</li>
+        </ul>
+        <div class="people">
+          <span>Foam tech</span>
+          <span>Mold setter</span>
+        </div>
+        <div class="meta">
+          <div><b>Needs:</b> foam chemicals, molds</div>
+          <div><b>Gives next step:</b> trimmed foam pads</div>
+        </div>
+      </article>
+
+      <article class="cell c-5">
+        <p class="step">Step 5 · Frame bay</p>
+        <h2>The metal frame is built</h2>
+        <p>The seat’s structure is prepared: metal frame, moving parts (like sliders and recliners), and wiring where needed.</p>
+        <ul>
+          <li>Fit mechanisms to the frame</li>
+          <li>Add wiring if the seat needs it</li>
+          <li>Send the finished frame module to assembly</li>
+        </ul>
+        <div class="people">
+          <span>Frame fitter</span>
+          <span>Electrical</span>
+        </div>
+        <div class="meta">
+          <div><b>Needs:</b> frame, hardware, wiring</div>
+          <div><b>Gives next step:</b> ready frame module</div>
+        </div>
+      </article>
+
+      <article class="cell c-roles">
+        <p class="step">Who does what</p>
+        <h2>Roles on this seat</h2>
+        <div class="role-block">
+          <article>
+            <h3>Receiving / leather QC</h3>
+            <p>Take in hides and decide what is good enough to cut.</p>
+          </article>
+          <article>
+            <h3>Cutters and sew operators</h3>
+            <p>Turn leather into a finished cover.</p>
+          </article>
+          <article>
+            <h3>Foam and frame teams</h3>
+            <p>Prepare the other two parts in parallel.</p>
+          </article>
+          <article>
+            <h3>Assemblers</h3>
+            <p>Put the three parts together into one seat.</p>
+          </article>
+          <article>
+            <h3>Final QC</h3>
+            <p>Check the finished seat before it leaves.</p>
+          </article>
+          <article>
+            <h3>Shipping / planner</h3>
+            <p>Pack seats and keep the customer delivery date.</p>
+          </article>
+        </div>
+      </article>
+
+      <article class="cell c-6">
+        <p class="step">Step 6 · Assembly</p>
+        <h2>Cover, foam, and frame are put together</h2>
+        <p>This is where the three parts become one seat. The cover is fitted over the foam, then that is locked onto the frame. If any one part is missing, this room stops.</p>
+        <ul>
+          <li>Fit the leather cover onto the foam</li>
+          <li>Attach the covered foam to the frame</li>
+          <li>Clip and wire the seat as needed</li>
+          <li>Send the built seat to final check</li>
+        </ul>
+        <div class="people">
+          <span>Assembler</span>
+          <span>Trim fitter</span>
+          <span>Team lead</span>
+        </div>
+        <div class="meta">
+          <div><b>Needs:</b> finished cover, foam pads, frame module</div>
+          <div><b>Gives next step:</b> built leather seat</div>
+        </div>
+      </article>
+
+      <article class="cell c-7">
+        <p class="step">Step 7 · Quality</p>
+        <h2>The finished seat is checked</h2>
+        <p>Someone checks how it looks, how it fits, and whether moving parts work. Bad seats go back for rework. Good seats go to shipping.</p>
+        <ul>
+          <li>Check appearance and fit</li>
+          <li>Test moving parts</li>
+          <li>Pass the seat or send it back</li>
+        </ul>
+        <div class="people"><span>Final QC</span></div>
+        <div class="meta">
+          <div><b>Needs:</b> built seat</div>
+          <div><b>Gives next step:</b> passed seat, or rework</div>
+        </div>
+      </article>
+
+      <article class="cell c-8">
+        <p class="step">Step 8 · Shipping</p>
+        <h2>Passed seats leave the plant</h2>
+        <p>Seats are packed, labeled, and loaded. Shipping and planning keep the delivery date promised to the car plant.</p>
+        <ul>
+          <li>Pack passed seats</li>
+          <li>Load to the dock schedule</li>
+          <li>Ship to the customer plant</li>
+        </ul>
+        <div class="people">
+          <span>Shipping</span>
+          <span>Planner</span>
+        </div>
+        <div class="meta">
+          <div><b>Needs:</b> passed seats</div>
+          <div><b>Gives next step:</b> delivery to the car line</div>
+        </div>
+      </article>
+
+      <article class="cell c-delay">
+        <p class="step">Why supply delay matters here</p>
+        <h2>If leather is late, the seat stops at assembly</h2>
+        <p>Cutting and sewing have nothing to work with. Foam and frame can still finish. Assembly still cannot build the seat without the cover. That is the simple plant reason a supplier delay becomes a customer-date problem.</p>
+        <ul>
+          <li>Late leather → empty cutting and sewing</li>
+          <li>Foam and frame may still be ready</li>
+          <li>Assembly waits → ship date slips</li>
+        </ul>
+        <div class="people">
+          <span>First signal: receiving</span>
+          <span>Hard stop: assembly</span>
+        </div>
+      </article>
+    </div>
+
+    <div class="foot">
+      <span>Plain plant walk · leather seat example</span>
+      <span><a href="./qad-plant-stages.html">Earlier mock</a> · <a href="./qad-manufacturing.html">Case page</a></span>
+    </div>
+  </div>
+</body>
+</html>

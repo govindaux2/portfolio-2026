@@ -1,0 +1,338 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>QAD Button Component Source Ready</title>
+<style>
+/*
+  QAD DESIGN SYSTEM SOURCE FILE 03
+  Component source: Buttons only.
+
+  Keep from uploaded source:
+  - Graphite/black primary button surface.
+  - Silver horizontal data-dash click animation.
+  - Secondary, ghost, disabled, danger, loading, and icon-only button states.
+
+  Normalized for current QAD system:
+  - IBM Plex Sans stack.
+  - 4px radius rule.
+  - Controlled QAD red/orange only as signal accents.
+  - No logo inside buttons.
+*/
+:root{
+  --qad-font:"IBM Plex Sans", Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --qad-red:#f82408;
+  --qad-orange:#ff8661;
+  --qad-graphite:#111418;
+  --qad-graphite-2:#202733;
+  --qad-carbon:#07090c;
+  --qad-ink:#111418;
+  --qad-muted:#657180;
+  --qad-line:#dfe6ef;
+  --qad-surface:#ffffff;
+  --qad-glass:rgba(255,255,255,.72);
+  --qad-glass-strong:rgba(255,255,255,.86);
+  --qad-radius:4px;
+  --qad-ease:cubic-bezier(.2,.72,.16,1);
+  --qad-fast:160ms;
+  --qad-base:260ms;
+  --qad-sweep:760ms;
+  --qad-shadow-button:0 12px 30px rgba(16,22,30,.22), inset 0 1px 0 rgba(255,255,255,.18);
+  --qad-shadow-button-hover:0 18px 40px rgba(16,22,30,.28), inset 0 1px 0 rgba(255,255,255,.24);
+  --qad-shadow-soft:0 20px 50px rgba(31,40,52,.12), inset 0 1px 0 rgba(255,255,255,.75);
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;font-family:var(--qad-font);color:var(--qad-ink);background:#eef3f8;font-weight:400}
+body{
+  padding:40px;
+  background:
+    radial-gradient(780px 420px at 9% -6%,rgba(255,255,255,.95),transparent 68%),
+    radial-gradient(620px 360px at 86% 12%,rgba(248,36,8,.075),transparent 72%),
+    radial-gradient(760px 440px at 78% 100%,rgba(77,92,106,.10),transparent 66%),
+    linear-gradient(135deg,#fbfcfe 0%,#eef3f8 58%,#f8fafc 100%);
+}
+body:before{
+  content:"";
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  opacity:.52;
+  background-image:
+    linear-gradient(rgba(98,116,139,.09) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(98,116,139,.075) 1px,transparent 1px),
+    radial-gradient(circle,rgba(70,84,102,.13) 1px,transparent 1.35px);
+  background-size:42px 42px,42px 42px,18px 18px;
+  mask:linear-gradient(#000 0%,rgba(0,0,0,.72) 62%,transparent 100%);
+}
+button{font:inherit}
+svg{display:block}
+h1,h2,h3,p{margin:0}
+h1{font-size:34px;line-height:.98;letter-spacing:-.052em;font-weight:500}
+h2{font-size:19px;line-height:1.18;letter-spacing:-.028em;font-weight:500}
+h3{font-size:13px;line-height:1.18;font-weight:500}
+p{font-size:13px;line-height:1.55;color:var(--qad-muted)}
+small{font-size:11px;color:var(--qad-muted)}
+.source-page{position:relative;z-index:1;max-width:1180px;margin:0 auto;display:grid;gap:22px}
+.source-header,
+.source-panel{
+  border-radius:var(--qad-radius);
+  background:var(--qad-glass);
+  border:1px solid rgba(255,255,255,.88);
+  box-shadow:var(--qad-shadow-soft);
+  backdrop-filter:blur(20px) saturate(145%);
+  -webkit-backdrop-filter:blur(20px) saturate(145%);
+}
+.source-header{padding:24px;display:flex;align-items:flex-start;justify-content:space-between;gap:20px}
+.kicker{display:inline-flex;align-items:center;gap:8px;height:24px;margin-bottom:12px;padding:0 9px;border-radius:var(--qad-radius);border:1px solid rgba(248,36,8,.16);background:rgba(248,36,8,.065);color:var(--qad-red);font-size:10px;font-weight:500;letter-spacing:.14em;text-transform:uppercase}
+.kicker:before{content:"";width:5px;height:5px;border-radius:50%;background:var(--qad-red);box-shadow:0 0 12px rgba(248,36,8,.48)}
+.source-header p{max-width:700px;margin-top:10px}
+.source-index{display:grid;gap:6px;min-width:252px;padding:12px;border-radius:var(--qad-radius);background:rgba(255,255,255,.60);border:1px solid var(--qad-line)}
+.source-index div{display:flex;justify-content:space-between;gap:18px;font-size:11px;color:var(--qad-muted)}
+.source-index strong{font-weight:500;color:var(--qad-ink)}
+.source-panel{padding:22px;overflow:hidden}
+.panel-head{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;margin-bottom:18px}
+.panel-head p{max-width:620px;margin-top:5px}
+.button-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.demo-cell{min-height:124px;padding:16px;border-radius:var(--qad-radius);background:rgba(255,255,255,.66);border:1px solid rgba(223,230,239,.78);display:flex;flex-direction:column;align-items:flex-start;justify-content:space-between;gap:14px;box-shadow:inset 0 1px 0 rgba(255,255,255,.82)}
+.demo-cell.dark{background:linear-gradient(145deg,rgba(13,16,20,.94),rgba(29,36,45,.90));border-color:rgba(255,255,255,.10);color:#fff;box-shadow:0 18px 46px rgba(15,20,26,.18),inset 0 1px 0 rgba(255,255,255,.10)}
+.demo-cell.dark small{color:rgba(255,255,255,.48)}
+.demo-cell.full{grid-column:span 3;min-height:142px}
+.demo-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.icon{width:16px;height:16px;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;fill:none}
+
+/* =========================
+   QAD BUTTON COMPONENT
+   ========================= */
+.qad-btn{
+  --btn-h:42px;
+  --btn-pad:18px;
+  position:relative;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  height:var(--btn-h);
+  min-width:0;
+  padding:0 var(--btn-pad);
+  border-radius:var(--qad-radius);
+  border:1px solid rgba(255,255,255,.20);
+  background:linear-gradient(180deg,#1b2028 0%,#080a0d 56%,#222831 100%);
+  color:#fff;
+  font-size:13px;
+  line-height:1;
+  font-weight:500;
+  letter-spacing:-.01em;
+  box-shadow:var(--qad-shadow-button);
+  overflow:hidden;
+  cursor:pointer;
+  user-select:none;
+  white-space:nowrap;
+  text-decoration:none;
+  transition:
+    transform var(--qad-fast) var(--qad-ease),
+    box-shadow var(--qad-fast) var(--qad-ease),
+    border-color var(--qad-fast) var(--qad-ease),
+    background var(--qad-fast) var(--qad-ease),
+    color var(--qad-fast) var(--qad-ease),
+    opacity var(--qad-fast) var(--qad-ease);
+}
+.qad-btn:hover{transform:translateY(-1px);box-shadow:var(--qad-shadow-button-hover)}
+.qad-btn:active,.qad-btn.is-active{transform:translateY(1px) scale(.995)}
+.qad-btn:focus-visible{outline:2px solid rgba(248,36,8,.28);outline-offset:2px}
+.qad-btn[disabled],.qad-btn.is-disabled{opacity:.46;cursor:not-allowed;pointer-events:none;filter:saturate(.72)}
+.qad-btn .btn-label{position:relative;z-index:2}
+.qad-btn .btn-icon{position:relative;z-index:2;width:16px;height:16px;display:grid;place-items:center;color:currentColor}
+.qad-btn .data-dash{
+  position:absolute;
+  left:-44px;
+  height:2px;
+  width:34px;
+  border-radius:var(--qad-radius);
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.94),rgba(210,219,232,.88),transparent);
+  opacity:0;
+  filter:drop-shadow(0 0 8px rgba(255,255,255,.58));
+  z-index:1;
+  pointer-events:none;
+}
+.qad-btn .data-dash.d1{top:12px;animation-delay:0ms}
+.qad-btn .data-dash.d2{top:19px;width:24px;animation-delay:70ms}
+.qad-btn .data-dash.d3{top:26px;width:42px;animation-delay:125ms}
+.qad-btn .data-dash.d4{top:33px;width:18px;animation-delay:190ms}
+.qad-btn:active .data-dash,
+.qad-btn.is-running .data-dash,
+.qad-btn.demo-run .data-dash{animation:qadDataDashSweep var(--qad-sweep) var(--qad-ease) 1}
+@keyframes qadDataDashSweep{
+  0%{transform:translateX(0);opacity:0}
+  12%{opacity:.96}
+  72%{opacity:.86}
+  100%{transform:translateX(260px);opacity:0}
+}
+.qad-btn--secondary{
+  background:rgba(255,255,255,.74);
+  color:#121820;
+  border-color:rgba(52,66,82,.16);
+  box-shadow:0 10px 24px rgba(46,57,68,.10), inset 0 1px 0 rgba(255,255,255,.86);
+}
+.qad-btn--secondary:hover{box-shadow:0 14px 30px rgba(46,57,68,.13), inset 0 1px 0 rgba(255,255,255,.90)}
+.qad-btn--ghost{
+  background:rgba(255,255,255,.30);
+  color:#17202b;
+  border-color:rgba(54,70,88,.13);
+  box-shadow:none;
+}
+.qad-btn--ghost:hover{background:rgba(255,255,255,.48);box-shadow:0 10px 24px rgba(46,57,68,.08)}
+.qad-btn--danger{
+  background:linear-gradient(180deg,#32161a 0%,#14090b 56%,#291014 100%);
+  border-color:rgba(248,36,8,.24);
+  box-shadow:0 12px 30px rgba(84,11,16,.22), inset 0 1px 0 rgba(255,255,255,.14);
+}
+.qad-btn--danger:hover{box-shadow:0 18px 40px rgba(84,11,16,.28),0 0 20px rgba(248,36,8,.13),inset 0 1px 0 rgba(255,255,255,.18)}
+.qad-btn--small{--btn-h:34px;--btn-pad:13px;font-size:12px;gap:8px}
+.qad-btn--large{--btn-h:48px;--btn-pad:22px;font-size:14px}
+.qad-btn--icon{--btn-h:38px;--btn-pad:0;width:38px;min-width:38px;gap:0}
+.qad-btn--full{width:100%}
+.qad-btn.is-loading{cursor:progress;color:rgba(255,255,255,.72)}
+.qad-btn.is-loading:before{
+  content:"";
+  width:13px;
+  height:13px;
+  border-radius:50%;
+  border:1.5px solid rgba(255,255,255,.32);
+  border-top-color:rgba(255,255,255,.92);
+  animation:qadBtnSpin .78s linear infinite;
+  position:relative;
+  z-index:2;
+}
+@keyframes qadBtnSpin{to{transform:rotate(360deg)}}
+.qad-btn--secondary.is-loading{color:rgba(18,24,32,.72)}
+.qad-btn--secondary.is-loading:before{border-color:rgba(18,24,32,.20);border-top-color:rgba(18,24,32,.72)}
+.qad-btn--dark-surface.qad-btn--secondary,
+.dark .qad-btn--secondary{
+  background:rgba(255,255,255,.92);
+  color:#121820;
+  border-color:rgba(255,255,255,.28);
+  box-shadow:0 12px 28px rgba(0,0,0,.24), inset 0 1px 0 rgba(255,255,255,.90);
+}
+.dark .qad-btn--ghost{background:rgba(255,255,255,.06);color:rgba(255,255,255,.82);border-color:rgba(255,255,255,.12);box-shadow:none}
+.state-strip{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-top:12px}
+.state-box{padding:12px;border-radius:var(--qad-radius);background:rgba(255,255,255,.58);border:1px solid rgba(223,230,239,.78);display:grid;gap:10px;align-content:start}
+.code-note{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:11px;color:#495565;background:rgba(255,255,255,.64);border:1px solid rgba(223,230,239,.78);border-radius:var(--qad-radius);padding:10px;overflow:auto}
+.merge-note{display:grid;gap:10px;padding:14px;border-radius:var(--qad-radius);background:rgba(17,20,24,.96);color:#fff;border:1px solid rgba(255,255,255,.10)}
+.merge-note p{color:rgba(255,255,255,.66)}
+.merge-list{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.merge-list div{padding:11px;border-radius:var(--qad-radius);background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.08);font-size:12px;color:rgba(255,255,255,.72)}
+.merge-list strong{display:block;font-weight:500;color:#fff;margin-bottom:4px}
+@media(max-width:880px){body{padding:20px}.source-header{display:grid}.button-grid{grid-template-columns:1fr}.demo-cell.full{grid-column:auto}.state-strip,.merge-list{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" aria-hidden="true" focusable="false" style="position:absolute;overflow:hidden">
+  <symbol id="i-filter" viewBox="0 0 24 24"><path d="M4 6h16"/><path d="M7 12h10"/><path d="M10 18h4"/></symbol>
+  <symbol id="i-run" viewBox="0 0 24 24"><path d="M7 4v16l12-8Z"/></symbol>
+  <symbol id="i-send" viewBox="0 0 24 24"><path d="m4 12 16-7-7 16-2-7-7-2Z"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol>
+  <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16"/><path d="M10 11v6M14 11v6"/><path d="M6 7l1 14h10l1-14"/><path d="M9 7V4h6v3"/></symbol>
+</svg>
+<main class="source-page">
+  <header class="source-header">
+    <div>
+      <div class="kicker">Source 03 / Buttons</div>
+      <h1>QAD button component system</h1>
+      <p>This file is intentionally limited to button styling, interaction states, and the horizontal silver data-dash animation. It is ready to be added as the third source file when the full design-system ZIP is updated.</p>
+    </div>
+    <aside class="source-index" aria-label="Design source index">
+      <div><strong>01</strong><span>Cards + background source</span></div>
+      <div><strong>02</strong><span>Header + nav + AI chat source</span></div>
+      <div><strong>03</strong><span>Button source / this file</span></div>
+      <div><strong>Radius</strong><span>4px normalized</span></div>
+      <div><strong>Font</strong><span>IBM Plex Sans</span></div>
+    </aside>
+  </header>
+
+  <section class="source-panel">
+    <div class="panel-head">
+      <div>
+        <h2>Primary button behavior</h2>
+        <p>Graphite gradient button with short silver data segments sweeping left to right on click or running state. Use for primary analysis actions.</p>
+      </div>
+      <small>No QAD logo inside buttons</small>
+    </div>
+    <div class="button-grid">
+      <div class="demo-cell">
+        <small>Default primary</small>
+        <button class="qad-btn" type="button"><span class="btn-label">Run analysis</span><span class="data-dash d1"></span><span class="data-dash d2"></span><span class="data-dash d3"></span><span class="data-dash d4"></span></button>
+      </div>
+      <div class="demo-cell">
+        <small>Demo running animation</small>
+        <button class="qad-btn demo-run" type="button"><span class="btn-icon"><svg class="icon"><use href="#i-run"/></svg></span><span class="btn-label">Run forecast</span><span class="data-dash d1"></span><span class="data-dash d2"></span><span class="data-dash d3"></span><span class="data-dash d4"></span></button>
+      </div>
+      <div class="demo-cell">
+        <small>Active / pressed</small>
+        <button class="qad-btn is-active" type="button"><span class="btn-label">Pressed state</span><span class="data-dash d1"></span><span class="data-dash d2"></span><span class="data-dash d3"></span><span class="data-dash d4"></span></button>
+      </div>
+      <div class="demo-cell">
+        <small>Secondary</small>
+        <button class="qad-btn qad-btn--secondary" type="button"><span class="btn-icon"><svg class="icon"><use href="#i-filter"/></svg></span><span class="btn-label">Filter</span></button>
+      </div>
+      <div class="demo-cell">
+        <small>Ghost</small>
+        <button class="qad-btn qad-btn--ghost" type="button"><span class="btn-label">Cancel</span></button>
+      </div>
+      <div class="demo-cell">
+        <small>Danger / destructive</small>
+        <button class="qad-btn qad-btn--danger" type="button"><span class="btn-icon"><svg class="icon"><use href="#i-trash"/></svg></span><span class="btn-label">Remove</span><span class="data-dash d1"></span><span class="data-dash d2"></span><span class="data-dash d3"></span><span class="data-dash d4"></span></button>
+      </div>
+      <div class="demo-cell full">
+        <small>Size + utility variants</small>
+        <div class="demo-row">
+          <button class="qad-btn qad-btn--small" type="button"><span class="btn-label">Small</span><span class="data-dash d1"></span><span class="data-dash d2"></span><span class="data-dash d3"></span><span class="data-dash d4"></span></button>
+          <button class="qad-btn" type="button"><span class="btn-label">Medium</span><span class="data-dash d1"></span><span class="data-dash d2"></span><span class="data-dash d3"></span><span class="data-dash d4"></span></button>
+          <button class="qad-btn qad-btn--large" type="button"><span class="btn-label">Large</span><span class="data-dash d1"></span><span class="data-dash d2"></span><span class="data-dash d3"></span><span class="data-dash d4"></span></button>
+          <button class="qad-btn qad-btn--icon" type="button" aria-label="Add"><span class="btn-icon"><svg class="icon"><use href="#i-plus"/></svg></span></button>
+          <button class="qad-btn qad-btn--secondary is-loading" type="button"><span class="btn-label">Loading</span></button>
+          <button class="qad-btn is-disabled" type="button"><span class="btn-label">Disabled</span></button>
+        </div>
+      </div>
+      <div class="demo-cell dark full">
+        <small>Dark AI-chat surface variants</small>
+        <div class="demo-row">
+          <button class="qad-btn qad-btn--secondary" type="button"><span class="btn-icon"><svg class="icon"><use href="#i-check"/></svg></span><span class="btn-label">Create action</span></button>
+          <button class="qad-btn qad-btn--ghost" type="button"><span class="btn-label">Show evidence</span></button>
+          <button class="qad-btn" type="button"><span class="btn-icon"><svg class="icon"><use href="#i-send"/></svg></span><span class="btn-label">Send</span><span class="data-dash d1"></span><span class="data-dash d2"></span><span class="data-dash d3"></span><span class="data-dash d4"></span></button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="source-panel">
+    <div class="panel-head">
+      <div>
+        <h2>Interaction state inventory</h2>
+        <p>These states should replace inconsistent button treatments across the final ZIP when the full package is updated.</p>
+      </div>
+    </div>
+    <div class="state-strip">
+      <div class="state-box"><h3>Default</h3><button class="qad-btn" type="button"><span class="btn-label">Default</span><span class="data-dash d1"></span><span class="data-dash d2"></span><span class="data-dash d3"></span><span class="data-dash d4"></span></button></div>
+      <div class="state-box"><h3>Hover</h3><button class="qad-btn" style="transform:translateY(-1px);box-shadow:var(--qad-shadow-button-hover)" type="button"><span class="btn-label">Hover</span></button></div>
+      <div class="state-box"><h3>Pressed</h3><button class="qad-btn is-active" type="button"><span class="btn-label">Pressed</span></button></div>
+      <div class="state-box"><h3>Loading</h3><button class="qad-btn is-loading" type="button"><span class="btn-label">Loading</span></button></div>
+      <div class="state-box"><h3>Disabled</h3><button class="qad-btn is-disabled" type="button"><span class="btn-label">Disabled</span></button></div>
+    </div>
+  </section>
+
+  <section class="merge-note">
+    <h2>Merge guidance for final QAD package</h2>
+    <p>When the ZIP is uploaded, this file should be added beside the prepared card/background source and header/nav/AI-chat source. Then the global CSS/tokens/MD guidance should point to these three files as the styling truth.</p>
+    <div class="merge-list">
+      <div><strong>Keep</strong>Black-to-graphite primary button, silver dash click motion, secondary/ghost/danger/loading states.</div>
+      <div><strong>Normalize</strong>Use IBM Plex Sans, 4px radius, 400/500 weights, and controlled QAD red/orange accents.</div>
+      <div><strong>Replace</strong>Any older button style with large radius, logo-in-button usage, excessive red fill, or mismatched animation.</div>
+    </div>
+    <div class="code-note">CSS entry point: .qad-btn, .qad-btn--secondary, .qad-btn--ghost, .qad-btn--danger, .qad-btn--small, .qad-btn--large, .qad-btn--icon, .is-loading, .is-disabled, .is-running / .demo-run.</div>
+  </section>
+</main>
+</body>
+</html>

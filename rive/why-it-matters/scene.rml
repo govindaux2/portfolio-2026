@@ -1,0 +1,29 @@
+<Rive version="1" kind="fragment">
+    <ScriptAsset file="track.luau" name="track" id="0:80" codeFileId="0:88"/>
+
+    <Artboard defaultStateMachineId="0:7" styleId="0:5" width="800" height="450" name="Why it matters" id="0:2">
+        <LayoutComponentStyle name="Artboard Style" id="0:5"/>
+
+        <Fill name="Background" id="0:81">
+            <SolidColor colorValue="FF1C1916" name="Color" id="0:82"/>
+        </Fill>
+
+        <LayoutComponent width="800" height="450" styleId="0:11" name="Root" id="0:10">
+            <LayoutComponentStyle layoutWidthScaleType="fill" layoutHeightScaleType="fill" widthUnitsValue="auto" heightUnitsValue="auto" name="Root Style" id="0:11"/>
+            <ScriptedLayout scriptAssetId="0:80" name="Track" id="0:12"/>
+        </LayoutComponent>
+
+        <StateMachine name="State Machine 1" id="0:7">
+            <StateMachineLayer name="Layer 1" id="0:8">
+                <AnyState x="0" y="-120" id="0:83"/>
+                <ExitState x="120" y="-120" id="0:84"/>
+                <EntryState id="0:85">
+                    <StateTransition stateToId="0:13" id="0:86"/>
+                </EntryState>
+                <AnimationState animationId="0:6" id="0:13"/>
+            </StateMachineLayer>
+        </StateMachine>
+
+        <LinearAnimation loopValue="loop" duration="60" name="Tick" id="0:6"/>
+    </Artboard>
+</Rive>

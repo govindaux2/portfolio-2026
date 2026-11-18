@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>MIP explore · rail</title>
+<link rel="stylesheet" href="../surface.css"/>
+<style>
+:root{
+  --font:"IBM Plex Sans", Inter, ui-sans-serif, system-ui, sans-serif;
+  --red:#0158DB;
+  --orange:#6B9CFF;
+  --ease:cubic-bezier(.18,.82,.2,1);
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;overflow:hidden;font-family:var(--font);background:#07090c;color:#f3f5f7}
+body{padding:0}
+.icon{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.55;stroke-linecap:round;stroke-linejoin:round;flex:0 0 22px}
+.explore-rail{
+  --rail-w:72px;
+  height:100%;
+  min-height:280px;
+  display:flex;
+  background:#07090c;
+}
+.nav-shell{
+  width:var(--rail-w);
+  height:100%;
+  display:flex;
+  flex-direction:column;
+  align-items:stretch;
+  padding:12px 8px 10px;
+  background:linear-gradient(180deg, rgba(30,37,47,.96), rgba(9,14,21,.98));
+  border-right:1px solid rgba(255,255,255,.12);
+  overflow:hidden;
+}
+.explore-rail.is-open{--rail-w:196px}
+.nav-logo{height:48px;display:grid;place-items:center;margin-bottom:6px}
+.nav-logo svg{width:18px;height:30px}
+.nav-items{
+  position:relative;flex:1;display:flex;flex-direction:column;
+  align-items:center;gap:7px;min-height:0;
+}
+.explore-rail.is-open .nav-items{align-items:stretch}
+.active-lens{
+  position:absolute;left:50%;top:0;width:54px;height:50px;border-radius:4px;
+  background:rgba(255,255,255,.06);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.1);
+  transform:translate(-50%,0);
+  transition:transform .52s cubic-bezier(.16,.86,.18,1);
+  pointer-events:none;overflow:hidden;
+}
+.active-lens::before{
+  content:"";position:absolute;left:0;top:8px;width:3px;height:34px;border-radius:4px;
+  background:linear-gradient(180deg,var(--red),var(--orange));
+}
+.explore-rail.is-open .active-lens{
+  left:0;width:100%;transform:translate(0, var(--lens-y, 0px));
+}
+.nav-item{
+  position:relative;z-index:1;width:54px;height:50px;
+  border:0;border-radius:4px;background:transparent;color:#afbac7;
+  display:flex;align-items:center;justify-content:center;gap:12px;
+  padding:0;cursor:pointer;font:500 12px/1 var(--font);white-space:nowrap;
+  transition:color .22s var(--ease), opacity .22s var(--ease);
+}
+.explore-rail.is-open .nav-item{width:100%;justify-content:flex-start;padding:0 12px 0 14px}
+.nav-item span{
+  max-width:0;opacity:0;overflow:hidden;
+  transition:opacity .22s ease;
+  color:inherit;
+}
+.explore-rail.is-open .nav-item span{max-width:120px;opacity:1}
+.nav-item:hover{color:#fff}
+.nav-item.active{color:#fff}
+.nav-foot{padding-top:8px}
+.rail-toggle{
+  appearance:none;width:100%;height:34px;
+  border:1px solid rgba(255,255,255,.16);border-radius:4px;
+  background:rgba(255,255,255,.07);color:#e8ecf1;
+  font:500 11px/1 var(--font);letter-spacing:.03em;cursor:pointer;
+}
+.rail-toggle:hover{background:rgba(255,255,255,.12)}
+</style>
+<script src="../surface-boot.js"></script>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute;overflow:hidden" aria-hidden="true">
+  <symbol id="qad-mark" viewBox="0 0 207 333"><path d="M12.1407 202.259C12.913 199.933 15.9415 195.859 17.5044 193.789L18.2726 194.197C16.6686 197.096 14.7447 199.764 12.8565 202.485C15.8755 208.178 24.0278 217.7 28.4593 222.991C58.4032 258.743 95.7154 281.906 138.774 298.734C154.723 304.967 174.269 309.879 189.057 317.674C190.619 318.498 192.303 320.35 191.906 322.374C191.563 324.128 188.71 326.26 187.126 326.945C162.6 337.554 116.008 331.57 91.8875 323.495C61.3867 313.283 21.8632 295.218 6.42545 265.898C-0.881116 252.021 -1.21599 237.458 3.3277 222.769C4.71705 218.278 12.2261 203.084 12.1407 202.259Z" fill="#0158DB"/><path d="M12.1408 202.259C-23.1856 149.45 25.0762 111.576 73.7508 99.2411C80.676 97.4863 86.1312 96.7458 93.1527 96.5994C107.001 96.3115 107.877 102.98 99.5967 112.399C81.3042 131.471 60.2123 147.681 41.7621 166.632C33.2542 175.371 25.7802 184.657 18.2726 194.197L17.5044 193.789C15.9416 195.859 12.913 199.933 12.1408 202.259Z" fill="#0158DB"/><path d="M44.9246 0H68.0119C78.4296 2.28861 89.0417 1.9796 100.128 4.90077C145.864 16.9518 221.631 49.1503 203.427 109.312C201.371 116.107 197.706 123.3 194.187 129.559L193.689 129.49C153.752 70.0051 93.6144 39.283 26.9627 19.1966C23.2979 18.0921 16.3382 15.0346 14.7188 11.4716C14.9622 2.3599 38.0802 1.30755 44.9246 0Z" fill="#EB7038"/><path d="M193.689 129.49L194.187 129.559C199.916 139.29 204.843 148.615 206.268 159.946C210.93 197.031 171.828 220.869 141.604 230.672C134.471 232.985 104.933 241.126 101.801 230.922C99.423 223.175 123.701 204.423 129.14 198.931C143.731 185.548 158.397 173.193 171.546 158.469C179.348 149.732 188.115 139.678 193.689 129.49Z" fill="#EB7038"/></symbol>
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="M4 11.2 12 4l8 7.2"/><path d="M6.5 10.5V20h11v-9.5"/><path d="M10 20v-5h4v5"/></symbol>
+  <symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 19h16"/><path d="M7 16V9"/><path d="M12 16V5"/><path d="M17 16v-4"/></symbol>
+  <symbol id="i-plant" viewBox="0 0 24 24"><path d="M4 20h16"/><path d="M6 20V9l5 3V9l7 4v7"/><path d="M8 15h2M13 15h2M17 15h1"/></symbol>
+  <symbol id="i-supply" viewBox="0 0 24 24"><path d="M4 8h10v8H4z"/><path d="M14 11h3l3 3v2h-6z"/><path d="M7 19a2 2 0 1 0 0-4 2 2 0 0 0 0 4ZM17 19a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z"/></symbol>
+  <symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 4 3 20h18L12 4z"/><path d="M12 9v5M12 17h.01"/></symbol>
+  <symbol id="i-settings" viewBox="0 0 24 24"><path d="M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8Z"/><path d="M4 12h2M18 12h2M12 4v2M12 18v2M6.5 6.5 8 8M16 16l1.5 1.5M17.5 6.5 16 8M8 16l-1.5 1.5"/></symbol>
+</svg>
+<div class="explore-rail" id="rail">
+  <aside class="nav-shell" aria-label="Signal rail">
+    <div class="nav-logo" aria-hidden="true"><svg viewBox="0 0 207 333"><use href="#qad-mark"/></svg></div>
+    <nav class="nav-items" id="navItems">
+      <div class="active-lens" id="activeLens"></div>
+      <button class="nav-item active" type="button" data-label="Command"><svg class="icon"><use href="#i-home"/></svg><span>Command</span></button>
+      <button class="nav-item" type="button" data-label="Performance"><svg class="icon"><use href="#i-chart"/></svg><span>Performance</span></button>
+      <button class="nav-item" type="button" data-label="Operations"><svg class="icon"><use href="#i-plant"/></svg><span>Operations</span></button>
+      <button class="nav-item" type="button" data-label="Supply"><svg class="icon"><use href="#i-supply"/></svg><span>Supply</span></button>
+      <button class="nav-item" type="button" data-label="Alerts"><svg class="icon"><use href="#i-alert"/></svg><span>Alerts</span></button>
+      <button class="nav-item" type="button" data-label="Settings"><svg class="icon"><use href="#i-settings"/></svg><span>Settings</span></button>
+    </nav>
+    <div class="nav-foot">
+      <button class="rail-toggle" type="button" id="railToggle" aria-expanded="false">Expand →</button>
+    </div>
+  </aside>
+</div>
+<script>
+(function(){
+  var rail = document.getElementById('rail');
+  var items = document.getElementById('navItems');
+  var lens = document.getElementById('activeLens');
+  var toggle = document.getElementById('railToggle');
+  if(!rail || !items || !lens || !toggle) return;
+  function place(btn){
+    if(!btn) return;
+    var y = Math.round(btn.getBoundingClientRect().top - items.getBoundingClientRect().top);
+    lens.style.setProperty('--lens-y', y + 'px');
+    if(rail.classList.contains('is-open')){
+      lens.style.transform = 'translate(0, ' + y + 'px)';
+    } else {
+      lens.style.transform = 'translate(-50%, ' + y + 'px)';
+    }
+  }
+  items.querySelectorAll('.nav-item').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      items.querySelectorAll('.nav-item').forEach(function(b){ b.classList.remove('active'); });
+      btn.classList.add('active');
+      place(btn);
+    });
+  });
+  toggle.addEventListener('click', function(){
+    var open = !rail.classList.contains('is-open');
+    rail.classList.toggle('is-open', open);
+    toggle.textContent = open ? '← Collapse' : 'Expand →';
+    toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    var on = items.querySelector('.nav-item.active');
+    requestAnimationFrame(function(){ place(on); });
+  });
+  place(items.querySelector('.nav-item.active'));
+  window.addEventListener('resize', function(){ place(items.querySelector('.nav-item.active')); });
+})();
+</script>
+</body>
+</html>

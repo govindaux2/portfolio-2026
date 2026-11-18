@@ -1,0 +1,378 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>QAD · Seat plant playbook</title>
+  <link rel="stylesheet" href="playbook.css" />
+  <script>
+    if (new URLSearchParams(location.search).get('embed') === '1') {
+      document.documentElement.dataset.embed = '1';
+    }
+  </script>
+</head>
+<body>
+  <a class="skip" href="#plant">Skip to plant map</a>
+  <div class="wrap">
+    <header class="top">
+      <a href="/work/manufacturing">← Manufacturing overview</a>
+      <span>Seat plant playbook · preview</span>
+    </header>
+
+    <section class="hero">
+      <p class="kicker">Plant floor · Tier-1 seat plant</p>
+      <h1>A seat plant, mapped for supply delay.</h1>
+      <p class="lede">Hover a bay for what happens, who is involved, investment, and margin erosion. One flow: suppliers → plant → customers.</p>
+      <p class="note">Scale reference: Tier-1 class of <strong>Reyes Automotive Group</strong> (Champions of Manufacturing, Chicago 2026). Dollars are <strong>illustrative estimates</strong>, not reported metrics.</p>
+      <div class="artifact-row">
+        <a class="artifact" href="/work/manufacturing">
+          <span>
+            <span class="mark">Portfolio</span>
+            <strong>Manufacturing overview</strong>
+            <p>Back to the work page in the portfolio shell.</p>
+          </span>
+          <span class="go">Open overview</span>
+        </a>
+        <a class="artifact" href="../qad-manufacturing.html">
+          <span>
+            <span class="mark">Case study</span>
+            <strong>Manufacturing Intelligence</strong>
+            <p>The written case this plant map belongs to.</p>
+          </span>
+          <span class="go">Open case study</span>
+        </a>
+      </div>
+    </section>
+
+    <section>
+      <h2>One flow. Top to bottom.</h2>
+      <p class="copy">This map shows <strong>one single flow</strong> — suppliers in, through the seat plant, out to customers. Hover a bay for people, investment, and margin erosion. Click a plant bay for the department page.</p>
+      <div class="seg-legend" aria-label="Legend">
+        <span class="path-in"><i></i> Suppliers in</span>
+        <span class="path-make"><i></i> Make line</span>
+        <span class="path-out"><i></i> Customers out</span>
+        <span class="stp"><i></i> Source to pay</span>
+        <span class="ptp"><i></i> Plan to produce</span>
+        <span class="otc"><i></i> Order to cash</span>
+      </div>
+
+      <div class="plant-stage is-islands" id="plant">
+        <div class="flow-callout" role="note">
+          <span class="flow-callout-kicker">Single scenario</span>
+          <strong>Suppliers → plant → customers</strong>
+          <p>One critical path for supply delay. Other routes exist; this is the flow we map.</p>
+        </div>
+
+        <div class="island-stack" data-plant-map>
+
+        <figure class="island island-in" data-band="in">
+          <figcaption class="island-cap"><span class="band-kicker path-in">Suppliers in</span><strong>Supply 1 · 2 · 3</strong></figcaption>
+          <div class="island-frame">
+            <img src="islands/island-suppliers.jpg" width="1280" height="720" alt="Three supplier stores: steel frames, foam chem, and cover fabric." />
+            <div class="island-hots">
+          <button type="button" class="hot" data-seg="stp" data-zone="supply-1" style="--l:10%;--t:28%;--w:26%;--h:48%" aria-label="Supply 1 · Frame steel.">
+            <span class="hot-pad" aria-hidden="true"></span>
+            <span class="hot-dialog">
+              <strong>Supply 1 · Frame steel</strong>
+              <em>Source to pay</em>
+              <span class="hot-desc">Ships stamped frames and brackets into receiving.</span>
+              <span class="hot-meta">
+                <span><i>People</i><ul><li>Buyer</li><li>Commodity manager</li></ul></span>
+                <span><i>Investment · est.</i><b class="inv">—</b></span>
+                <span><i>Margin erosion · est.</i><b class="ero">—</b></span>
+              </span>
+            </span>
+          </button>
+          <button type="button" class="hot" data-seg="stp" data-zone="supply-2" style="--l:38%;--t:28%;--w:24%;--h:48%" aria-label="Supply 2 · Foam chem.">
+            <span class="hot-pad" aria-hidden="true"></span>
+            <span class="hot-dialog">
+              <strong>Supply 2 · Foam chem</strong>
+              <em>Source to pay</em>
+              <span class="hot-desc">Ships foam chemicals and pad blanks for pour &amp; cure.</span>
+              <span class="hot-meta">
+                <span><i>People</i><ul><li>Buyer</li><li>Foam process engineer</li></ul></span>
+                <span><i>Investment · est.</i><b class="inv">—</b></span>
+                <span><i>Margin erosion · est.</i><b class="ero">—</b></span>
+              </span>
+            </span>
+          </button>
+          <button type="button" class="hot" data-seg="stp" data-zone="supply-3" style="--l:64%;--t:28%;--w:26%;--h:48%" aria-label="Supply 3 · Cover fabric.">
+            <span class="hot-pad" aria-hidden="true"></span>
+            <span class="hot-dialog">
+              <strong>Supply 3 · Cover fabric</strong>
+              <em>Source to pay</em>
+              <span class="hot-desc">Ships leather and fabric rolls for cut &amp; sew.</span>
+              <span class="hot-meta">
+                <span><i>People</i><ul><li>Buyer</li><li>Cutting room lead</li></ul></span>
+                <span><i>Investment · est.</i><b class="inv">—</b></span>
+                <span><i>Margin erosion · est.</i><b class="ero">—</b></span>
+              </span>
+            </span>
+          </button>
+            </div>
+          </div>
+          <p class="island-note">What they supply: frames · foam chem · cover fabric</p>
+        </figure>
+        <div class="flow-spine" aria-hidden="true"><span></span></div>
+
+        <figure class="island" data-band="plant">
+          <figcaption class="island-cap"><span class="band-kicker path-make">Make line</span><strong>Receiving</strong></figcaption>
+          <div class="island-frame">
+            <img src="islands/island-receiving.jpg" width="1280" height="720" alt="Receiving dock with inbound truck and staged crates." />
+            <div class="island-hots">
+          <a class="hot" data-seg="stp" data-zone="receiving" href="receiving.html" style="--l:14%;--t:18%;--w:72%;--h:64%" aria-label="Receiving / warehouse. Margin erosion $380K/mo · est..">
+            <span class="hot-pad" aria-hidden="true"></span>
+            <span class="hot-dialog">
+              <strong>Receiving / warehouse</strong>
+              <em>Source to pay</em>
+              <span class="hot-desc">Dock, ASN, put-away — parts enter the plant and stage for kitting.</span>
+              <span class="hot-meta">
+                <span><i>People</i><ul><li>Warehouse lead</li><li>Logistics coordinator</li></ul></span>
+                <span><i>Investment · est.</i><b class="inv">$2.4M plant · est.</b></span>
+                <span><i>Margin erosion · est.</i><b class="ero">$380K/mo · est.</b></span>
+              </span>
+            </span>
+          </a>
+            </div>
+          </div>
+        </figure>
+        <div class="flow-spine" aria-hidden="true"><span></span></div>
+
+        <figure class="island" data-band="plant">
+          <figcaption class="island-cap"><span class="band-kicker path-make">Make line</span><strong>Purchasing · Planning</strong></figcaption>
+          <div class="island-frame">
+            <img src="islands/island-offices.jpg" width="1280" height="720" alt="Glass office for purchasing and planning beside staging." />
+            <div class="island-hots">
+          <a class="hot is-risk" data-seg="stp" data-zone="purchasing" href="purchasing.html" style="--l:8%;--t:16%;--w:40%;--h:68%" aria-label="Purchasing. Margin erosion $1.2M/mo · est..">
+            <span class="hot-pad" aria-hidden="true"></span>
+            <span class="hot-dialog">
+              <strong>Purchasing</strong>
+              <em>Source to pay</em>
+              <span class="hot-desc">POs, supplier releases, expedites, and alternate-source calls.</span>
+              <span class="hot-meta">
+                <span><i>People</i><ul><li>Buyer</li><li>Commodity manager</li></ul></span>
+                <span><i>Investment · est.</i><b class="inv">$1.1M ops · est.</b></span>
+                <span><i>Margin erosion · est.</i><b class="ero">$1.2M/mo · est.</b></span>
+              </span>
+            </span>
+          </a>
+          <a class="hot" data-seg="ptp" data-zone="planning" href="planning.html" style="--l:52%;--t:16%;--w:40%;--h:68%" aria-label="Planning. Margin erosion $1.1M/mo · est..">
+            <span class="hot-pad" aria-hidden="true"></span>
+            <span class="hot-dialog">
+              <strong>Planning</strong>
+              <em>Plan to produce</em>
+              <span class="hot-desc">Work orders, frozen-zone schedule, substitution calls when parts slip.</span>
+              <span class="hot-meta">
+                <span><i>People</i><ul><li>Production planner</li><li>Scheduler</li></ul></span>
+                <span><i>Investment · est.</i><b class="inv">$900K ops · est.</b></span>
+                <span><i>Margin erosion · est.</i><b class="ero">$1.1M/mo · est.</b></span>
+              </span>
+            </span>
+          </a>
+            </div>
+          </div>
+        </figure>
+        <div class="flow-spine" aria-hidden="true"><span></span></div>
+
+        <figure class="island" data-band="plant">
+          <figcaption class="island-cap"><span class="band-kicker path-make">Make line</span><strong>Metal · Foam · Cut &amp; sew</strong></figcaption>
+          <div class="island-frame">
+            <img src="islands/island-fabricate.jpg" width="1280" height="720" alt="Metal press, foam station, and cut-and-sew table with open spacing." />
+            <div class="island-hots">
+          <a class="hot" data-seg="ptp" data-zone="metal" href="metal.html" style="--l:6%;--t:18%;--w:28%;--h:66%" aria-label="Metal. Margin erosion $560K/mo · est..">
+            <span class="hot-pad" aria-hidden="true"></span>
+            <span class="hot-dialog">
+              <strong>Metal</strong>
+              <em>Plan to produce</em>
+              <span class="hot-desc">Frames, stampings, weld cells for the seat structure.</span>
+              <span class="hot-meta">
+                <span><i>People</i><ul><li>Press supervisor</li><li>Weld tech lead</li></ul></span>
+                <span><i>Investment · est.</i><b class="inv">$4.8M cells · est.</b></span>
+                <span><i>Margin erosion · est.</i><b class="ero">$560K/mo · est.</b></span>
+              </span>
+            </span>
+          </a>
+          <a class="hot" data-seg="ptp" data-zone="foam" href="foam.html" style="--l:36%;--t:18%;--w:28%;--h:66%" aria-label="Foam. Margin erosion $760K/mo · est..">
+            <span class="hot-pad" aria-hidden="true"></span>
+            <span class="hot-dialog">
+              <strong>Foam</strong>
+              <em>Plan to produce</em>
+              <span class="hot-desc">Pour, cure, and trim pads for cushions and backs.</span>
+              <span class="hot-meta">
+                <span><i>People</i><ul><li>Foam process engineer</li><li>Mold tech</li></ul></span>
+                <span><i>Investment · est.</i><b class="inv">$3.2M molds · est.</b></span>
+                <span><i>Margin erosion · est.</i><b class="ero">$760K/mo · est.</b></span>
+              </span>
+            </span>
+          </a>
+          <a class="hot" data-seg="ptp" data-zone="cut-sew" href="cut-sew.html" style="--l:66%;--t:18%;--w:28%;--h:66%" aria-label="Cut &amp; sew. Margin erosion $640K/mo · est..">
+            <span class="hot-pad" aria-hidden="true"></span>
+            <span class="hot-dialog">
+              <strong>Cut &amp; sew</strong>
+              <em>Plan to produce</em>
+              <span class="hot-desc">Covers cut, sewn, and sequenced to the make line.</span>
+              <span class="hot-meta">
+                <span><i>People</i><ul><li>Cutting room lead</li><li>Sewing line lead</li></ul></span>
+                <span><i>Investment · est.</i><b class="inv">$2.1M room · est.</b></span>
+                <span><i>Margin erosion · est.</i><b class="ero">$640K/mo · est.</b></span>
+              </span>
+            </span>
+          </a>
+            </div>
+          </div>
+        </figure>
+        <div class="flow-spine" aria-hidden="true"><span></span></div>
+
+        <figure class="island" data-band="plant">
+          <figcaption class="island-cap"><span class="band-kicker path-make">Make line</span><strong>Final assembly · Quality</strong></figcaption>
+          <div class="island-frame">
+            <img src="islands/island-assembly.jpg" width="1280" height="720" alt="Oval assembly line with purple seats and a quality carousel." />
+            <div class="island-hots">
+          <a class="hot is-risk" data-seg="ptp" data-zone="assembly" href="assembly.html" style="--l:10%;--t:14%;--w:58%;--h:72%" aria-label="Final assembly. Margin erosion $1.9M/mo · est..">
+            <span class="hot-pad" aria-hidden="true"></span>
+            <span class="hot-dialog">
+              <strong>Final assembly</strong>
+              <em>Plan to produce</em>
+              <span class="hot-desc">Build complete seats on the make line — highest idle cost on delay.</span>
+              <span class="hot-meta">
+                <span><i>People</i><ul><li>Assembly supervisor</li><li>Team lead</li></ul></span>
+                <span><i>Investment · est.</i><b class="inv">$6.5M line · est.</b></span>
+                <span><i>Margin erosion · est.</i><b class="ero">$1.9M/mo · est.</b></span>
+              </span>
+            </span>
+          </a>
+          <a class="hot" data-seg="ptp" data-zone="quality" href="quality.html" style="--l:70%;--t:18%;--w:24%;--h:64%" aria-label="Quality. Margin erosion $300K/mo · est..">
+            <span class="hot-pad" aria-hidden="true"></span>
+            <span class="hot-dialog">
+              <strong>Quality</strong>
+              <em>Plan to produce</em>
+              <span class="hot-desc">Inspect, contain, release — evidence before the seat ships.</span>
+              <span class="hot-meta">
+                <span><i>People</i><ul><li>Quality engineer</li><li>Incoming inspector</li></ul></span>
+                <span><i>Investment · est.</i><b class="inv">$1.4M lab · est.</b></span>
+                <span><i>Margin erosion · est.</i><b class="ero">$300K/mo · est.</b></span>
+              </span>
+            </span>
+          </a>
+            </div>
+          </div>
+        </figure>
+        <div class="flow-spine" aria-hidden="true"><span></span></div>
+
+        <figure class="island island-out" data-band="out">
+          <figcaption class="island-cap"><span class="band-kicker path-out">Customers out</span><strong>Shipping · OEM · Service</strong></figcaption>
+          <div class="island-frame">
+            <img src="islands/island-customers.jpg" width="1280" height="720" alt="Shipping dock loading finished seats to OEM plants and a service shop." />
+            <div class="island-hots">
+          <a class="hot is-risk" data-seg="otc" data-zone="shipping" href="shipping.html" style="--l:6%;--t:16%;--w:42%;--h:68%" aria-label="Shipping / JIS. Margin erosion $1.5M/mo · est..">
+            <span class="hot-pad" aria-hidden="true"></span>
+            <span class="hot-dialog">
+              <strong>Shipping / JIS</strong>
+              <em>Order to cash</em>
+              <span class="hot-desc">Sequence racks, ASN, dock windows — keep the customer promise.</span>
+              <span class="hot-meta">
+                <span><i>People</i><ul><li>Shipping lead</li><li>Customer service</li></ul></span>
+                <span><i>Investment · est.</i><b class="inv">$2.8M dock · est.</b></span>
+                <span><i>Margin erosion · est.</i><b class="ero">$1.5M/mo · est.</b></span>
+              </span>
+            </span>
+          </a>
+          <button type="button" class="hot" data-seg="otc" data-zone="oem-a" style="--l:50%;--t:18%;--w:22%;--h:58%" aria-label="OEM North.">
+            <span class="hot-pad" aria-hidden="true"></span>
+            <span class="hot-dialog">
+              <strong>OEM North</strong>
+              <em>Order to cash</em>
+              <span class="hot-desc">Assembly plant takes sequenced seat sets — ~24 seats / truck · est.</span>
+              <span class="hot-meta">
+                <span><i>People</i><ul><li>Customer service</li><li>Plant liaison</li></ul></span>
+                <span><i>Investment · est.</i><b class="inv">—</b></span>
+                <span><i>Margin erosion · est.</i><b class="ero">—</b></span>
+              </span>
+            </span>
+          </button>
+          <button type="button" class="hot" data-seg="otc" data-zone="oem-b" style="--l:74%;--t:18%;--w:20%;--h:58%" aria-label="OEM South · Service.">
+            <span class="hot-pad" aria-hidden="true"></span>
+            <span class="hot-dialog">
+              <strong>OEM South · Service</strong>
+              <em>Order to cash</em>
+              <span class="hot-desc">Second plant plus service parts — finished purple seats leave the dock.</span>
+              <span class="hot-meta">
+                <span><i>People</i><ul><li>Customer service</li></ul></span>
+                <span><i>Investment · est.</i><b class="inv">—</b></span>
+                <span><i>Margin erosion · est.</i><b class="ero">—</b></span>
+              </span>
+            </span>
+          </button>
+            </div>
+          </div>
+          <p class="island-note">What leaves: finished seat sets · ~24 / truck · est. · OEM + service</p>
+        </figure>
+        </div>
+      </div>
+      <p class="plant-hint">Order on this flow: suppliers → receiving → purchasing → planning → metal → foam → cut &amp; sew → assembly → quality → shipping → customers.</p>
+    </section>
+
+    <section>
+      <h2>Margin exposure, ranked.</h2>
+      <p class="copy">Illustrative monthly loss when a supply delay hits the critical path.</p>
+      <div class="rank-board">
+        <article>
+          <span class="tag stp">Source to pay</span>
+          <strong>$1.6M<span style="font-size:16px;color:var(--muted)"> /mo est.</span></strong>
+          <p>Suppliers, POs, dock, and cash to the vendor.</p>
+          <ol>
+            <li><a href="purchasing.html">Purchasing</a><span class="amt">$1.2M/mo</span></li>
+            <li><a href="receiving.html">Receiving</a><span class="amt">$380K/mo</span></li>
+          </ol>
+        </article>
+        <article>
+          <span class="tag ptp">Plan to produce</span>
+          <strong>$5.2M<span style="font-size:16px;color:var(--muted)"> /mo est.</span></strong>
+          <p>Schedule, make, inspect — where idle time burns cash.</p>
+          <ol>
+            <li><a href="assembly.html">Final assembly</a><span class="amt">$1.9M/mo</span></li>
+            <li><a href="planning.html">Planning</a><span class="amt">$1.1M/mo</span></li>
+            <li><a href="foam.html">Foam</a><span class="amt">$760K/mo</span></li>
+            <li><a href="cut-sew.html">Cut & sew</a><span class="amt">$640K/mo</span></li>
+            <li><a href="metal.html">Metal</a><span class="amt">$560K/mo</span></li>
+            <li><a href="quality.html">Quality</a><span class="amt">$300K/mo</span></li>
+          </ol>
+        </article>
+        <article>
+          <span class="tag otc">Order to cash</span>
+          <strong>$1.5M<span style="font-size:16px;color:var(--muted)"> /mo est.</span></strong>
+          <p>Sequence, ship, and keep the customer promise.</p>
+          <ol>
+            <li><a href="shipping.html">Shipping / JIS</a><span class="amt">$1.5M/mo</span></li>
+          </ol>
+        </article>
+      </div>
+    </section>
+
+    <section>
+      <h2>All departments.</h2>
+      <nav class="dept-nav" aria-label="Departments">
+        <a href="receiving.html" data-seg="stp"><i class="pip" aria-hidden="true"></i>Receiving / warehouse</a>
+        <a href="purchasing.html" data-seg="stp"><i class="pip" aria-hidden="true"></i>Purchasing</a>
+        <a href="planning.html" data-seg="ptp"><i class="pip" aria-hidden="true"></i>Planning</a>
+        <a href="metal.html" data-seg="ptp"><i class="pip" aria-hidden="true"></i>Metal</a>
+        <a href="foam.html" data-seg="ptp"><i class="pip" aria-hidden="true"></i>Foam</a>
+        <a href="cut-sew.html" data-seg="ptp"><i class="pip" aria-hidden="true"></i>Cut & sew</a>
+        <a href="assembly.html" data-seg="ptp"><i class="pip" aria-hidden="true"></i>Final assembly</a>
+        <a href="quality.html" data-seg="ptp"><i class="pip" aria-hidden="true"></i>Quality</a>
+        <a href="shipping.html" data-seg="otc"><i class="pip" aria-hidden="true"></i>Shipping / JIS</a>
+      </nav>
+    </section>
+
+    <section style="padding-bottom:96px">
+      <h2>How to read this playbook.</h2>
+      <div class="rail">
+        <article><h3>Function first</h3><p>Each page starts with what the bay does and what it ships next.</p></article>
+        <article><h3>People, then dollars</h3><p>Personas carry the friction. Estimates show why it is expensive.</p></article>
+        <article><h3>One use case</h3><p>Every page ties back to supply delay.</p></article>
+      </div>
+    </section>
+  </div>
+  <script src="plant-map.js" defer></script>
+</body>
+</html>

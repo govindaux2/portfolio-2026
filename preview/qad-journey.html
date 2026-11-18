@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Supply delay · flow</title>
+  <style>
+    @font-face { font-family: "DM Sans"; font-weight: 400 700; font-display: swap; src: url("../public/fonts/dm-sans-latin.woff2") format("woff2"); }
+    @font-face { font-family: "Rethink Sans"; font-weight: 400 700; font-display: swap; src: url("../public/fonts/rethink-sans-latin.woff2") format("woff2"); }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; height: 100%; background: #ffffff; color: #1a1a1a; font: 15px/1.4 "DM Sans", system-ui, sans-serif; overflow: hidden; }
+    .bar { position: fixed; z-index: 2; left: 20px; top: 16px; display: flex; gap: 16px; align-items: baseline; }
+    .bar a { color: #1a1a1a; }
+    .bar h1 { margin: 0; font: 560 22px/1.1 "Rethink Sans", system-ui, sans-serif; letter-spacing: -0.03em; }
+    .hint { position: fixed; z-index: 2; right: 20px; top: 18px; color: #1a1a1a; font-size: 13px; }
+    #viewport { width: 100%; height: 100%; cursor: grab; }
+    #viewport.is-drag { cursor: grabbing; }
+    #world { position: absolute; left: 0; top: 0; width: 2400px; height: 1500px; transform-origin: 0 0; }
+    svg.wires { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+    .node { position: absolute; width: 240px; padding: 16px 16px 14px; border-radius: 18px; background: #f3f3f3; }
+    .node h2 { margin: 0 0 6px; font: 560 16px/1.2 "Rethink Sans", system-ui, sans-serif; }
+    .node p { margin: 0; }
+    .node.decision { background: #111111; color: #ffffff; border-radius: 18px; }
+    .node.happy { background: #e5f2d8; }
+    .node.other { background: #f8efc4; }
+    .node.entry { width: 200px; background: #ffffff; outline: 1px solid #d5d5d5; }
+    .node.callout { width: 220px; background: #ffffff; outline: 1px dashed #111111; }
+    .kicker { display: block; margin-bottom: 6px; font-size: 11px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; }
+    .kw { border-bottom: 1px dotted #1a1a1a; cursor: help; position: relative; }
+    .decision .kw { border-bottom-color: #ffffff; }
+    .kw:hover::after, .kw:focus::after {
+      content: attr(data-tip);
+      position: absolute; left: 0; top: calc(100% + 6px); z-index: 3;
+      width: 220px; padding: 8px 10px; border-radius: 8px;
+      background: #111111; color: #ffffff; font-size: 12px; font-weight: 400; letter-spacing: 0; text-transform: none; line-height: 1.35;
+    }
+  </style>
+</head>
+<body>
+  <div class="bar">
+    <a href="qad-manufacturing.html">Back</a>
+    <h1>Supply delay, as the prototype runs it</h1>
+  </div>
+  <p class="hint">Drag to move. Scroll to zoom. Hover a dotted word.</p>
+  <div id="viewport"><div id="world"></div></div>
+  <script>
+    const tips = {
+      PO: "Purchase order. The promise a supplier made to deliver parts.",
+      WO: "Work order. The job on the line that needs those parts.",
+      SO: "Sales order. The customer order that the work is building.",
+      OTIF: "On time, in full. Whether the customer got the whole order on the promised date.",
+      "safety stock": "A buffer of parts kept aside. This case has none, so the delay cannot be absorbed.",
+      "force majeure": "The supplier’s notice that they cannot deliver as promised. Here, Meridian pushes the date out 12 days.",
+      expedite: "Pay to bring part of the late order in faster, in this demo by air.",
+      "frozen horizon": "The part of the schedule that is locked. Orders outside it can still be moved.",
+      "blended mitigation": "Cover the shortfall from three places: 10% finished goods, 30% expedite, 60% another supplier."
+    };
+    function tipText(text) {
+      return text.replace(/PO|WO|SO|OTIF|safety stock|force majeure|expedite|frozen horizon|blended mitigation/g, (word) =>
+        '<span class="kw" tabindex="0" data-tip="' + tips[word] + '">' + word + "</span>");
+    }
+    const nodes = [
+      { id: "e1", x: 40, y: 80, cls: "entry", k: "Entry", t: "Buyer, before escalation", d: "Priya Nair. The demo can open here, on the fresh alert." },
+      { id: "e2", x: 40, y: 250, cls: "entry", k: "Entry", t: "Planner, before escalation", d: "Marcus Webb. Nothing is on his landing yet." },
+      { id: "e3", x: 40, y: 420, cls: "entry", k: "Entry", t: "Scheduler, before a task", d: "R. Menon. A heads-up only. No action." },
+      { id: "signal", x: 320, y: 200, t: "A supplier date slips", d: "Meridian sends a force majeure notice. PO-4471 moves 12 days, 16 July to 28 July." },
+      { id: "buyer", x: 620, y: 200, t: "Buyer reads the alert", d: "The housing feeds WO-2205 and WO-2208 on Line 3, and SO-8891 for Hartwell. No safety stock." },
+      { id: "esc", x: 920, y: 200, cls: "decision", t: "Escalate, don’t edit the date", d: "The buyer does not change the PO. The decision goes up to the planner." },
+      { id: "fork", x: 1220, y: 188, cls: "decision", t: "The planner chooses", d: "Two costs are on the card: about $210K if the customer date slips, about $340K if the line sits idle." },
+      { id: "q1", x: 1220, y: 40, cls: "callout", k: "Also asked", t: "Could this stop here?", d: "If safety stock or buffer time is enough, the loop ends. A partial shipment is the other question. None of those are available here." },
+      { id: "b1", x: 1560, y: 40, cls: "happy", k: "Happy path", t: "Blended mitigation", d: "Recommended in the demo. 10% finished goods, 30% expedite, 60% another supplier." },
+      { id: "b2", x: 1840, y: 40, cls: "happy", t: "Tell the customer it might slip", d: "Customer service, T. Abraham, sends a possible-delay note for SO-8891." },
+      { id: "b3", x: 2120, y: 40, cls: "happy", t: "Use finished goods", d: "Production planning, K. Shah, covers 10% from the finished-goods buffer." },
+      { id: "b4", x: 1560, y: 230, cls: "happy", t: "Expedite part of the PO", d: "Priya asks Meridian to air-freight 30%. The reply is not instant. The screen waits, then shows it." },
+      { id: "b5", x: 1840, y: 230, cls: "happy", t: "Raise the other PO", d: "60% goes to Kaimann, the approved alternate. Halcyon is cheaper and riskier, and is not chosen." },
+      { id: "b6", x: 2120, y: 230, cls: "happy", t: "The date is protected", d: "OTIF is projected back near 98%. The scheduler’s heads-up closes. He never gets a task." },
+      { id: "r1", x: 1560, y: 460, cls: "other", k: "Other path", t: "Reschedule the line", d: "Taking the penalty is cheaper than every option that avoids it." },
+      { id: "r2", x: 1840, y: 460, cls: "other", t: "Move the work orders", d: "R. Menon pulls orders that already have material and sit outside the frozen horizon. WO-2205 and WO-2208 wait for 28 July." },
+      { id: "r3", x: 2120, y: 460, cls: "other", t: "Now change the PO date", d: "This is the first time PO-4471’s date is edited, to 28 July." },
+      { id: "r4", x: 1840, y: 660, cls: "other", t: "Tell the customer it will slip", d: "Customer service tells Hartwell the order will miss, and that the penalty is accepted." },
+      { id: "r5", x: 2120, y: 660, cls: "other", t: "The line stays busy", d: "The idle cost is avoided. The $210K penalty is kept. OTIF is not restored." },
+      { id: "skip", x: 1220, y: 430, cls: "callout", k: "Shown, not built", t: "Other options on the card", d: "100% alternate supplier, expedite only, and consume safety stock. Safety stock is marked unavailable. Only the two paths above are demo-complete." }
+    ];
+    const edges = [
+      ["e1","signal"],["signal","buyer"],["buyer","esc"],["esc","fork"],
+      ["fork","b1"],["b1","b2"],["b2","b3"],["b1","b4"],["b4","b5"],["b5","b6"],["b3","b6"],
+      ["fork","r1"],["r1","r2"],["r2","r3"],["r2","r4"],["r3","r5"],["r4","r5"],
+      ["e2","esc"],["e3","fork"]
+    ];
+    const world = document.getElementById("world");
+    const byId = {};
+    nodes.forEach((n) => {
+      const el = document.createElement("article");
+      el.className = "node" + (n.cls ? " " + n.cls : "");
+      el.style.left = n.x + "px";
+      el.style.top = n.y + "px";
+      el.innerHTML = (n.k ? '<span class="kicker">' + n.k + "</span>" : "") + "<h2>" + n.t + "</h2><p>" + tipText(n.d) + "</p>";
+      world.appendChild(el);
+      byId[n.id] = { ...n, el };
+    });
+    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svg.classList.add("wires");
+    world.prepend(svg);
+    function port(n, side) {
+      const w = n.el.offsetWidth, h = n.el.offsetHeight;
+      return { x: n.x + (side === "right" ? w : 0), y: n.y + h / 2 };
+    }
+    edges.forEach(([a, b]) => {
+      const A = port(byId[a], "right"), B = port(byId[b], "left");
+      const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+      const c = Math.max(40, (B.x - A.x) / 2);
+      path.setAttribute("d", "M " + A.x + " " + A.y + " C " + (A.x + c) + " " + A.y + ", " + (B.x - c) + " " + B.y + ", " + B.x + " " + B.y);
+      path.setAttribute("fill", "none");
+      path.setAttribute("stroke", "#1a1a1a");
+      path.setAttribute("stroke-width", "1.25");
+      svg.appendChild(path);
+    });
+    const vp = document.getElementById("viewport");
+    let x = 40, y = 40, z = 0.82, drag = null;
+    function apply() { world.style.transform = "translate(" + x + "px," + y + "px) scale(" + z + ")"; }
+    vp.addEventListener("pointerdown", (e) => {
+      if (e.target.closest(".node, a, .kw")) return;
+      drag = { px: e.clientX, py: e.clientY, x, y };
+      vp.classList.add("is-drag");
+      vp.setPointerCapture(e.pointerId);
+    });
+    vp.addEventListener("pointermove", (e) => {
+      if (!drag) return;
+      x = drag.x + e.clientX - drag.px;
+      y = drag.y + e.clientY - drag.py;
+      apply();
+    });
+    vp.addEventListener("pointerup", () => { drag = null; vp.classList.remove("is-drag"); });
+    vp.addEventListener("wheel", (e) => {
+      e.preventDefault();
+      const next = Math.min(1.4, Math.max(0.45, z * (e.deltaY > 0 ? 0.92 : 1.08)));
+      const r = next / z;
+      x = e.clientX - (e.clientX - x) * r;
+      y = e.clientY - (e.clientY - y) * r;
+      z = next;
+      apply();
+    }, { passive: false });
+    apply();
+  </script>
+</body>
+</html>

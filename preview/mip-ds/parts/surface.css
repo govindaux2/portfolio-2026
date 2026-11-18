@@ -1,0 +1,352 @@
+/* MIP DS surface modes — light (paper) vs black (carbon). Semantic risk stays red. */
+:root {
+  --ds-signal: #f82408;
+  --ds-signal-soft: #ff8661;
+  --ds-risk: #d62016;
+}
+
+html[data-ds-surface="light"] {
+  color-scheme: light;
+}
+
+html[data-ds-surface="dark"] {
+  color-scheme: dark;
+}
+
+/* ---------- BLACK / CARBON shell (product surfaces that default to paper) ---------- */
+html[data-ds-surface="dark"] {
+  --paper: #151b24 !important;
+  --glass: rgba(255,255,255,.06) !important;
+  --glass-2: rgba(255,255,255,.04) !important;
+  --ink: #f3f5f7 !important;
+  --muted: #9aa5b2 !important;
+  --soft: #1c2430 !important;
+  --line: rgba(255,255,255,.12) !important;
+  --line-2: rgba(255,255,255,.08) !important;
+  --bg0: #0a0d12 !important;
+  --bg1: #11161e !important;
+  --white: #151b24 !important;
+  --mist: #0e131a !important;
+  --shadow: 0 24px 70px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.06) !important;
+  --soft-shadow: 0 12px 34px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.05) !important;
+  --shadow-card: 0 18px 48px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.06) !important;
+  --shadow-soft: 0 10px 28px rgba(0,0,0,.32) !important;
+  --paper-88: rgba(21,27,36,.92) !important;
+  --paper-72: rgba(21,27,36,.78) !important;
+}
+
+html[data-ds-surface="dark"] html,
+html[data-ds-surface="dark"] body {
+  background: #0a0d12 !important;
+  color: #f3f5f7 !important;
+}
+
+html[data-ds-surface="dark"] body {
+  background:
+    radial-gradient(920px 520px at 50% -8%, rgba(255,255,255,.04), transparent 62%),
+    radial-gradient(620px 360px at 85% 7%, rgba(248,36,8,.10), transparent 72%),
+    radial-gradient(760px 430px at 18% 98%, rgba(127,164,216,.08), transparent 64%),
+    linear-gradient(135deg,#0c1016 0%,#0a0d12 58%,#11161e 100%) !important;
+}
+
+html[data-ds-surface="dark"] body:before {
+  opacity: .35 !important;
+  background-image:
+    linear-gradient(rgba(255,255,255,.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.04) 1px, transparent 1px) !important;
+}
+
+html[data-ds-surface="dark"] body:after {
+  opacity: .12 !important;
+  mix-blend-mode: soft-light !important;
+}
+
+html[data-ds-surface="dark"] .kicker,
+html[data-ds-surface="dark"] .label,
+html[data-ds-surface="dark"] .caption,
+html[data-ds-surface="dark"] .body,
+html[data-ds-surface="dark"] .data-note,
+html[data-ds-surface="dark"] .field-help,
+html[data-ds-surface="dark"] .field-label {
+  color: #9aa5b2 !important;
+}
+
+html[data-ds-surface="dark"] .h1,
+html[data-ds-surface="dark"] .h2,
+html[data-ds-surface="dark"] .h3,
+html[data-ds-surface="dark"] h1,
+html[data-ds-surface="dark"] h2,
+html[data-ds-surface="dark"] h3 {
+  color: #f3f5f7 !important;
+}
+
+html[data-ds-surface="dark"] .card,
+html[data-ds-surface="dark"] .panel,
+html[data-ds-surface="dark"] .glass,
+html[data-ds-surface="dark"] .soft-section,
+html[data-ds-surface="dark"] .chart-card,
+html[data-ds-surface="dark"] .demo-cell,
+html[data-ds-surface="dark"] .ai-thread,
+html[data-ds-surface="dark"] .prompt-row,
+html[data-ds-surface="dark"] .answer-row,
+html[data-ds-surface="dark"] .composer,
+html[data-ds-surface="dark"] .screen,
+html[data-ds-surface="dark"] .metric-card,
+html[data-ds-surface="dark"] .step-card,
+html[data-ds-surface="dark"] .tile,
+html[data-ds-surface="dark"] .surface,
+html[data-ds-surface="dark"] .board-card,
+html[data-ds-surface="dark"] .command-card,
+html[data-ds-surface="dark"] .workspace,
+html[data-ds-surface="dark"] .canvas-card {
+  background: linear-gradient(145deg, rgba(28,34,44,.96), rgba(18,24,32,.92)) !important;
+  border-color: rgba(255,255,255,.12) !important;
+  color: #f3f5f7 !important;
+  box-shadow: 0 18px 48px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.06) !important;
+}
+
+html[data-ds-surface="dark"] .card:after,
+html[data-ds-surface="dark"] .screen:before {
+  opacity: .35 !important;
+}
+
+html[data-ds-surface="dark"] .table th {
+  background: linear-gradient(180deg,#1a222c,#151b24) !important;
+  color: #9aa5b2 !important;
+  border-color: rgba(255,255,255,.1) !important;
+}
+
+html[data-ds-surface="dark"] .table td {
+  background: rgba(255,255,255,.04) !important;
+  border-color: rgba(255,255,255,.08) !important;
+  color: #e8ecf1 !important;
+}
+
+html[data-ds-surface="dark"] .chip {
+  background: rgba(255,255,255,.06) !important;
+  border-color: rgba(255,255,255,.12) !important;
+  color: #d5dbe3 !important;
+}
+
+html[data-ds-surface="dark"] .chip.red {
+  background: rgba(248,36,8,.14) !important;
+  border-color: rgba(248,36,8,.35) !important;
+  color: #ffb4a4 !important;
+}
+
+html[data-ds-surface="dark"] .chip.green {
+  background: rgba(66,168,117,.14) !important;
+  border-color: rgba(66,168,117,.3) !important;
+  color: #86c9a8 !important;
+}
+
+html[data-ds-surface="dark"] .input,
+html[data-ds-surface="dark"] .field-control,
+html[data-ds-surface="dark"] input,
+html[data-ds-surface="dark"] select,
+html[data-ds-surface="dark"] textarea {
+  background: rgba(255,255,255,.05) !important;
+  border-color: rgba(255,255,255,.14) !important;
+  color: #e8ecf1 !important;
+}
+
+html[data-ds-surface="dark"] .tabs {
+  background: rgba(255,255,255,.04) !important;
+  border-color: rgba(255,255,255,.12) !important;
+}
+
+html[data-ds-surface="dark"] .tab { color: #9aa5b2 !important; }
+html[data-ds-surface="dark"] .tab.active {
+  background: #f3f5f7 !important;
+  color: #0f1216 !important;
+}
+
+html[data-ds-surface="dark"] .btn.secondary,
+html[data-ds-surface="dark"] .qad-btn--secondary {
+  background: rgba(255,255,255,.08) !important;
+  color: #f3f5f7 !important;
+  border-color: rgba(255,255,255,.16) !important;
+}
+
+html[data-ds-surface="dark"] .btn.ghost,
+html[data-ds-surface="dark"] .qad-btn--ghost {
+  background: transparent !important;
+  color: rgba(243,245,247,.82) !important;
+  border-color: rgba(255,255,255,.14) !important;
+}
+
+html[data-ds-surface="dark"] .demo-cell:not(.dark) {
+  background: linear-gradient(145deg, rgba(28,34,44,.96), rgba(18,24,32,.92)) !important;
+  border-color: rgba(255,255,255,.12) !important;
+  color: #f3f5f7 !important;
+}
+
+html[data-ds-surface="dark"] .demo-cell small { color: rgba(243,245,247,.5) !important; }
+
+html[data-ds-surface="dark"] .chart-title { color: #f3f5f7 !important; }
+html[data-ds-surface="dark"] .line-dark { stroke: #c5ced8 !important; }
+html[data-ds-surface="dark"] .footer-line { color: #9aa5b2 !important; }
+html[data-ds-surface="dark"] .skeleton { background: #1c2430 !important; }
+
+html[data-ds-surface="dark"] .status-text.risk,
+html[data-ds-surface="dark"] .red,
+html[data-ds-surface="dark"] .error {
+  color: var(--ds-risk) !important;
+}
+
+/* Keep signal accents red in black mode */
+html[data-ds-surface="dark"] .nav-item.active,
+html[data-ds-surface="dark"] .chip.red,
+html[data-ds-surface="dark"] [class*="critical"] {
+  /* red handled above / by source tokens */
+}
+
+/* Command / dark product shells already dark — deepen neatly */
+html[data-ds-surface="dark"] .nav-rail,
+html[data-ds-surface="dark"] .side-rail,
+html[data-ds-surface="dark"] .rail,
+html[data-ds-surface="dark"] .left-nav,
+html[data-ds-surface="dark"] aside.rail {
+  background: linear-gradient(180deg,#0e131a,#07090c) !important;
+  box-shadow: 0 22px 52px rgba(0,0,0,.45) !important;
+}
+
+/* ---------- LIGHT shell for pages that lean dark (header/chat story) ---------- */
+html[data-ds-surface="light"] body {
+  /* keep authored light wash when present; nudge chat page chrome only */
+}
+
+/* AI chat stays dark per QAD-DESIGN-SYSTEM — never invert the chat shell to white */
+html[data-ds-surface="light"] .chat-shell,
+html[data-ds-surface="light"] .qad-ai-chat,
+html[data-ds-surface="light"] aside.chat-shell,
+html[data-ds-surface="dark"] .chat-shell,
+html[data-ds-surface="dark"] .qad-ai-chat,
+html[data-ds-surface="dark"] aside.chat-shell {
+  background: #07090c !important;
+  color: #f3f5f7 !important;
+}
+
+html[data-ds-surface="light"] .app-header,
+html[data-ds-surface="light"] header.app-bar,
+html[data-ds-surface="light"] .top-header {
+  background: #111418 !important;
+  color: #fff !important;
+}
+
+/* Light mode: paper product surfaces stay crisp */
+html[data-ds-surface="light"] .card,
+html[data-ds-surface="light"] .panel,
+html[data-ds-surface="light"] .chart-card {
+  background: linear-gradient(145deg,#fff,rgba(255,255,255,.9)) !important;
+}
+
+/* Status risk always QAD red */
+.status-text.risk,
+.bad,
+.red,
+[data-tone="critical"] {
+  /* reinforced */
+}
+.status-text.risk { color: #d62016 !important; }
+
+
+/* ---- Extra black-mode maps for MIP class names ---- */
+html[data-ds-surface="dark"] .source-stage,
+html[data-ds-surface="dark"] .workspace,
+html[data-ds-surface="dark"] .dashboard,
+html[data-ds-surface="dark"] .stage-card,
+html[data-ds-surface="dark"] .hero-card,
+html[data-ds-surface="dark"] .event-card,
+html[data-ds-surface="dark"] .small-card,
+html[data-ds-surface="dark"] .response-card,
+html[data-ds-surface="dark"] .state-tile,
+html[data-ds-surface="dark"] .stepper-shell,
+html[data-ds-surface="dark"] .source-panel,
+html[data-ds-surface="dark"] .panels,
+html[data-ds-surface="dark"] .panel-head {
+  background: linear-gradient(145deg, rgba(28,34,44,.96), rgba(16,21,29,.94)) !important;
+  border-color: rgba(255,255,255,.12) !important;
+  color: #f3f5f7 !important;
+}
+
+html[data-ds-surface="dark"] .source-header,
+html[data-ds-surface="dark"] .app-header,
+html[data-ds-surface="dark"] .chat-header {
+  background: #07090c !important;
+  border-color: rgba(255,255,255,.1) !important;
+  color: #f3f5f7 !important;
+}
+
+html[data-ds-surface="dark"] .nav-shell,
+html[data-ds-surface="dark"] .rail,
+html[data-ds-surface="dark"] .nav {
+  background: linear-gradient(180deg, #10151c, #07090c) !important;
+  border-color: rgba(255,255,255,.1) !important;
+}
+
+html[data-ds-surface="dark"] .nav-item { color: #aab4c1 !important; }
+html[data-ds-surface="dark"] .nav-item.active,
+html[data-ds-surface="dark"] .nav-item.is-on {
+  color: #fff !important;
+}
+
+html[data-ds-surface="dark"] .chat-body,
+html[data-ds-surface="dark"] .chat-shell {
+  background: #07090c !important;
+  color: #f3f5f7 !important;
+}
+
+html[data-ds-surface="dark"] .step-name,
+html[data-ds-surface="dark"] .step-meta,
+html[data-ds-surface="dark"] .stage-label,
+html[data-ds-surface="dark"] .card-copy,
+html[data-ds-surface="dark"] .card-meta,
+html[data-ds-surface="dark"] .chat-title,
+html[data-ds-surface="dark"] .chat-state {
+  color: #c5ced8 !important;
+}
+
+html[data-ds-surface="dark"] .stepper-track {
+  background: rgba(255,255,255,.08) !important;
+}
+html[data-ds-surface="dark"] .metric { color: #f3f5f7 !important; }
+
+html[data-ds-surface="dark"] .chartbox,
+html[data-ds-surface="dark"] .chart-inner,
+html[data-ds-surface="dark"] .chart-area,
+html[data-ds-surface="dark"] .donut-stage,
+html[data-ds-surface="dark"] .mini-chart {
+  background: rgba(255,255,255,.03) !important;
+  border-color: rgba(255,255,255,.1) !important;
+}
+
+/* Light mode: keep paper crisp; deepen only intentional dark shells */
+html[data-ds-surface="light"] .chat-shell,
+html[data-ds-surface="light"] .chat-body {
+  background: #0f1011 !important;
+  color: #f3f5f7 !important;
+}
+
+html[data-ds-surface="light"] .source-stage,
+html[data-ds-surface="light"] .workspace,
+html[data-ds-surface="light"] .dashboard {
+  /* leave authored styles — usually light mist + dark rail */
+}
+
+/* Risk / critical never leave QAD red */
+html[data-ds-surface="light"] .status-text.risk,
+html[data-ds-surface="dark"] .status-text.risk,
+html[data-ds-surface="light"] .red,
+html[data-ds-surface="dark"] .red {
+  color: #d62016 !important;
+}
+
+html[data-ds-surface="light"] .chip.red,
+html[data-ds-surface="dark"] .chip.red {
+  color: #ffb4a4 !important;
+}
+html[data-ds-surface="light"] .chip.red {
+  color: #a72c21 !important;
+  background: #fff0ee !important;
+}

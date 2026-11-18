@@ -1,0 +1,112 @@
+@font-face {
+  font-family: "Bricolage Grotesque";
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url("/fonts/bricolage-latin.woff2") format("woff2");
+}
+
+.card {
+  position: relative;
+  width: 380px;
+  height: 191px;
+  overflow: hidden;
+  border-radius: 26px;
+  color: #fff;
+  font-family: "Bricolage Grotesque", "DM Sans", sans-serif;
+  background: linear-gradient(157deg, rgb(253, 88, 148) 50%, rgb(248, 128, 175) 70%, rgb(220, 252, 255) 116%);
+  box-shadow: 0 0 12px rgb(255 73 140 / 18%);
+}
+
+.headline {
+  position: absolute;
+  left: 33px;
+  top: 38px;
+  right: 120px;
+  margin: 0;
+  font-size: 32px;
+  font-weight: 400;
+  line-height: 1.15;
+  white-space: nowrap;
+}
+
+.message {
+  position: absolute;
+  left: 33px;
+  top: 92px;
+  width: 210px;
+  margin: 0;
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 1.2;
+}
+
+.badge {
+  position: absolute;
+  left: 267px;
+  top: 39px;
+  width: 88px;
+  height: 88px;
+  overflow: hidden;
+  border-radius: 50%;
+  box-shadow: 0 -9px 10px rgb(0 0 0 / 9%);
+}
+
+.hatch {
+  position: absolute;
+  left: -30%;
+  top: -30%;
+  width: 160%;
+  height: 160%;
+  background-color: rgb(255 120 168 / 35%);
+  background-image:
+    linear-gradient(rgb(255 255 255 / 55%) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(255 255 255 / 55%) 1px, transparent 1px);
+  background-size: 7px 7px;
+  animation: turn 18s linear infinite;
+}
+
+.sheen {
+  position: absolute;
+  top: -20%;
+  left: 0;
+  width: 40%;
+  height: 140%;
+  background: linear-gradient(90deg, transparent, rgb(255 255 255 / 55%), transparent);
+  animation: sheen 7s linear infinite;
+}
+
+.date {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  margin: 0;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1.15;
+  text-align: center;
+  white-space: pre-line;
+}
+
+@keyframes turn {
+  to {
+    transform: rotate(1turn);
+  }
+}
+
+@keyframes sheen {
+  from {
+    transform: translateX(-180%);
+  }
+  to {
+    transform: translateX(280%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hatch,
+  .sheen {
+    animation: none;
+  }
+}

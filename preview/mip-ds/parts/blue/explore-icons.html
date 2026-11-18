@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>MIP explore · icons · blue</title>
+<link rel="stylesheet" href="../surface.css"/>
+<style>
+:root{
+  --font: "IBM Plex Sans", "IBM Plex Sans Condensed", Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Arial, sans-serif;
+  --bg0:#edf1f6; --bg1:#f7f9fc; --paper:#ffffff; --paper-88:rgba(255,255,255,.88); --paper-72:rgba(255,255,255,.72);
+  --ink:#0B1F3A; --muted:#6b7380; --soft:#9ca7b5; --line:#dce3ec; --line2:#edf1f5;
+  --steel:#2e3944; --tool:#4d5c6a; --alloy:#576069; --carbon:#0B1F3A;
+  --red:#0158DB; --orange:#6B9CFF; --smelter:#003C9C; --rose:#fff0ee;
+  --green:#86c9a8; --green2:#dbf2e7; --amber:#ffd596; --blue:#88a9d8; --violet:#b7a2ff;
+  --r-btn:4px; --r-card:4px; --r-panel:4px; --r-lg:4px;
+  --shadow-card:0 18px 48px rgba(38,49,63,.12), inset 0 1px 0 rgba(255,255,255,.86);
+  --shadow-soft:0 10px 28px rgba(38,49,63,.10);
+  --shadow-red:0 12px 28px rgba(1,88,219,.20);
+  --glass:blur(22px) saturate(1.35);
+  --ease:cubic-bezier(.2,.8,.2,1); --dur:260ms;
+}
+
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;font-family:var(--font,"IBM Plex Sans",Inter,ui-sans-serif,system-ui,sans-serif);color:var(--ink,#111);background:transparent}
+body{padding:12px}
+.explore{display:grid;gap:12px}
+.explore-note{margin:0;font:400 11px/1.4 var(--font);color:var(--muted,#657180)}
+
+
+.icon-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:10px}
+.icon-cell{
+  display:grid;gap:8px;justify-items:center;padding:14px 8px;border-radius:4px;
+  background:rgba(255,255,255,.62);border:1px solid rgba(220,227,236,.92);
+}
+.icon-cell svg.icon{width:28px;height:28px;stroke:var(--red);fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.icon-cell span{font:500 11px/1.2 var(--font);color:var(--muted,#657180);text-align:center}
+
+html[data-ds-surface="dark"] .icon-cell{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.1)}
+html[data-ds-surface="dark"] .icon-cell span{color:#9aa5b2}
+html[data-ds-surface="dark"] .icon-cell svg.icon{stroke:var(--red)}
+</style>
+<script src="../surface-boot.js"></script>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute;overflow:hidden" aria-hidden="true">
+  <symbol id="qad-mark" viewBox="0 0 96 32"><text x="0" y="23" font-family="IBM Plex Sans,Arial,sans-serif" font-size="24" font-weight="500" letter-spacing="1" fill="#0158DB">MIP</text></symbol>
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="M4 11.2 12 4l8 7.2"/><path d="M6.5 10.5V20h11v-9.5"/><path d="M10 20v-5h4v5"/></symbol>
+  <symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 19h16"/><path d="M7 16V9"/><path d="M12 16V5"/><path d="M17 16v-4"/></symbol>
+  <symbol id="i-plant" viewBox="0 0 24 24"><path d="M4 20h16"/><path d="M6 20V9l5 3V9l7 4v7"/><path d="M8 15h2M13 15h2M17 15h1"/></symbol>
+  <symbol id="i-quality" viewBox="0 0 24 24"><path d="M12 3 5 6v5c0 4.6 3 8 7 10 4-2 7-5.4 7-10V6l-7-3Z"/><path d="m8.7 12 2.1 2.1 4.5-4.8"/></symbol>
+  <symbol id="i-maint" viewBox="0 0 24 24"><path d="m14.7 6.4 2.9 2.9"/><path d="M4.5 19.5 13 11"/><path d="M15.8 4.2a4.2 4.2 0 0 0 4 5.5l-8.5 8.5a3 3 0 1 1-4.2-4.2Z"/></symbol>
+  <symbol id="i-ai" viewBox="0 0 24 24"><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/><circle cx="12" cy="12" r="5"/><path d="M9 12h6M12 9v6"/></symbol>
+
+  <symbol id="i-supply" viewBox="0 0 24 24"><path d="M4 8h10v8H4z"/><path d="M14 11h3l3 3v2h-6z"/><path d="M7 19a2 2 0 1 0 0-4 2 2 0 0 0 0 4ZM17 19a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z"/></symbol>
+  <symbol id="i-work" viewBox="0 0 24 24"><path d="M8 7V5h8v2"/><path d="M4 8h16v11H4z"/><path d="M9 13h6"/></symbol>
+  <symbol id="i-report" viewBox="0 0 24 24"><path d="M6 4h9l3 3v13H6z"/><path d="M14 4v4h4"/><path d="M9 13h6M9 17h4"/></symbol>
+  <symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 4 3 20h18L12 4z"/><path d="M12 9v5M12 17h.01"/></symbol>
+  <symbol id="i-settings" viewBox="0 0 24 24"><path d="M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8Z"/><path d="M4 12h2M18 12h2M12 4v2M12 18v2M6.5 6.5 8 8M16 16l1.5 1.5M17.5 6.5 16 8M8 16l-1.5 1.5"/></symbol>
+  <symbol id="i-filter" viewBox="0 0 24 24"><path d="M4 6h16"/><path d="M7 12h10"/><path d="M10 18h4"/></symbol>
+  <symbol id="i-send" viewBox="0 0 24 24"><path d="m4 12 16-7-7 16-2-7-7-2Z"/></symbol>
+</svg>
+<div class="explore">
+  <p class="explore-note">Library exploration · cards-nav symbols · blue. Stroke follows theme accent (--red).</p>
+  <div class="icon-grid">
+    <div class="icon-cell"><svg class="icon" width="28" height="28" aria-hidden="true"><use href="#i-home"/></svg><span>home</span></div><div class="icon-cell"><svg class="icon" width="28" height="28" aria-hidden="true"><use href="#i-chart"/></svg><span>chart</span></div><div class="icon-cell"><svg class="icon" width="28" height="28" aria-hidden="true"><use href="#i-plant"/></svg><span>plant</span></div><div class="icon-cell"><svg class="icon" width="28" height="28" aria-hidden="true"><use href="#i-quality"/></svg><span>quality</span></div><div class="icon-cell"><svg class="icon" width="28" height="28" aria-hidden="true"><use href="#i-maint"/></svg><span>maint</span></div><div class="icon-cell"><svg class="icon" width="28" height="28" aria-hidden="true"><use href="#i-ai"/></svg><span>ai</span></div><div class="icon-cell"><svg class="icon" width="28" height="28" aria-hidden="true"><use href="#i-supply"/></svg><span>supply</span></div><div class="icon-cell"><svg class="icon" width="28" height="28" aria-hidden="true"><use href="#i-work"/></svg><span>work</span></div><div class="icon-cell"><svg class="icon" width="28" height="28" aria-hidden="true"><use href="#i-report"/></svg><span>report</span></div><div class="icon-cell"><svg class="icon" width="28" height="28" aria-hidden="true"><use href="#i-alert"/></svg><span>alert</span></div><div class="icon-cell"><svg class="icon" width="28" height="28" aria-hidden="true"><use href="#i-settings"/></svg><span>settings</span></div><div class="icon-cell"><svg class="icon" width="28" height="28" aria-hidden="true"><use href="#i-filter"/></svg><span>filter</span></div><div class="icon-cell"><svg class="icon" width="28" height="28" aria-hidden="true"><use href="#i-send"/></svg><span>send</span></div>
+  </div>
+</div>
+</body>
+</html>

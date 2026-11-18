@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>QAD Chart Widgets - Four Core Graphs</title>
+<style>
+:root{
+  --font:"IBM Plex Sans", Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --paper:#ffffff;
+  --glass:rgba(255,255,255,.74);
+  --glass-strong:rgba(255,255,255,.88);
+  --ink:#111111;
+  --muted:#4B5563;
+  --line:#DDE3EC;
+  --line-2:#EEF2F6;
+  --slate:#4B5563;
+  --qad-red:#FFC43D;
+  --qad-orange:#FFD66B;
+  --data-blue:#315B9F;
+  --data-blue-soft:#6E91C8;
+  --data-teal:#14B8A6;
+  --data-violet:#8DA3C2;
+  --data-gray:#67768A;
+  --success:#14B8A6;
+  --radius:4px;
+  --ease:cubic-bezier(.18,.82,.2,1);
+  --shadow-card:0 22px 58px rgba(33,44,58,.11), inset 0 1px 0 rgba(255,255,255,.86);
+  --shadow-soft:0 12px 34px rgba(33,44,58,.085), inset 0 1px 0 rgba(255,255,255,.82);
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;font-family:var(--font);color:var(--ink);background:#F4F6F9;font-weight:400}
+body{
+  background:
+    radial-gradient(920px 520px at 50% -8%, rgba(255,255,255,.98), transparent 62%),
+    radial-gradient(620px 360px at 86% 12%, rgba(255,196,61,.055), transparent 72%),
+    radial-gradient(760px 430px at 82% 98%, rgba(37,99,235,.10), transparent 64%),
+    linear-gradient(135deg,#fbfcfe 0%,#F4F6F9 58%,#f8fafc 100%);
+  overflow-x:hidden;
+}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.54;background-image:
+  linear-gradient(rgba(98,116,139,.085) 1px,transparent 1px),
+  linear-gradient(90deg,rgba(98,116,139,.070) 1px,transparent 1px),
+  radial-gradient(circle,rgba(70,84,102,.11) 1px,transparent 1.35px);background-size:42px 42px,42px 42px,18px 18px;mask:linear-gradient(#000 0%,rgba(0,0,0,.74) 62%,transparent 100%)}
+svg{display:block}button{font:inherit}
+.page{position:relative;z-index:1;width:min(1500px,calc(100vw - 64px));margin:0 auto;padding:44px 0 64px}
+.page-head{display:flex;justify-content:space-between;align-items:flex-start;gap:24px;margin-bottom:28px}
+.eyebrow{font-size:12px;font-weight:500;letter-spacing:.14em;color:#4B5563;text-transform:uppercase}.eyebrow::after{content:"";display:block;width:24px;height:2px;margin-top:12px;background:var(--qad-red);border-radius:var(--radius)}
+h1{margin:18px 0 10px;font-size:38px;line-height:1.03;font-weight:500;letter-spacing:-.048em}.intro{margin:0;max-width:680px;font-size:15px;line-height:1.55;color:var(--muted)}
+.brand-note{display:flex;align-items:center;gap:10px;height:34px;padding:0 12px;border-radius:var(--radius);background:rgba(255,255,255,.70);border:1px solid rgba(223,230,239,.82);box-shadow:var(--shadow-soft);font-size:12px;color:#3d4651}.brand-note i{width:7px;height:7px;border-radius:50%;background:var(--qad-red);box-shadow:0 0 14px rgba(255,196,61,.42)}
+.chart-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px}.chart-card{position:relative;min-height:338px;border-radius:var(--radius);background:var(--glass);border:1px solid rgba(255,255,255,.88);box-shadow:var(--shadow-card);backdrop-filter:blur(20px) saturate(132%);-webkit-backdrop-filter:blur(20px) saturate(132%);overflow:hidden;transform:translateY(12px);opacity:0;animation:cardIn .58s var(--ease) forwards}.chart-card:nth-child(2){animation-delay:.08s}.chart-card:nth-child(3){animation-delay:.16s}.chart-card:nth-child(4){animation-delay:.24s}.chart-card::before{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(255,255,255,.76),rgba(255,255,255,.20));box-shadow:inset 0 1px 0 rgba(255,255,255,.86)}.chart-card::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(100deg,transparent 0 38%,rgba(255,255,255,.62) 48%,transparent 58%);transform:translateX(-120%);opacity:.88;animation:cardLoad 980ms var(--ease) .08s forwards}.chart-card:hover{box-shadow:0 26px 66px rgba(33,44,58,.15),inset 0 1px 0 rgba(255,255,255,.88);transform:translateY(-2px);transition:transform .22s var(--ease),box-shadow .22s var(--ease)}@keyframes cardIn{to{opacity:1;transform:none}}@keyframes cardLoad{to{transform:translateX(120%);opacity:0}}
+.chart-inner{position:relative;z-index:1;padding:18px 18px 16px;height:100%;display:flex;flex-direction:column}.chart-title{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-bottom:12px}.title-left{font-size:12px;font-weight:500;letter-spacing:.095em;color:#344052;text-transform:uppercase}.meta-dot{width:5px;height:5px;border-radius:50%;background:var(--qad-red);box-shadow:0 0 10px rgba(255,196,61,.32);opacity:.72}.chart-area{position:relative;min-height:220px;flex:1}.chart-area svg{width:100%;height:100%;overflow:visible}.legend{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin:12px 0 0;padding-left:28px;font-size:11px;color:#344052}.legend.centered{justify-content:center;padding-left:0}.legend.tight{gap:10px;padding-left:0}.legend-item{display:inline-flex;align-items:center;gap:7px;white-space:nowrap}.legend-line{width:18px;height:2px;border-radius:var(--radius);background:currentColor}.legend-dash{width:20px;height:0;border-top:2px dashed currentColor}.legend-dot{width:9px;height:9px;border-radius:50%;background:currentColor}.legend-swatch{width:16px;height:8px;border-radius:var(--radius);background:currentColor}
+.axis text,.axis-label{font-size:10.5px;fill:#607084}.axis path,.axis line{stroke:#cdd6e1;stroke-width:1}.gridline{stroke:#DDE3EC;stroke-width:1;stroke-dasharray:3 4}.baseline{stroke:#b8c3d0;stroke-width:1}.line-blue{fill:none;stroke:var(--data-blue);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}.line-teal{fill:none;stroke:var(--data-teal);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}.line-target{fill:none;stroke:var(--data-teal);stroke-width:1.6;stroke-dasharray:6 8;stroke-linecap:round}.area-teal{fill:url(#areaTeal);opacity:0;animation:fadeIn .8s var(--ease) .7s forwards}.draw-line{stroke-dasharray:900;stroke-dashoffset:900;animation:drawLine 1.15s var(--ease) .5s forwards}.draw-line.delay{animation-delay:.72s}.hover-hit{cursor:pointer}.hot-point{opacity:0;transform-origin:center;animation:pointPop .34s var(--ease) 1.05s forwards}.hot-point:nth-of-type(2){animation-delay:1.12s}.hot-point:nth-of-type(3){animation-delay:1.18s}@keyframes drawLine{to{stroke-dashoffset:0}}@keyframes fadeIn{to{opacity:1}}@keyframes pointPop{from{opacity:0;transform:scale(.6)}to{opacity:1;transform:scale(1)}}.bar-group rect{transform-box:fill-box;transform-origin:bottom;transform:scaleY(0);animation:barGrow .78s var(--ease) forwards}.bar-group:nth-child(1) rect{animation-delay:.45s}.bar-group:nth-child(2) rect{animation-delay:.56s}.bar-group:nth-child(3) rect{animation-delay:.67s}.bar-group:nth-child(4) rect{animation-delay:.78s}@keyframes barGrow{to{transform:scaleY(1)}}.bar-plan{fill:var(--data-gray)}.bar-actual{fill:var(--data-blue)}
+.donut-stage{position:relative;min-height:230px;display:grid;place-items:center}.donut-svg{width:214px;height:214px}.donut-track{fill:none;stroke:#e6edf5;stroke-width:14}.donut-seg{fill:none;stroke-width:14;stroke-linecap:round;transform:rotate(-90deg);transform-origin:100px 100px;stroke-dashoffset:390;animation:donutDraw 1.15s var(--ease) .5s forwards}.seg-blue{stroke:var(--data-blue);stroke-dasharray:128 390;--donut-offset:0}.seg-teal{stroke:var(--data-teal);stroke-dasharray:112 390;--donut-offset:-134px;animation-delay:.68s}.seg-violet{stroke:var(--data-violet);stroke-dasharray:54 390;--donut-offset:-252px;animation-delay:.78s}.seg-red{stroke:var(--qad-red);stroke-dasharray:44 390;--donut-offset:-314px;animation-delay:.86s}.donut-label{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none}.donut-label b{display:block;font-size:31px;line-height:.95;font-weight:500;letter-spacing:-.04em}.donut-label span{display:block;margin-top:8px;font-size:12px;color:#344052}.delta{font-size:11px;color:var(--success);display:inline-flex;align-items:center;gap:4px}@keyframes donutDraw{to{stroke-dashoffset:var(--donut-offset,0)}}
+.scatter-dot{opacity:0;transform-origin:center;animation:scatterPop .38s var(--ease) forwards;cursor:pointer}.scatter-dot:nth-child(3n){animation-delay:.42s}.scatter-dot:nth-child(4n){animation-delay:.52s}.scatter-dot:nth-child(5n){animation-delay:.62s}.scatter-dot.highlight{animation-delay:.76s}.regression{fill:none;stroke:var(--data-blue-soft);stroke-width:1.5;stroke-dasharray:4 5;opacity:0;animation:fadeIn .8s var(--ease) .8s forwards}@keyframes scatterPop{from{opacity:0;transform:scale(.4)}to{opacity:.9;transform:scale(1)}}.footer-line{margin-top:10px;display:flex;align-items:center;gap:8px;font-size:12px;color:#4B5563}.footer-link{color:var(--data-blue);font-weight:500;text-decoration:none;display:inline-flex;gap:6px;align-items:center}.footer-link::after{content:"→";color:var(--data-blue)}
+.tooltip{position:fixed;z-index:20;min-width:112px;padding:10px 12px;border-radius:var(--radius);background:rgba(255,255,255,.94);border:1px solid rgba(210,219,230,.86);box-shadow:0 18px 42px rgba(31,42,58,.18),inset 0 1px 0 rgba(255,255,255,.92);backdrop-filter:blur(18px);font-size:12px;color:#111111;pointer-events:none;opacity:0;transform:translate(-50%,-12px);transition:opacity .14s var(--ease),transform .14s var(--ease)}.tooltip.is-visible{opacity:1;transform:translate(-50%,-18px)}.tooltip b{display:block;margin-bottom:7px;font-weight:500}.tooltip-row{display:flex;align-items:center;justify-content:space-between;gap:16px;color:#4d5c6a}.tooltip-row + .tooltip-row{margin-top:5px}.tooltip-row i{width:7px;height:7px;border-radius:50%;display:inline-block;margin-right:6px;vertical-align:1px}.tooltip-row strong{font-weight:500;color:#111111}
+@media(max-width:1200px){.chart-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.chart-card{min-height:350px}}
+@media(max-width:720px){.page{width:calc(100vw - 28px);padding:28px 0}.page-head{display:block}.brand-note{margin-top:18px;width:max-content}.chart-grid{grid-template-columns:1fr}.chart-card{min-height:340px}.legend{padding-left:0}h1{font-size:31px}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important}.chart-card{opacity:1;transform:none}}
+</style>
+
+<style id="qad-figma-blue-yellow-theme">
+:root{
+  --mip-orange:#FC790E;--mip-orange-hover:#E86C00;--mip-orange-pressed:#CB5D00;
+  --mip-orange-soft:#FFB06A;--mip-orange-tint:#FFF0E5;
+  --mip-blue:#00406D;--mip-blue-deep:#003452;--mip-blue-light:#3A82AA;
+  --mip-teal:#009C95;--mip-sky:#4E9AC7;--mip-gold:#E7AA32;--mip-slate:#708391;
+  --mip-text-primary:#111111;--mip-text-secondary:#2F3540;--mip-text-muted:#4B5563;
+  --mip-page:#EDF5F8;--mip-card:#FFFFFF;--mip-line:#DDE3EC;--mip-line-soft:#EEF2F6;
+  --mip-risk:#D92D20;
+}
+
+:root{--ink:#111111;--muted:#4B5563;--line:#DDE3EC;--line-2:#EEF2F6;--slate:#667085;--qad-red:#FC790E;--qad-orange:#FFB06A;--data-blue:#00406D;--data-blue-soft:#3A82AA;--data-teal:#009C95;--data-violet:#4E9AC7;--data-gray:#708391;--success:#009C95;}
+html,body{background:#EDF5F8;color:#111111;}
+body{background:radial-gradient(760px 430px at 88% 4%,rgba(252,121,14,.07),transparent 70%),radial-gradient(720px 420px at 10% 100%,rgba(58,130,170,.11),transparent 67%),linear-gradient(135deg,#FFFFFF,#EDF5F8);}
+.line-red,.series-red{stroke:#FC790E !important;}.seg-red{stroke:#FC790E !important;}.bar-red{fill:#FC790E !important;background:#FC790E !important;}
+.line-blue,.series-blue{stroke:#00406D !important;}.line-teal,.series-teal{stroke:#009C95 !important;}
+.tooltip,.chart-tooltip{border-color:rgba(0,64,109,.20);box-shadow:0 12px 28px rgba(0,52,82,.14);}
+</style>
+<link rel="stylesheet" href="../surface.css" />
+<script src="../surface-boot.js"></script>
+</head>
+<body>
+<main class="page">
+  <header class="page-head">
+    <div>
+      <div class="eyebrow">QAD chart widgets</div>
+      <h1>Four analytical chart cards</h1>
+      <p class="intro">Line/area trend, grouped bar, donut/gauge, and scatter correlation widgets built as interactive QAD-styled SVG components with loading motion and precise hover tooltips.</p>
+    </div>
+    <div class="brand-note"><i></i>Minimal analytics palette · QAD signal accents only</div>
+  </header>
+
+  <section class="chart-grid" aria-label="Four core chart widgets">
+    <article class="chart-card" aria-label="Line and area trend chart">
+      <div class="chart-inner">
+        <div class="chart-title"><span class="title-left">1. Line / area trend</span><span class="meta-dot"></span></div>
+        <div class="chart-area">
+          <svg viewBox="0 0 350 220" role="img" aria-label="Throughput and OEE over time">
+            <defs>
+              <linearGradient id="areaTeal" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#14B8A6" stop-opacity=".22"/><stop offset="1" stop-color="#14B8A6" stop-opacity="0"/></linearGradient>
+            </defs>
+            <g>
+              <path class="gridline" d="M42 34H328M42 83H328M42 132H328M42 181H328"/>
+              <path class="baseline" d="M42 181H328"/><path class="baseline" d="M42 34V181"/>
+              <path class="gridline" d="M199 34V181"/>
+            </g>
+            <g class="axis">
+              <text x="18" y="184">0</text><text x="14" y="135">25</text><text x="14" y="86">50</text><text x="14" y="37">100</text>
+              <text x="28" y="210">May 1</text><text x="104" y="210">May 8</text><text x="178" y="210">May 15</text><text x="256" y="210">May 22</text><text x="312" y="210">May 29</text>
+            </g>
+            <path class="area-teal" d="M42 146 C72 106 96 92 122 89 C148 86 160 110 184 91 C208 72 226 104 250 96 C276 86 288 56 310 75 C322 86 324 98 328 86 L328 181 L42 181Z"/>
+            <path class="line-teal draw-line delay" d="M42 146 C72 106 96 92 122 89 C148 86 160 110 184 91 C208 72 226 104 250 96 C276 86 288 56 310 75 C322 86 324 98 328 86"/>
+            <path class="line-blue draw-line" d="M42 118 C80 98 100 72 126 62 C150 54 160 72 184 58 C206 44 224 26 252 34 C282 42 302 50 328 24"/>
+            <circle class="hot-point hover-hit" cx="199" cy="34" r="5" fill="#315B9F" data-title="May 15" data-rows="Throughput|78%|#315B9F;OEE|64%|#14B8A6"/>
+            <circle class="hot-point hover-hit" cx="199" cy="91" r="5" fill="#14B8A6" data-title="May 15" data-rows="OEE|64%|#14B8A6;Throughput|78%|#315B9F"/>
+            <circle class="hot-point hover-hit" cx="328" cy="24" r="4" fill="#315B9F" data-title="May 29" data-rows="Throughput|86%|#315B9F;OEE|68%|#14B8A6"/>
+          </svg>
+        </div>
+        <div class="legend centered" aria-label="Line chart legend">
+          <span class="legend-item" style="color:var(--data-blue)"><i class="legend-line"></i>Throughput</span>
+          <span class="legend-item" style="color:var(--data-teal)"><i class="legend-line"></i>OEE</span>
+        </div>
+      </div>
+    </article>
+
+    <article class="chart-card" aria-label="Grouped bar chart">
+      <div class="chart-inner">
+        <div class="chart-title"><span class="title-left">2. Grouped bar</span><span class="meta-dot"></span></div>
+        <div class="chart-area">
+          <svg viewBox="0 0 350 220" role="img" aria-label="Plan and actual grouped bar chart">
+            <g>
+              <path class="gridline" d="M42 34H328M42 83H328M42 132H328M42 181H328"/>
+              <path class="baseline" d="M42 181H328"/><path class="baseline" d="M42 34V181"/>
+              <path class="line-target" d="M42 83H328"/>
+            </g>
+            <g class="axis">
+              <text x="18" y="184">0</text><text x="14" y="135">25</text><text x="14" y="86">75</text><text x="14" y="37">100</text>
+              <text x="72" y="210">Line 1</text><text x="146" y="210">Line 2</text><text x="220" y="210">Line 3</text><text x="294" y="210">Line 4</text>
+            </g>
+            <g class="bar-group">
+              <rect class="bar-plan hover-hit" x="78" y="62" width="18" height="119" rx="3" data-title="Line 1" data-rows="Plan|77|#67768A;Actual|59|#315B9F;Target|75|#14B8A6"/>
+              <rect class="bar-actual hover-hit" x="104" y="91" width="18" height="90" rx="3" data-title="Line 1" data-rows="Actual|59|#315B9F;Plan|77|#67768A"/>
+            </g>
+            <g class="bar-group">
+              <rect class="bar-plan hover-hit" x="152" y="80" width="18" height="101" rx="3" data-title="Line 2" data-rows="Plan|66|#67768A;Actual|49|#315B9F;Target|75|#14B8A6"/>
+              <rect class="bar-actual hover-hit" x="178" y="106" width="18" height="75" rx="3" data-title="Line 2" data-rows="Actual|49|#315B9F;Plan|66|#67768A"/>
+            </g>
+            <g class="bar-group">
+              <rect class="bar-plan hover-hit" x="226" y="52" width="18" height="129" rx="3" data-title="Line 3" data-rows="Plan|82|#67768A;Actual|68|#315B9F;Target|75|#14B8A6"/>
+              <rect class="bar-actual hover-hit" x="252" y="77" width="18" height="104" rx="3" data-title="Line 3" data-rows="Actual|68|#315B9F;Plan|82|#67768A"/>
+            </g>
+            <g class="bar-group">
+              <rect class="bar-plan hover-hit" x="300" y="111" width="18" height="70" rx="3" data-title="Line 4" data-rows="Plan|52|#67768A;Actual|64|#315B9F;Target|75|#14B8A6"/>
+              <rect class="bar-actual hover-hit" x="326" y="98" width="18" height="83" rx="3" data-title="Line 4" data-rows="Actual|64|#315B9F;Plan|52|#67768A"/>
+            </g>
+          </svg>
+        </div>
+        <div class="legend centered" aria-label="Grouped bar legend">
+          <span class="legend-item" style="color:var(--data-gray)"><i class="legend-line"></i>Plan</span>
+          <span class="legend-item" style="color:var(--data-blue)"><i class="legend-line"></i>Actual</span>
+          <span class="legend-item" style="color:var(--data-teal)"><i class="legend-dash"></i>Target</span>
+        </div>
+      </div>
+    </article>
+
+    <article class="chart-card" aria-label="Donut gauge chart">
+      <div class="chart-inner">
+        <div class="chart-title"><span class="title-left">3. Donut / gauge</span><span class="meta-dot"></span></div>
+        <div class="donut-stage">
+          <svg class="donut-svg" viewBox="0 0 200 200" role="img" aria-label="OEE donut gauge">
+            <circle class="donut-track" cx="100" cy="100" r="62"/>
+            <circle class="donut-seg seg-blue hover-hit" cx="100" cy="100" r="62" data-title="Availability" data-rows="Value|82%|#315B9F"/>
+            <circle class="donut-seg seg-teal hover-hit" cx="100" cy="100" r="62" data-title="Performance" data-rows="Value|76%|#14B8A6"/>
+            <circle class="donut-seg seg-violet hover-hit" cx="100" cy="100" r="62" data-title="Quality" data-rows="Value|97%|#8DA3C2"/>
+            <circle class="donut-seg seg-red hover-hit" cx="100" cy="100" r="62" data-title="QAD risk signal" data-rows="Current|78%|#FFC43D"/>
+          </svg>
+          <div class="donut-label"><b>78%</b><span>OEE</span></div>
+        </div>
+        <div class="legend tight" aria-label="Donut chart legend">
+          <span class="legend-item" style="color:var(--data-blue)"><i class="legend-dot"></i>Availability 82%</span>
+          <span class="legend-item" style="color:var(--data-teal)"><i class="legend-dot"></i>Performance 76%</span>
+          <span class="legend-item" style="color:var(--data-violet)"><i class="legend-dot"></i>Quality 97%</span>
+          <span class="legend-item" style="color:var(--qad-red)"><i class="legend-dot"></i>Risk signal 78%</span>
+        </div>
+        <div class="footer-line">Updated 2m ago <a class="footer-link" href="#">View details</a></div>
+      </div>
+    </article>
+
+    <article class="chart-card" aria-label="Scatter correlation chart">
+      <div class="chart-inner">
+        <div class="chart-title"><span class="title-left">4. Scatter (correlation)</span><span class="meta-dot"></span></div>
+        <div class="chart-area">
+          <svg viewBox="0 0 350 220" role="img" aria-label="Cycle time and quality scatter correlation">
+            <g>
+              <path class="gridline" d="M42 34H328M42 83H328M42 132H328M42 181H328"/>
+              <path class="gridline" d="M42 34V181M112 34V181M182 34V181M252 34V181M328 34V181"/>
+              <path class="baseline" d="M42 181H328"/><path class="baseline" d="M42 34V181"/>
+              <path class="regression" d="M48 168 C110 132 166 98 224 68 S292 44 322 28"/>
+            </g>
+            <g class="axis">
+              <text x="18" y="184">0</text><text x="14" y="135">25</text><text x="14" y="86">50</text><text x="14" y="37">100</text>
+              <text x="38" y="210">20</text><text x="106" y="210">40</text><text x="176" y="210">60</text><text x="246" y="210">80</text><text x="314" y="210">100</text>
+              <text x="172" y="220" class="axis-label">Cycle Time (s)</text>
+              <text x="-142" y="15" class="axis-label" transform="rotate(-90)">Quality (%)</text>
+            </g>
+            <g>
+              <circle class="scatter-dot hover-hit" cx="58" cy="158" r="3.4" fill="#6E91C8" data-title="Cycle Time: 24s" data-rows="Quality|26%|#6E91C8"/>
+              <circle class="scatter-dot hover-hit" cx="70" cy="148" r="3.4" fill="#6E91C8" data-title="Cycle Time: 28s" data-rows="Quality|31%|#6E91C8"/>
+              <circle class="scatter-dot hover-hit" cx="82" cy="136" r="3.4" fill="#14B8A6" data-title="Cycle Time: 31s" data-rows="Quality|38%|#14B8A6"/>
+              <circle class="scatter-dot hover-hit" cx="94" cy="124" r="3.4" fill="#315B9F" data-title="Cycle Time: 35s" data-rows="Quality|43%|#315B9F"/>
+              <circle class="scatter-dot hover-hit" cx="106" cy="112" r="3.4" fill="#8DA3C2" data-title="Cycle Time: 38s" data-rows="Quality|50%|#8DA3C2"/>
+              <circle class="scatter-dot hover-hit" cx="122" cy="96" r="3.4" fill="#6E91C8" data-title="Cycle Time: 42s" data-rows="Quality|61%|#6E91C8"/>
+              <circle class="scatter-dot hover-hit" cx="134" cy="140" r="3.4" fill="#315B9F" data-title="Cycle Time: 46s" data-rows="Quality|36%|#315B9F"/>
+              <circle class="scatter-dot hover-hit" cx="150" cy="84" r="3.4" fill="#315B9F" data-title="Cycle Time: 51s" data-rows="Quality|67%|#315B9F"/>
+              <circle class="scatter-dot hover-hit" cx="164" cy="128" r="3.4" fill="#14B8A6" data-title="Cycle Time: 55s" data-rows="Quality|42%|#14B8A6"/>
+              <circle class="scatter-dot hover-hit" cx="178" cy="60" r="3.4" fill="#315B9F" data-title="Cycle Time: 59s" data-rows="Quality|78%|#315B9F"/>
+              <circle class="scatter-dot hover-hit" cx="194" cy="108" r="3.4" fill="#6E91C8" data-title="Cycle Time: 64s" data-rows="Quality|55%|#6E91C8"/>
+              <circle class="scatter-dot hover-hit" cx="210" cy="84" r="3.4" fill="#14B8A6" data-title="Cycle Time: 69s" data-rows="Quality|68%|#14B8A6"/>
+              <circle class="scatter-dot hover-hit" cx="226" cy="52" r="3.4" fill="#315B9F" data-title="Cycle Time: 73s" data-rows="Quality|82%|#315B9F"/>
+              <circle class="scatter-dot hover-hit" cx="242" cy="96" r="3.4" fill="#315B9F" data-title="Cycle Time: 78s" data-rows="Quality|61%|#315B9F"/>
+              <circle class="scatter-dot hover-hit highlight" cx="282" cy="26" r="5" fill="#fff" stroke="var(--qad-red)" stroke-width="3" data-title="Cycle Time: 82s" data-rows="Quality|92%|#FFC43D;Status|Attention|#FFC43D"/>
+            </g>
+          </svg>
+        </div>
+        <div class="legend centered" aria-label="Scatter chart legend">
+          <span class="legend-item" style="color:var(--data-blue)"><i class="legend-dot"></i>Cycle samples</span>
+          <span class="legend-item" style="color:var(--data-teal)"><i class="legend-dash"></i>Correlation trend</span>
+          <span class="legend-item" style="color:var(--qad-red)"><i class="legend-dot"></i>Active signal</span>
+        </div>
+      </div>
+    </article>
+  </section>
+</main>
+<div class="tooltip" id="tooltip" role="tooltip"></div>
+<script>
+const tooltip = document.getElementById('tooltip');
+function renderTooltip(target){
+  const title = target.dataset.title || '';
+  const rows = (target.dataset.rows || '').split(';').filter(Boolean).map(row => {
+    const [label, value, color] = row.split('|');
+    return `<div class="tooltip-row"><span><i style="background:${color || '#4B5563'}"></i>${label}</span><strong>${value}</strong></div>`;
+  }).join('');
+  tooltip.innerHTML = `<b>${title}</b>${rows}`;
+}
+function moveTooltip(event){
+  tooltip.style.left = `${event.clientX}px`;
+  tooltip.style.top = `${event.clientY}px`;
+}
+document.querySelectorAll('.hover-hit').forEach(el => {
+  el.setAttribute('tabindex','0');
+  el.addEventListener('mouseenter', event => { renderTooltip(el); moveTooltip(event); tooltip.classList.add('is-visible'); });
+  el.addEventListener('mousemove', moveTooltip);
+  el.addEventListener('mouseleave', () => tooltip.classList.remove('is-visible'));
+  el.addEventListener('focus', () => { renderTooltip(el); const rect = el.getBoundingClientRect(); tooltip.style.left = `${rect.left + rect.width/2}px`; tooltip.style.top = `${rect.top}px`; tooltip.classList.add('is-visible'); });
+  el.addEventListener('blur', () => tooltip.classList.remove('is-visible'));
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,367 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>QAD Logo Signal Rail Story</title>
+<style>
+:root{
+  --font:"IBM Plex Sans", Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --paper:#ffffff;
+  --glass:rgba(255,255,255,.66);
+  --glass-2:rgba(255,255,255,.48);
+  --ink:#111111;
+  --muted:#4B5563;
+  --soft:#f4f7fb;
+  --line:#DDE3EC;
+  --line-2:#EEF2F6;
+  --graphite:#111111;
+  --charcoal:#252b33;
+  --slate:#4B5563;
+  --silver:#c8d0da;
+  --red:#FC790E;
+  --red-deep:#D92D20;
+  --orange:#FFB06A;
+  --green:#14B8A6;
+  --green-strong:#14B8A6;
+  --blue:#6E91C8;
+  --ease:cubic-bezier(.18,.82,.2,1);
+  --shadow:0 24px 70px rgba(33,44,58,.12), inset 0 1px 0 rgba(255,255,255,.82);
+  --soft-shadow:0 12px 34px rgba(33,44,58,.09), inset 0 1px 0 rgba(255,255,255,.78);
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;font-family:var(--font);color:var(--ink);overflow:hidden;background:#F4F6F9}
+button{font:inherit}
+body{
+  background:
+    radial-gradient(920px 520px at 50% -8%, rgba(255,255,255,.98), transparent 62%),
+    radial-gradient(620px 360px at 85% 7%, rgba(252,121,14,.10), transparent 72%),
+    radial-gradient(760px 430px at 82% 98%, rgba(127,164,216,.13), transparent 64%),
+    linear-gradient(135deg,#fbfcfe 0%,#F4F6F9 58%,#f8fafc 100%);
+}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.62;background-image:linear-gradient(rgba(98,116,139,.10) 1px,transparent 1px),linear-gradient(90deg,rgba(98,116,139,.08) 1px,transparent 1px),radial-gradient(circle,rgba(70,84,102,.14) 1px,transparent 1.35px);background-size:42px 42px,42px 42px,18px 18px;mask:linear-gradient(#000 0%,rgba(0,0,0,.74) 60%,transparent 100%)}
+body::after{content:"";position:fixed;right:-130px;top:24px;width:850px;height:260px;opacity:.28;pointer-events:none;background:repeating-radial-gradient(ellipse at center, rgba(252,121,14,.23) 0 1px, transparent 2px 7px);clip-path:polygon(0 62%,18% 28%,38% 42%,52% 70%,70% 20%,100% 38%,100% 67%,72% 52%,54% 83%,36% 60%,16% 48%,0 74%);filter:blur(.15px)}
+svg{display:block}.icon{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}.label{font-size:10px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:#7a8796}.tiny{font-size:11px;color:var(--muted)}.body{font-size:13px;line-height:1.55;color:var(--muted)}.h1{margin:0;font-size:30px;line-height:1.05;letter-spacing:-.045em;font-weight:500}.h2{margin:0;font-size:18px;line-height:1.18;letter-spacing:-.025em;font-weight:500}.up{color:var(--green-strong)!important}.down{color:var(--red)!important}
+/* ---------- logo-only loader story ---------- */
+.story{position:fixed;inset:0;z-index:100;pointer-events:none;overflow:hidden}.story::before{content:"";position:absolute;inset:0;background:radial-gradient(520px 380px at 50% 48%,rgba(255,255,255,.92),rgba(255,255,255,.60) 54%,rgba(238,243,248,.08));animation:storyVeil 760ms var(--ease) 2800ms forwards}.story-mark{position:absolute;left:50%;top:50%;width:62px;height:100px;margin:-50px 0 0 -31px;filter:drop-shadow(0 20px 32px rgba(252,121,14,.24));transform-origin:50% 50%;animation:markBreathe 1120ms var(--ease) infinite alternate}.story-mark{transition:opacity .18s var(--ease)}.story-mark svg{width:100%;height:100%;overflow:visible}.story-mark svg use{transform-origin:center}.story-mark.is-travelling{animation:none}.story-caption{position:absolute;left:50%;top:calc(50% + 128px);transform:translate(-50%,10px);text-align:center;opacity:0;animation:captionInOut 2300ms var(--ease) 180ms forwards}.story-caption strong{display:block;font-size:12px;letter-spacing:.16em;text-transform:uppercase;font-weight:500;color:#252b33}.story-caption span{display:block;margin-top:8px;font-size:12px;color:#6b7684}.signal-halo{position:absolute;left:50%;top:50%;width:218px;height:218px;margin:-109px 0 0 -109px;border-radius:4px;opacity:0;animation:haloPulse 2400ms var(--ease) 160ms forwards}.signal-halo::before,.signal-halo::after{content:"";position:absolute;inset:0;border-radius:inherit;border:1px solid rgba(252,121,14,.16);clip-path:polygon(50% 0,100% 0,100% 58%,50% 50%,0 58%,0 0)}.signal-halo::before{animation:haloSpin 6200ms linear infinite}.signal-halo::after{inset:22px;border-color:rgba(127,164,216,.20);clip-path:polygon(0 44%,50% 50%,100% 44%,100% 100%,0 100%);animation:haloSpin 7900ms linear infinite reverse}.data-stream{position:absolute;left:50%;top:50%;width:44vw;height:2px;transform:translate(-50%,-50%);opacity:0;background:linear-gradient(90deg,transparent,rgba(208,218,230,.10),#fff 42%,rgba(252,121,14,.65) 50%,#fff 58%,rgba(208,218,230,.10),transparent);box-shadow:0 0 24px rgba(252,121,14,.18);animation:streamPass 860ms var(--ease) 650ms 2}.data-stream.s2{top:calc(50% - 21px);width:36vw;animation-delay:860ms}.data-stream.s3{top:calc(50% + 24px);width:32vw;animation-delay:1080ms}.travel-trace{position:absolute;left:0;top:0;width:1px;height:1px;opacity:0;pointer-events:none}.travel-trace::before{content:"";position:absolute;width:280px;height:2px;border-radius:4px;background:linear-gradient(90deg,transparent,rgba(252,121,14,.78),rgba(255,255,255,.96),transparent);box-shadow:0 0 22px rgba(252,121,14,.24);transform-origin:right center}.story.done{display:none}@keyframes storyVeil{to{opacity:0;visibility:hidden}}@keyframes markBreathe{from{transform:scale(.985) rotate(-2deg)}to{transform:scale(1.055) rotate(2deg)}}@keyframes captionInOut{0%{opacity:0;transform:translate(-50%,10px)}16%,76%{opacity:1;transform:translate(-50%,0)}100%{opacity:0;transform:translate(-50%,-8px)}}@keyframes haloPulse{0%{opacity:0;transform:scale(.76)}18%,76%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(1.18)}}@keyframes haloSpin{to{transform:rotate(360deg)}}@keyframes streamPass{0%{opacity:0;transform:translate(-50%,-50%) scaleX(.25)}22%,78%{opacity:.96}100%{opacity:0;transform:translate(-50%,-50%) scaleX(1.08)}}
+/* ---------- app shell ---------- */
+.app{position:relative;z-index:1;height:100vh;padding:26px 28px;display:grid;grid-template-columns:74px minmax(0,1fr);gap:22px;opacity:0;transform:translateY(14px);animation:appIn 780ms var(--ease) 2360ms forwards}.app.ready{opacity:1;transform:none;animation:none}@keyframes appIn{to{opacity:1;transform:none}}
+.nav-shell{position:relative;display:grid;grid-template-rows:58px 1fr auto;height:calc(100vh - 52px);border-radius:4px;padding:11px 6px 14px;background:linear-gradient(180deg,rgba(30,37,47,.78),rgba(9,14,21,.88));border:1px solid rgba(255,255,255,.18);box-shadow:0 30px 72px rgba(9,16,25,.26),inset 0 1px 0 rgba(255,255,255,.16);backdrop-filter:blur(24px) saturate(145%);overflow:visible}.nav-shell::before{content:"";position:absolute;inset:0;border-radius:4px;pointer-events:none;background:radial-gradient(160px 105px at 34px 28px,rgba(252,121,14,.16),transparent 72%),linear-gradient(90deg,rgba(255,255,255,.08),transparent 34%),linear-gradient(180deg,rgba(255,255,255,.045),transparent 48%,rgba(255,255,255,.025))}.nav-shell::after{content:"";position:absolute;inset:10px 5px 88px;border-radius:4px;pointer-events:none;opacity:.30;background:radial-gradient(circle,rgba(255,255,255,.22) 1px,transparent 1.45px),url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 68 720'%3E%3Cg fill='none' stroke-linecap='round'%3E%3Cpath d='M8 120 C46 88 18 42 54 14' stroke='%23ffffff' stroke-opacity='.11' stroke-width='1'/%3E%3Cpath d='M8 348 C49 310 17 262 56 230' stroke='%23FFB06A' stroke-opacity='.14' stroke-width='1.2'/%3E%3Cpath d='M9 590 C49 552 16 505 55 472' stroke='%23ffffff' stroke-opacity='.10' stroke-width='1'/%3E%3C/g%3E%3C/svg%3E");background-size:13px 13px,100% 100%;mask:linear-gradient(180deg,transparent 0,#000 8%,#000 88%,transparent 100%)}.rail-thread{position:absolute;left:50%;top:74px;bottom:96px;transform:translateX(-.5px);width:1px;background:linear-gradient(180deg,transparent,rgba(255,255,255,.18),rgba(255,255,255,.09),rgba(252,121,14,.35),rgba(255,255,255,.10),transparent)}.nav-logo-dock{position:relative;height:58px}.dock-mark{position:absolute;left:50%;top:6px;width:22px;height:36px;transform:translateX(-50%) scale(.92);opacity:0;filter:drop-shadow(0 8px 14px rgba(252,121,14,.30));transition:opacity .18s var(--ease),transform .34s var(--ease)}.nav-logo-dock.arrived .dock-mark{opacity:1;transform:translateX(-50%) scale(1)}.nav-items{position:relative;display:flex;flex-direction:column;align-items:center;gap:7px;padding-top:2px}.active-lens{position:absolute;left:50%;top:2px;width:54px;height:50px;border-radius:4px;background:linear-gradient(90deg,rgba(252,121,14,.18),rgba(255,176,106,.10) 42%,rgba(255,255,255,.045) 100%);box-shadow:inset 0 0 0 1px rgba(255,255,255,.10),0 0 18px rgba(252,121,14,.12);transform:translate(-50%,0);transition:transform 520ms cubic-bezier(.16,.86,.18,1),box-shadow 260ms var(--ease),background 260ms var(--ease);pointer-events:none;overflow:hidden}.active-lens::before{content:"";position:absolute;left:0;top:8px;width:3px;height:34px;border-radius:4px;background:linear-gradient(180deg,var(--red),var(--orange));box-shadow:0 0 16px rgba(252,121,14,.72),0 0 28px rgba(255,176,106,.22)}.active-lens::after{content:"";position:absolute;inset:1px;border-radius:4px;background:radial-gradient(ellipse at 38% 48%,rgba(255,255,255,.12),transparent 58%);opacity:.78}.active-lens.settle{box-shadow:inset 0 0 0 1px rgba(255,255,255,.16),0 0 22px rgba(252,121,14,.18)}.nav-item{position:relative;z-index:1;width:54px;height:50px;border:0;border-radius:4px;background:transparent;color:#afbac7;display:grid;place-items:center;cursor:pointer;transition:color 220ms var(--ease),transform 220ms var(--ease),background 220ms var(--ease),filter 220ms var(--ease)}.nav-item .icon{width:31px;height:31px;stroke-width:1.5}.nav-item:hover{color:#fff;transform:translateX(2px);background:rgba(255,255,255,.045)}.nav-item.active{color:#fff;filter:drop-shadow(0 0 10px rgba(255,176,106,.22))}.nav-item.active .icon{transform:scale(1.08);transition:transform 260ms var(--ease)}.nav-item.active .node{opacity:1;transform:scale(1)}.node{display:none}.tip{position:absolute;left:58px;top:10px;height:24px;padding:0 8px;border-radius:4px;display:flex;align-items:center;white-space:nowrap;background:rgba(255,255,255,.86);border:1px solid rgba(222,230,240,.9);box-shadow:0 8px 18px rgba(32,41,52,.12);color:#1d232b;font-size:10px;font-weight:500;letter-spacing:.01em;opacity:0;pointer-events:none;transform:translateX(-5px);transition:.22s var(--ease);backdrop-filter:blur(14px)}.nav-item:hover .tip{opacity:1;transform:none}.nav-bottom{display:grid;gap:12px;justify-items:center}.mini-status{width:50px;border-radius:4px;padding:14px 8px;text-align:center;color:#e9eef5;background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.10)}.mini-status strong{display:block;font-size:19px;font-weight:500}.mini-status span{display:block;margin-top:2px;font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:#8d98a8}
+.main{min-width:0;display:flex;flex-direction:column;gap:20px}.topbar{height:82px;border-radius:4px;padding:18px 22px;display:flex;justify-content:space-between;align-items:center;background:var(--glass);border:1px solid rgba(255,255,255,.88);box-shadow:var(--soft-shadow);backdrop-filter:blur(18px)}.brand-kicker{display:flex;align-items:center;gap:14px}.mark-small{width:28px;height:45px;filter:drop-shadow(0 10px 20px rgba(252,121,14,.17))}.top-actions{display:flex;align-items:center;gap:10px}.chip{height:30px;border-radius:4px;padding:0 12px;display:inline-flex;align-items:center;gap:7px;background:rgba(255,255,255,.72);border:1px solid var(--line);font-size:11px;color:#52606f}.chip.red{color:var(--red);background:rgba(252,121,14,.07);border-color:rgba(252,121,14,.16)}.btn{position:relative;height:36px;border:0;border-radius:4px;padding:0 16px;color:#fff;background:linear-gradient(180deg,#2a3038,#101419);box-shadow:0 12px 24px rgba(15,20,26,.20),inset 0 1px 0 rgba(255,255,255,.18);display:inline-flex;align-items:center;gap:8px;cursor:pointer;overflow:hidden}.btn.secondary{color:#303844;background:rgba(255,255,255,.74);border:1px solid var(--line);box-shadow:0 8px 18px rgba(40,52,68,.08),inset 0 1px 0 rgba(255,255,255,.85)}.btn .bits{position:absolute;inset:0;pointer-events:none;opacity:0}.btn .bits i{position:absolute;left:-36px;width:24px;height:2px;border-radius:4px;background:linear-gradient(90deg,transparent,#fff,#d6dee8,transparent)}.btn .bits i:nth-child(1){top:12px}.btn .bits i:nth-child(2){top:18px;width:32px}.btn .bits i:nth-child(3){top:24px;width:18px}.btn:hover .bits{opacity:1}.btn:hover .bits i{animation:buttonBits 820ms var(--ease)}.btn:hover .bits i:nth-child(2){animation-delay:70ms}.btn:hover .bits i:nth-child(3){animation-delay:130ms}@keyframes buttonBits{to{transform:translateX(118px);opacity:0}}
+.workspace{min-height:0;flex:1;display:grid;grid-template-columns:minmax(0,1fr) 374px;gap:20px}.dashboard{min-width:0;display:flex;flex-direction:column;gap:20px}.hero-card,.panel,.unique-note{position:relative;border-radius:4px;background:var(--glass);border:1px solid rgba(255,255,255,.88);box-shadow:var(--shadow);backdrop-filter:blur(20px)}.hero-card{padding:22px}.hero-head{display:flex;justify-content:space-between;gap:20px;align-items:flex-start}.metric-row{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-top:20px}.metric{min-height:94px;border-radius:4px;padding:16px;background:rgba(255,255,255,.70);border:1px solid var(--line-2);box-shadow:inset 0 1px 0 rgba(255,255,255,.85)}.metric b{display:block;margin:7px 0;font-size:25px;font-weight:500;letter-spacing:-.045em}.panels{display:grid;grid-template-columns:1.35fr .75fr;gap:20px;min-height:0}.panel{padding:20px}.chartbox{height:260px;border-radius:4px;background:linear-gradient(180deg,rgba(255,255,255,.80),rgba(247,250,253,.68));border:1px solid var(--line-2);overflow:hidden}.gridline{stroke:#e1e8f0;stroke-width:1}.line-gray{fill:none;stroke:#758295;stroke-width:2;stroke-linecap:round}.line-red{fill:none;stroke:#FC790E;stroke-width:2;stroke-linecap:round;filter:drop-shadow(0 4px 8px rgba(252,121,14,.18))}.driver{display:grid;grid-template-columns:100px 1fr 48px;gap:12px;align-items:center;height:38px;font-size:12px;color:#566271}.track{height:8px;border-radius:4px;background:#e8edf4;overflow:hidden}.fill{height:8px;border-radius:4px;background:linear-gradient(90deg,var(--red),var(--orange))}.fill.green{background:linear-gradient(90deg,var(--green),#42b477)}.pattern-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:22px}.pattern{height:76px;border-radius:4px;border:1px solid var(--line-2);background:#fff}.pattern.dot{background-image:radial-gradient(circle,#bcc7d4 1px,transparent 1.3px);background-size:12px 12px}.pattern.line{background-image:linear-gradient(#DDE3EC 1px,transparent 1px),linear-gradient(90deg,#DDE3EC 1px,transparent 1px);background-size:12px 12px}.pattern.ribbon{background:radial-gradient(ellipse at 20% 70%,rgba(252,121,14,.10),transparent 52%),repeating-radial-gradient(ellipse at center,rgba(252,121,14,.22) 0 1px,transparent 2px 7px);clip-path:polygon(0 48%,26% 28%,48% 58%,70% 22%,100% 44%,100% 100%,0 100%)}.side{display:flex;flex-direction:column;gap:20px;min-width:0}.unique-note{padding:20px;overflow:hidden;background:linear-gradient(145deg,rgba(18,24,32,.98),rgba(35,42,52,.96));color:#fff}.unique-note::after{content:"";position:absolute;right:-80px;top:-40px;width:250px;height:180px;opacity:.28;background:repeating-radial-gradient(ellipse at center,rgba(252,121,14,.34) 0 1px,transparent 2px 7px);clip-path:polygon(0 62%,25% 22%,54% 62%,78% 28%,100% 46%,100% 100%,0 100%)}.unique-note p{position:relative;z-index:1;margin:12px 0 0;font-size:13px;line-height:1.6;color:#c4ccd7}.prompt{border-radius:4px;background:rgba(247,250,253,.92);border:1px solid var(--line-2);padding:12px;display:flex;align-items:center;gap:12px}.orb-mini{width:34px;height:34px;border-radius:4px;display:grid;place-items:center;background:#fff;border:1px solid var(--line);box-shadow:inset 0 1px 0 #fff}.evidence-grid,.cards{display:grid;grid-template-columns:1fr 1fr;gap:10px}.evidence,.small-card{margin-top:12px;padding:14px;border-radius:4px;background:rgba(255,255,255,.72);border:1px solid var(--line-2)}.evidence b,.small-card b{display:block;margin:4px 0;font-size:19px;letter-spacing:-.04em;font-weight:500}.composer{height:48px;border-radius:4px;background:#fff;border:1px solid var(--line);display:flex;align-items:center;gap:10px;padding:0 8px 0 14px}
+@media (max-width:1100px){.app{grid-template-columns:116px 1fr}.workspace{grid-template-columns:1fr}.side{display:grid;grid-template-columns:repeat(3,1fr)}.metric-row{grid-template-columns:repeat(3,1fr)}}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}.story{display:none}.app{opacity:1;transform:none}.dock-mark{opacity:1;transform:none}}
+</style>
+
+<style id="qad-figma-blue-yellow-theme">
+:root{
+  --mip-orange:#FC790E;--mip-orange-hover:#E86C00;--mip-orange-pressed:#CB5D00;
+  --mip-orange-soft:#FFB06A;--mip-orange-tint:#FFF0E5;
+  --mip-blue:#00406D;--mip-blue-deep:#003452;--mip-blue-light:#3A82AA;
+  --mip-teal:#009C95;--mip-sky:#4E9AC7;--mip-gold:#E7AA32;--mip-slate:#708391;
+  --mip-text-primary:#111111;--mip-text-secondary:#2F3540;--mip-text-muted:#4B5563;
+  --mip-page:#EDF5F8;--mip-card:#FFFFFF;--mip-line:#DDE3EC;--mip-line-soft:#EEF2F6;
+  --mip-risk:#D92D20;
+}
+
+:root{--ink:#111111;--muted:#4B5563;--soft:#F4F6F9;--line:#DDE3EC;--line-2:#EEF2F6;--graphite:#00406D;--charcoal:#003452;--slate:#667085;--silver:#DDE3EC;--red:#FC790E;--red-deep:#CB5D00;--orange:#FFB06A;--green:#009C95;--green-strong:#009C95;--blue:#3A82AA;}
+html,body{background:#EDF5F8;color:#111111;}
+body{background:radial-gradient(720px 420px at 88% 4%,rgba(252,121,14,.07),transparent 70%),radial-gradient(720px 440px at 10% 100%,rgba(58,130,170,.11),transparent 66%),linear-gradient(135deg,#FFFFFF 0%,#EDF5F8 58%,#F7FAFB 100%);}
+.nav-shell{background:linear-gradient(180deg,rgba(0,76,120,.96),rgba(0,52,82,.99));border-color:rgba(255,255,255,.16);box-shadow:0 30px 72px rgba(0,52,82,.28),inset 0 1px 0 rgba(255,255,255,.14);}
+.nav-shell::before{background:radial-gradient(160px 105px at 34px 28px,rgba(252,121,14,.22),transparent 72%),linear-gradient(90deg,rgba(255,255,255,.08),transparent 34%),linear-gradient(180deg,rgba(255,255,255,.045),transparent 48%,rgba(255,255,255,.025));}
+.active-lens{background:linear-gradient(90deg,rgba(252,121,14,.24),rgba(255,176,106,.12) 42%,rgba(255,255,255,.045) 100%);box-shadow:inset 0 0 0 1px rgba(255,255,255,.11),0 0 18px rgba(252,121,14,.18);}
+.active-lens::before{background:linear-gradient(180deg,#FC790E,#FFB06A);box-shadow:0 0 16px rgba(252,121,14,.72),0 0 28px rgba(255,176,106,.24);}
+.btn:not(.secondary){background:#FC790E;border:1px solid #FC790E;color:#fff;box-shadow:0 12px 26px rgba(252,121,14,.24),inset 0 1px 0 rgba(255,255,255,.18);}
+.btn:not(.secondary):hover{background:#E86C00;border-color:#E86C00;}
+.btn:not(.secondary):active{background:#CB5D00;border-color:#CB5D00;}
+.btn.secondary{background:#fff;color:#111111;border:1px solid #FC790E;box-shadow:0 8px 18px rgba(0,64,109,.08),inset 0 1px 0 rgba(255,255,255,.85);}
+.btn.secondary:hover{background:#FFF5EC;border-color:#E86C00;}
+.chip.red{color:#FC790E;background:#FFF0E5;border-color:rgba(252,121,14,.26);}
+.unique-note{background:linear-gradient(145deg,#00406D,#003452);}
+.line-red{stroke:#FC790E !important;filter:drop-shadow(0 4px 8px rgba(252,121,14,.20));}
+.fill{background:linear-gradient(90deg,#FC790E,#FFB06A);}
+.down{color:#D92D20 !important;}.up{color:#009C95 !important;}
+a,.link-action{color:#FC790E;}
+</style>
+
+<style id="page-02-monitor-navigation-alignment">
+/* Page 02 uses the same compact, white, static rail language as the MIP Monitor page. */
+.app{
+  padding:0 !important;
+  grid-template-columns:68px minmax(0,1fr) !important;
+  gap:0 !important;
+}
+.main{padding:26px 28px !important;min-width:0}
+.nav-shell{
+  position:relative !important;
+  width:68px !important;
+  height:100vh !important;
+  min-height:0 !important;
+  padding:14px 0 10px !important;
+  border:0 !important;
+  border-right:1px solid #DDE3EC !important;
+  border-radius:0 !important;
+  background:#FFFFFF !important;
+  box-shadow:8px 0 24px rgba(39,75,131,.07) !important;
+  backdrop-filter:none !important;
+  -webkit-backdrop-filter:none !important;
+  display:flex !important;
+  flex-direction:column !important;
+  align-items:center !important;
+  overflow:hidden !important;
+}
+.nav-shell::before,.nav-shell::after,.rail-thread{display:none !important;content:none !important}
+/* Keep the target in the DOM for the existing logo-flight calculation, but do not display a logo in the rail. */
+.nav-logo-dock{
+  position:absolute !important;
+  left:0 !important;
+  top:0 !important;
+  width:68px !important;
+  height:42px !important;
+  opacity:0 !important;
+  pointer-events:none !important;
+}
+.dock-mark,.nav-logo-dock.arrived .dock-mark{opacity:0 !important}
+.active-lens{display:none !important}
+.nav-items{
+  position:relative !important;
+  width:100% !important;
+  display:flex !important;
+  flex-direction:column !important;
+  align-items:center !important;
+  gap:10px !important;
+  padding:0 !important;
+  margin:0 !important;
+}
+.nav-bottom{
+  width:100% !important;
+  margin-top:auto !important;
+  padding-top:8px !important;
+  display:grid !important;
+  place-items:center !important;
+}
+.nav-item{
+  position:relative !important;
+  width:42px !important;
+  height:42px !important;
+  border:1px solid transparent !important;
+  border-radius:8px !important;
+  background:transparent !important;
+  color:#61718A !important;
+  transform:none !important;
+  filter:none !important;
+  box-shadow:none !important;
+}
+.nav-item .icon{
+  width:23px !important;
+  height:23px !important;
+  stroke-width:1.65 !important;
+  transform:none !important;
+}
+.nav-item:hover{
+  color:#315B9F !important;
+  background:#F7FAFF !important;
+  border-color:rgba(49,91,159,.12) !important;
+  transform:none !important;
+}
+.nav-item.active{
+  color:#8A6500 !important;
+  background:#FFF7DA !important;
+  border-color:rgba(252,121,14,.44) !important;
+  box-shadow:0 10px 24px rgba(39,75,131,.10),inset 0 0 0 1px rgba(255,255,255,.82) !important;
+}
+.nav-item.active .icon{stroke:#8A6500 !important;filter:none !important;transform:none !important}
+.nav-item.active::before,.nav-item.active::after,.node,.mini-status{display:none !important;content:none !important}
+.tip{
+  left:48px !important;
+  top:9px !important;
+  color:#243247 !important;
+  background:rgba(255,255,255,.96) !important;
+  border-color:#DDE3EC !important;
+  box-shadow:0 8px 18px rgba(39,75,131,.12) !important;
+}
+@media (max-width:1100px){
+  .app{grid-template-columns:68px minmax(0,1fr) !important}
+  .main{padding:22px !important}
+}
+@media (max-width:700px){
+  .app{grid-template-columns:56px minmax(0,1fr) !important}
+  .nav-shell{width:56px !important}
+  .nav-logo-dock{width:56px !important}
+  .nav-item{width:38px !important;height:38px !important}
+  .nav-item .icon{width:21px !important;height:21px !important}
+  .main{padding:16px !important}
+}
+</style>
+
+<style id="page-02-orange-blue-final-theme">
+/* Keep the latest compact Page 02 rail geometry, recolored to the Orange + Blue theme. */
+.nav-shell{
+  background:#FFFFFF !important;
+  border-right-color:#DDE3EC !important;
+  box-shadow:8px 0 24px rgba(0,52,82,.07) !important;
+}
+.nav-item{color:#61718A !important}
+.nav-item:hover{
+  color:#00406D !important;
+  background:#F4F8FA !important;
+  border-color:rgba(0,64,109,.14) !important;
+}
+.nav-item.active{
+  color:#FC790E !important;
+  background:#FFF0E5 !important;
+  border-color:rgba(252,121,14,.34) !important;
+  box-shadow:0 10px 24px rgba(0,52,82,.10),inset 0 0 0 1px rgba(255,255,255,.84) !important;
+}
+.nav-item.active .icon{stroke:#FC790E !important}
+.tip{
+  color:#243247 !important;
+  background:rgba(255,255,255,.97) !important;
+  border-color:#DDE3EC !important;
+  box-shadow:0 8px 18px rgba(0,52,82,.12) !important;
+}
+</style>
+
+<style id="page-02-orange-logo-feedback-fix">
+/* Orange brand monogram during loading, flight, and every docked/on-page use. */
+.story-mark,.dock-mark,.mark-small{filter:drop-shadow(0 12px 24px rgba(252,121,14,.24)) !important}
+.signal-halo::before{border-color:rgba(252,121,14,.18) !important}
+.data-stream{box-shadow:0 0 24px rgba(252,121,14,.20) !important}
+.travel-trace::before{box-shadow:0 0 22px rgba(252,121,14,.26) !important}
+</style>
+<link rel="stylesheet" href="../surface.css" />
+<script src="../surface-boot.js"></script>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute;overflow:hidden" aria-hidden="true">
+  <symbol id="qad-mark" viewBox="0 0 207 333"><path d="M12.1407 202.259C12.913 199.933 15.9415 195.859 17.5044 193.789L18.2726 194.197C16.6686 197.096 14.7447 199.764 12.8565 202.485C15.8755 208.178 24.0278 217.7 28.4593 222.991C58.4032 258.743 95.7154 281.906 138.774 298.734C154.723 304.967 174.269 309.879 189.057 317.674C190.619 318.498 192.303 320.35 191.906 322.374C191.563 324.128 188.71 326.26 187.126 326.945C162.6 337.554 116.008 331.57 91.8875 323.495C61.3867 313.283 21.8632 295.218 6.42545 265.898C-0.881116 252.021 -1.21599 237.458 3.3277 222.769C4.71705 218.278 12.2261 203.084 12.1407 202.259Z" fill="#FC790E"/><path d="M12.1408 202.259C-23.1856 149.45 25.0762 111.576 73.7508 99.2411C80.676 97.4863 86.1312 96.7458 93.1527 96.5994C107.001 96.3115 107.877 102.98 99.5967 112.399C81.3042 131.471 60.2123 147.681 41.7621 166.632C33.2542 175.371 25.7802 184.657 18.2726 194.197L17.5044 193.789C15.9416 195.859 12.913 199.933 12.1408 202.259Z" fill="#FC790E"/><path d="M44.9246 0H68.0119C78.4296 2.28861 89.0417 1.9796 100.128 4.90077C145.864 16.9518 221.631 49.1503 203.427 109.312C201.371 116.107 197.706 123.3 194.187 129.559L193.689 129.49C153.752 70.0051 93.6144 39.283 26.9627 19.1966C23.2979 18.0921 16.3382 15.0346 14.7188 11.4716C14.9622 2.3599 38.0802 1.30755 44.9246 0Z" fill="#FFB06A"/><path d="M193.689 129.49L194.187 129.559C199.916 139.29 204.843 148.615 206.268 159.946C210.93 197.031 171.828 220.869 141.604 230.672C134.471 232.985 104.933 241.126 101.801 230.922C99.423 223.175 123.701 204.423 129.14 198.931C143.731 185.548 158.397 173.193 171.546 158.469C179.348 149.732 188.115 139.678 193.689 129.49Z" fill="#FFB06A"/></symbol>
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="M4 11.2 12 4l8 7.2"/><path d="M6.5 10.5V20h11v-9.5"/><path d="M10 20v-5h4v5"/></symbol>
+  <symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 19h16"/><path d="M7 16V9"/><path d="M12 16V5"/><path d="M17 16v-4"/></symbol>
+  <symbol id="i-plant" viewBox="0 0 24 24"><path d="M4 20h16"/><path d="M6 20V9l5 3V9l7 4v7"/><path d="M8 15h2M13 15h2M17 15h1"/></symbol>
+  <symbol id="i-quality" viewBox="0 0 24 24"><path d="M12 3 5 6v5c0 4.6 3 8 7 10 4-2 7-5.4 7-10V6l-7-3Z"/><path d="m8.7 12 2.1 2.1 4.5-4.8"/></symbol>
+  <symbol id="i-maint" viewBox="0 0 24 24"><path d="m14.7 6.4 2.9 2.9"/><path d="M4.5 19.5 13 11"/><path d="M15.8 4.2a4.2 4.2 0 0 0 4 5.5l-8.5 8.5a3 3 0 1 1-4.2-4.2Z"/></symbol>
+  <symbol id="i-ai" viewBox="0 0 24 24"><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/><circle cx="12" cy="12" r="5"/><path d="M9 12h6M12 9v6"/></symbol>
+
+  <symbol id="i-supply" viewBox="0 0 24 24"><path d="M4 8h10v8H4z"/><path d="M14 11h3l3 3v2h-6z"/><path d="M7 19a2 2 0 1 0 0-4 2 2 0 0 0 0 4ZM17 19a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z"/></symbol>
+  <symbol id="i-work" viewBox="0 0 24 24"><path d="M8 7V5h8v2"/><path d="M4 8h16v11H4z"/><path d="M9 13h6"/></symbol>
+  <symbol id="i-report" viewBox="0 0 24 24"><path d="M6 4h9l3 3v13H6z"/><path d="M14 4v4h4"/><path d="M9 13h6M9 17h4"/></symbol>
+  <symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 4 3 20h18L12 4z"/><path d="M12 9v5M12 17h.01"/></symbol>
+  <symbol id="i-settings" viewBox="0 0 24 24"><path d="M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8Z"/><path d="M4 12h2M18 12h2M12 4v2M12 18v2M6.5 6.5 8 8M16 16l1.5 1.5M17.5 6.5 16 8M8 16l-1.5 1.5"/></symbol>
+  <symbol id="i-filter" viewBox="0 0 24 24"><path d="M4 6h16"/><path d="M7 12h10"/><path d="M10 18h4"/></symbol>
+  <symbol id="i-send" viewBox="0 0 24 24"><path d="m4 12 16-7-7 16-2-7-7-2Z"/></symbol>
+</svg>
+
+<div class="story" id="story" aria-hidden="true">
+  <div class="signal-halo"></div>
+  <div class="data-stream s1"></div>
+  <div class="data-stream s2"></div>
+  <div class="data-stream s3"></div>
+  <div class="travel-trace" id="travelTrace"></div>
+  <div class="story-mark" id="storyMark"><svg><use href="#qad-mark"/></svg></div>
+  <div class="story-caption"><strong>QAD signal initializing</strong><span>Brand intelligence becomes persistent navigation.</span></div>
+</div>
+
+<main class="app" id="app">
+  <aside class="nav-shell" aria-label="QAD Signal Rail Navigation">
+    <!-- Hidden docking target preserves the approved logo-flight animation without adding a visible logo to the rail. -->
+    <div class="nav-logo-dock" id="navLogoDock" aria-hidden="true"><svg class="dock-mark"><use href="#qad-mark"/></svg></div>
+    <nav class="nav-items" id="navItems" aria-label="Primary navigation">
+      <div class="active-lens" id="activeLens" aria-hidden="true"></div>
+      <button class="nav-item active" type="button" data-label="Command"><svg class="icon"><use href="#i-home"/></svg><span class="tip">Command</span></button>
+      <button class="nav-item" type="button" data-label="Intelligence"><svg class="icon"><use href="#i-ai"/></svg><span class="tip">Intelligence</span></button>
+      <button class="nav-item" type="button" data-label="Performance"><svg class="icon"><use href="#i-chart"/></svg><span class="tip">Performance</span></button>
+      <button class="nav-item" type="button" data-label="Operations"><svg class="icon"><use href="#i-plant"/></svg><span class="tip">Operations</span></button>
+      <button class="nav-item" type="button" data-label="Quality"><svg class="icon"><use href="#i-quality"/></svg><span class="tip">Quality</span></button>
+      <button class="nav-item" type="button" data-label="Supply"><svg class="icon"><use href="#i-supply"/></svg><span class="tip">Supply</span></button>
+      <button class="nav-item" type="button" data-label="Work Orders"><svg class="icon"><use href="#i-work"/></svg><span class="tip">Work Orders</span></button>
+      <button class="nav-item" type="button" data-label="Alerts"><svg class="icon"><use href="#i-alert"/></svg><span class="tip">Alerts</span></button>
+    </nav>
+    <div class="nav-bottom">
+      <button class="nav-item" type="button" data-label="Settings"><svg class="icon"><use href="#i-settings"/></svg><span class="tip">Settings</span></button>
+    </div>
+  </aside>
+  <section class="main">
+    <header class="topbar">
+      <div class="brand-kicker"><svg class="mark-small"><use href="#qad-mark"/></svg><div><h1 class="h1">Manufacturing Intelligence</h1><div class="body">Logo-led onboarding into a persistent QAD Signal Rail.</div></div></div>
+      <div class="top-actions"><span class="chip red">AI signal active</span><span class="chip">This week</span><button class="btn secondary"><svg class="icon" style="width:16px;height:16px"><use href="#i-filter"/></svg>Filters</button><button class="btn">Run Analysis<span class="bits"><i></i><i></i><i></i></span></button></div>
+    </header>
+    <div class="workspace">
+      <div class="dashboard">
+        <section class="hero-card">
+          <div class="hero-head"><div><div class="label">Executive command center</div><h2 class="h2" style="margin-top:8px">The QAD mark starts as intelligence in the center, then docks into navigation as an always-on signal.</h2></div><span class="chip">Live plant intelligence</span></div>
+          <div class="metric-row"><div class="metric"><span class="tiny">OEE</span><b>82.6%</b><span class="tiny up">▲ 2.3% vs last 7 days</span></div><div class="metric"><span class="tiny">Output</span><b>31.4k</b><span class="tiny up">▲ 3.8%</span></div><div class="metric"><span class="tiny">Downtime</span><b>2.6h</b><span class="tiny down">▼ 4.1%</span></div><div class="metric"><span class="tiny">Scrap rate</span><b>1.24%</b><span class="tiny up">▲ 0.15%</span></div><div class="metric"><span class="tiny">At risk</span><b>18.7k</b><span class="tiny down">▲ 6.6%</span></div></div>
+        </section>
+        <div class="panels">
+          <section class="panel"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px"><div><div class="label">Forecast canvas</div><h2 class="h2" style="margin-top:7px">OEE forecast with QAD red risk path</h2></div><span class="chip">Confidence 74%</span></div><div class="chartbox"><svg viewBox="0 0 640 230" aria-label="OEE forecast chart"><defs><linearGradient id="areaRed" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#FC790E" stop-opacity=".22"/><stop offset="1" stop-color="#FC790E" stop-opacity="0"/></linearGradient></defs><g opacity=".9"><path class="gridline" d="M20 48H620M20 98H620M20 148H620M20 198H620"/></g><path d="M30 175 C80 132 112 150 150 122 S235 110 270 94 S342 102 384 82" class="line-gray"/><path d="M384 82 C420 88 438 72 464 68 S506 50 532 45 S574 38 612 24" class="line-red"/><path d="M384 82 C420 108 454 118 490 98 S560 82 612 62 L612 202 L384 202 Z" fill="url(#areaRed)"/><circle cx="384" cy="82" r="4" fill="#fff" stroke="#FC790E" stroke-width="2"/><text x="26" y="222" font-size="11" fill="#768391">Mon</text><text x="186" y="222" font-size="11" fill="#768391">Wed</text><text x="350" y="222" font-size="11" fill="#768391">Today</text><text x="560" y="222" font-size="11" fill="#768391">Sun</text></svg></div></section>
+          <section class="panel"><div class="label">Root cause drivers</div><h2 class="h2" style="margin:7px 0 16px">What changed</h2><div class="driver"><span>Changeover</span><span class="track"><i class="fill" style="display:block;width:82%"></i></span><b class="down">-2.7%</b></div><div class="driver"><span>Feeder stop</span><span class="track"><i class="fill" style="display:block;width:58%"></i></span><b class="down">-1.8%</b></div><div class="driver"><span>Scrap</span><span class="track"><i class="fill" style="display:block;width:34%"></i></span><b class="down">-0.6%</b></div><div class="driver"><span>Speed</span><span class="track"><i class="fill green" style="display:block;width:48%"></i></span><b class="up">+0.4%</b></div><div class="pattern-strip"><i class="pattern dot"></i><i class="pattern line"></i><i class="pattern ribbon"></i></div></section>
+        </div>
+      </div>
+      <aside class="side">
+        <section class="unique-note"><div class="label" style="color:#f1b7ae">Navigation concept</div><h2 class="h2" style="position:relative;z-index:1;margin-top:7px">Clean signal selection</h2><p>The selected item now uses a stable red-orange signal edge and quiet glass glow. The wave animation has been removed so the rail feels crisp, premium, and reliable. Labels stay small and hover-only.</p></section>
+        <section class="panel"><div class="label">AI conversation</div><h2 class="h2" style="margin-top:7px">Answer as an analytical canvas</h2><div class="prompt" style="margin-top:14px"><div class="orb-mini"><strong>Q</strong></div><div class="body">Why is Line 4 risk rising?</div></div><div class="evidence-grid"><div class="evidence"><div class="tiny">Evidence</div><b class="up">▲ 27%</b><div class="tiny">Changeover time</div></div><div class="evidence"><div class="tiny">Action</div><b>PM today</b><div class="tiny">Create work order</div></div></div></section>
+        <section class="panel"><div class="label">KPI card system</div><div class="cards" style="margin-top:12px"><div class="small-card"><span class="tiny">Quality</span><b>97.3%</b><span class="tiny up">▲ 0.8%</span></div><div class="small-card"><span class="tiny">Energy</span><b>1.24%</b><span class="tiny up">▼ 0.15%</span></div></div></section>
+      </aside>
+    </div>
+  </section>
+</main>
+<script>
+const story = document.getElementById('story');
+const storyMark = document.getElementById('storyMark');
+const navLogoDock = document.getElementById('navLogoDock');
+const dockMark = document.querySelector('.dock-mark');
+const app = document.getElementById('app');
+const trace = document.getElementById('travelTrace');
+const navItems = [...document.querySelectorAll('.nav-item')];
+const lens = document.getElementById('activeLens');
+function centerOf(rect){ return {x:rect.left + rect.width/2, y:rect.top + rect.height/2}; }
+function setLens(target){
+  const parentRect = document.getElementById('navItems').getBoundingClientRect();
+  const rect = target.getBoundingClientRect();
+  const y = rect.top - parentRect.top;
+  lens.style.transform = `translate(-50%, ${y}px)`;
+}
+navItems.forEach(item => item.addEventListener('click', () => {
+  navItems.forEach(i => i.classList.remove('active'));
+  item.classList.add('active');
+  setLens(item);
+  lens.classList.remove('settle');
+  void lens.offsetWidth;
+  lens.classList.add('settle');
+  window.setTimeout(() => lens.classList.remove('settle'), 260);
+}));
+window.addEventListener('resize', () => setLens(document.querySelector('.nav-item.active')));
+function runLogoStory(){
+  setLens(document.querySelector('.nav-item.active'));
+  const from = centerOf(storyMark.getBoundingClientRect());
+  const to = centerOf(dockMark.getBoundingClientRect());
+  const dx = to.x - from.x;
+  const dy = to.y - from.y;
+  const scale = dockMark.getBoundingClientRect().height / storyMark.getBoundingClientRect().height;
+  setTimeout(() => {
+    storyMark.classList.add('is-travelling');
+    trace.style.left = `${from.x}px`; trace.style.top = `${from.y}px`; trace.style.opacity = '1';
+    const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+    const distance = Math.hypot(dx, dy);
+    trace.style.setProperty('--dist', `${distance}px`);
+    trace.style.setProperty('--angle', `${angle}deg`);
+    trace.animate([
+      {opacity:0, transform:`rotate(${angle}deg) scaleX(.2)`},
+      {opacity:.9, transform:`rotate(${angle}deg) scaleX(${Math.max(distance/280,.75)})`, offset:.45},
+      {opacity:0, transform:`rotate(${angle}deg) scaleX(.12)`}
+    ],{duration:1120,easing:'cubic-bezier(.18,.82,.2,1)',fill:'forwards'});
+    storyMark.animate([
+      {transform:'translate3d(0,0,0) scale(1) rotate(0deg)', filter:'drop-shadow(0 20px 32px rgba(252,121,14,.24))'},
+      {transform:`translate3d(${dx*.32}px,${dy*.12}px,0) scale(1.08) rotate(28deg)`, offset:.28},
+      {transform:`translate3d(${dx*.70}px,${dy*.68}px,0) scale(.82) rotate(216deg)`, offset:.72},
+      {transform:`translate3d(${dx}px,${dy}px,0) scale(${scale}) rotate(360deg)`, filter:'drop-shadow(0 10px 18px rgba(252,121,14,.32))'}
+    ],{duration:1180,easing:'cubic-bezier(.18,.82,.2,1)',fill:'forwards'});
+    setTimeout(()=> { storyMark.style.opacity = '0'; navLogoDock.classList.add('arrived'); }, 1160);
+  }, 1680);
+  setTimeout(()=>{story.classList.add('done'); app.classList.add('ready'); navLogoDock.classList.add('arrived');}, 3180);
+}
+if(matchMedia('(prefers-reduced-motion: reduce)').matches){ story.remove(); app.classList.add('ready'); navLogoDock.classList.add('arrived'); }
+else { requestAnimationFrame(runLogoStory); }
+window.addEventListener('keydown', e => { if(e.key === 'Escape'){ story?.classList.add('done'); app.classList.add('ready'); navLogoDock.classList.add('arrived'); }});
+</script>
+</body>
+</html>

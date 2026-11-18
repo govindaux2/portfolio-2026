@@ -1,0 +1,419 @@
+.shell {
+  --stage: #070707;
+  --ink: #f5f5f5;
+  --muted: #8d8d8d;
+  --faint: #6b6b6b;
+  --line: #222;
+  --chip: #161616;
+  --chip-line: #2c2c2c;
+  --soft: #2a2a2a;
+  --raised: #111;
+  --pill: #fff;
+  --pill-ink: #111;
+  --nav: #2a2a2a;
+  height: 100dvh;
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr) 196px;
+  background: var(--stage);
+  color: var(--ink);
+  font-family: "DM Sans", "Segoe UI", system-ui, sans-serif;
+}
+
+.shell h1,
+.shell h2,
+.shell h3,
+.shell h4 {
+  font-family: inherit;
+  font-weight: 560;
+  letter-spacing: -0.03em;
+  line-height: 1.2;
+  text-transform: none;
+}
+
+.shell[data-theme="light"] {
+  --stage: #f4f4f5;
+  --ink: #18181b;
+  --muted: #71717a;
+  --faint: #a1a1aa;
+  --line: #e4e4e7;
+  --chip: #fff;
+  --chip-line: #e4e4e7;
+  --soft: #ececee;
+  --raised: #fff;
+  --pill: #18181b;
+  --pill-ink: #fff;
+  --nav: #e4e4e7;
+}
+
+@media (prefers-color-scheme: light) {
+  .shell[data-theme="system"] {
+    --stage: #f4f4f5;
+    --ink: #18181b;
+    --muted: #71717a;
+    --faint: #a1a1aa;
+    --line: #e4e4e7;
+    --chip: #fff;
+    --chip-line: #e4e4e7;
+    --soft: #ececee;
+    --raised: #fff;
+    --pill: #18181b;
+    --pill-ink: #fff;
+    --nav: #e4e4e7;
+  }
+}
+
+.shell[data-preview="card"] .canvas {
+  background:
+    linear-gradient(var(--raised), var(--raised)) center / min(880px, calc(100% - 48px)) calc(100% - 36px) no-repeat;
+}
+
+.side,
+.rail {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  padding: 16px 12px;
+}
+
+.side {
+  border-right: 1px solid var(--line);
+}
+
+.rail {
+  border-left: 1px solid var(--line);
+  overflow: auto;
+}
+
+.system {
+  margin: 4px 12px 14px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.nav {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.nav button,
+.rail button {
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.nav button {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  height: 36px;
+  padding: 0 12px;
+  border-radius: 8px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.nav button[aria-current="page"] {
+  background: var(--nav);
+  color: var(--ink);
+}
+
+.num {
+  width: 1.4em;
+  color: var(--faint);
+  font-variant-numeric: tabular-nums;
+}
+
+.nav button[aria-current="page"] .num {
+  color: var(--ink);
+}
+
+.sideFoot {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px 4px 4px;
+}
+
+.choice {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.choice select {
+  max-width: 112px;
+  height: 28px;
+  padding: 0 8px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--chip);
+  color: var(--ink);
+  font: inherit;
+  font-size: 13px;
+}
+
+.center {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+}
+
+.canvas {
+  height: 100%;
+  overflow: auto;
+  padding: 72px 56px 112px;
+}
+
+.hero {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 72px;
+}
+
+.block {
+  padding: 28px 0 8px;
+  border-top: 1px solid var(--line);
+}
+
+.block h2,
+.lead h2 {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 560;
+  letter-spacing: -0.03em;
+}
+
+.block p,
+.lead p,
+.note {
+  max-width: 460px;
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.rule {
+  margin: 18px 0;
+  border: 0;
+  border-top: 1px solid var(--line);
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 22px;
+}
+
+.links {
+  display: flex;
+  gap: 22px;
+  margin-top: 18px;
+}
+
+.pair {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  max-width: 360px;
+  margin-top: 18px;
+}
+
+.person {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.swatches {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 22px;
+}
+
+.swatch {
+  width: 92px;
+}
+
+.swatch i {
+  display: block;
+  height: 64px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+}
+
+.swatch span {
+  display: block;
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.radii {
+  display: flex;
+  gap: 16px;
+  margin-top: 18px;
+}
+
+.radii b {
+  display: grid;
+  place-items: center;
+  width: 72px;
+  height: 48px;
+  border: 1px solid var(--line);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--muted);
+}
+
+.scale {
+  margin-top: 8px;
+}
+
+.scale p {
+  margin: 14px 0 0;
+  max-width: none;
+}
+
+.typeCard {
+  font-family: "Bricolage Grotesque", "DM Sans", sans-serif;
+  font-size: 32px;
+  font-weight: 400;
+  color: var(--ink);
+}
+
+.typeUi {
+  font-size: 14px;
+}
+
+.libraries {
+  margin: 18px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.libraries li {
+  display: grid;
+  grid-template-columns: 120px minmax(0, 280px);
+  gap: 16px;
+  max-width: 440px;
+  padding: 12px 0;
+  border-top: 1px solid var(--line);
+  font-size: 14px;
+}
+
+.libraries a {
+  color: var(--ink);
+}
+
+.sizes {
+  position: absolute;
+  top: 22px;
+  right: 28px;
+  z-index: 2;
+  display: flex;
+  gap: 16px;
+}
+
+.sizes button,
+.variants button {
+  border: 0;
+  background: transparent;
+  color: var(--faint);
+  font: inherit;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+}
+
+.sizes button[aria-pressed="true"] {
+  color: var(--ink);
+  box-shadow: inset 0 -1px 0 var(--ink);
+}
+
+.variants {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 2;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  height: 64px;
+  background: var(--stage);
+  border-top: 1px solid var(--line);
+}
+
+.variants button {
+  height: 32px;
+  padding: 0 12px;
+  border-radius: 999px;
+  letter-spacing: 0;
+  font-size: 13px;
+}
+
+.variants button[aria-pressed="true"] {
+  background: var(--soft);
+  color: var(--ink);
+}
+
+.group {
+  margin: 0 0 16px;
+  padding: 0 8px;
+}
+
+.group h2 {
+  margin: 8px 0;
+  color: var(--faint);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.group button {
+  display: block;
+  width: 100%;
+  padding: 5px 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.group button[aria-current="true"] {
+  color: var(--ink);
+}
+
+.layoutCard {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 420px;
+  margin-top: 22px;
+}

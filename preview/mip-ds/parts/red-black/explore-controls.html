@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>MIP explore · controls · red-black</title>
+<link rel="stylesheet" href="../surface.css"/>
+<style>
+:root{
+  --font: "IBM Plex Sans", Inter, ui-sans-serif, system-ui, sans-serif;
+  --red:#f82408; --orange:#ff8661; --smelter:#95002d; --rose:#fff0ee;
+  --dur:260ms; --ease:cubic-bezier(.2,.8,.2,1);
+  --r-btn:4px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;font-family:var(--font);color:#111;background:transparent}
+body{padding:12px}
+.explore{display:grid;gap:12px}
+.explore-note{margin:0;font:400 11px/1.4 var(--font);color:#657180}
+.explore-controls{display:grid;gap:14px}
+.control-card,.field-card{
+  min-height:0;padding:16px;
+  background:rgba(255,255,255,.62);
+  border:1px solid rgba(220,227,236,.92);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.84);
+  border-radius:4px;
+}
+.label{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#7d8794;font-weight:500}
+.state-stack{display:grid;gap:10px;margin-top:12px}
+.control-line{display:flex;align-items:center;gap:10px;font-size:13px;color:#313943}
+.field-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+@media(max-width:520px){.field-grid{grid-template-columns:1fr}}
+
+.control-checkbox,.control-radio{
+  width:18px;height:18px;border:1.5px solid #aeb8c5;background:#fff;
+  display:inline-grid;place-items:center;padding:0;cursor:pointer;
+  transition:border-color var(--dur) var(--ease), box-shadow var(--dur) var(--ease), background var(--dur) var(--ease), opacity var(--dur) var(--ease);
+}
+.control-checkbox{border-radius:4px}
+.control-radio{border-radius:50%}
+.control-checkbox:hover,.control-checkbox.is-hover,
+.control-radio:hover,.control-radio.is-hover{
+  border-color:var(--red);box-shadow:0 0 0 4px rgba(248,36,8,.075);
+}
+.control-checkbox.is-checked,.control-radio.is-checked{
+  border-color:var(--red);background:#fff;box-shadow:0 0 0 4px rgba(248,36,8,.075);
+}
+.control-checkbox svg{width:14px;height:14px;stroke:var(--red);stroke-width:2.2;fill:none;stroke-linecap:round;stroke-linejoin:round;opacity:0;transform:scale(.82);transition:opacity var(--dur) var(--ease), transform var(--dur) var(--ease)}
+.control-checkbox.is-checked svg{opacity:1;transform:scale(1)}
+.control-radio:after{content:"";width:8px;height:8px;background:var(--red);border-radius:50%;opacity:0;transform:scale(.55);transition:opacity var(--dur) var(--ease), transform var(--dur) var(--ease)}
+.control-radio.is-checked:after{opacity:1;transform:scale(1)}
+.control-checkbox:disabled,.control-radio:disabled,.qad-toggle:disabled,
+.control-checkbox.is-disabled,.control-radio.is-disabled,.qad-toggle.is-disabled{
+  opacity:.42;cursor:not-allowed;box-shadow:none;pointer-events:none;
+}
+
+.qad-toggle{
+  width:48px;height:26px;border-radius:999px;background:#e7edf4;position:relative;
+  border:1px solid #d7e0eb;cursor:pointer;padding:0;
+  transition:background var(--dur) var(--ease), border-color var(--dur) var(--ease);
+}
+.qad-toggle:after{
+  content:"";position:absolute;left:3px;top:3px;width:18px;height:18px;background:#fff;border-radius:50%;
+  box-shadow:0 3px 8px rgba(0,0,0,.15);transition:left var(--dur) var(--ease), transform var(--dur) var(--ease);
+}
+.qad-toggle:hover,.qad-toggle.is-hover{border-color:#bfc9d6;background:#dfe6ef}
+.qad-toggle.is-on{background:linear-gradient(90deg,#0f1011,#3a424c);border-color:#202832}
+.qad-toggle.is-on:after{left:25px}
+.qad-toggle.is-on:hover,.qad-toggle.is-on.is-hover{filter:brightness(1.08)}
+
+.form-field{display:grid;gap:7px}
+.field-label{font-size:11px;font-weight:500;color:#5f6976}
+.field-help{font-size:11px;color:#7a8491;line-height:1.35}
+.field-control{
+  height:42px;width:100%;border:1px solid rgba(220,227,236,.95);background:rgba(255,255,255,.74);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.82);padding:0 12px;color:#242a32;
+  font:400 13px/1 var(--font);outline:none;
+  transition:border-color var(--dur) var(--ease), box-shadow var(--dur) var(--ease), background var(--dur) var(--ease);
+  border-radius:4px;
+}
+.field-control:hover,.field-control.is-hover{border-color:#bfc9d6;background:rgba(255,255,255,.90)}
+.field-control:focus,.field-control.is-selected{border-color:#7e8ea0;box-shadow:0 0 0 3px rgba(77,92,106,.10),inset 0 1px 0 rgba(255,255,255,.86);background:#fff}
+.field-control:disabled,.field-control.is-disabled{opacity:.45;cursor:not-allowed;background:#f1f4f8}
+
+/* Custom dropdown — not the OS select */
+.qad-dd{position:relative}
+.qad-dd-trigger{
+  width:100%;height:42px;display:flex;align-items:center;justify-content:space-between;gap:10px;
+  border:1px solid rgba(220,227,236,.95);background:rgba(255,255,255,.74);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.82);padding:0 12px;color:#242a32;
+  font:400 13px/1 var(--font);border-radius:4px;cursor:pointer;text-align:left;
+  transition:border-color var(--dur) var(--ease), box-shadow var(--dur) var(--ease), background var(--dur) var(--ease);
+}
+.qad-dd-trigger:hover,.qad-dd.is-hover .qad-dd-trigger{border-color:#bfc9d6;background:rgba(255,255,255,.90)}
+.qad-dd.is-open .qad-dd-trigger,.qad-dd-trigger:focus-visible{
+  border-color:var(--red);box-shadow:0 0 0 3px rgba(248,36,8,.12);background:#fff;outline:none;
+}
+.qad-dd-trigger:disabled,.qad-dd.is-disabled .qad-dd-trigger{opacity:.45;cursor:not-allowed;background:#f1f4f8}
+.qad-dd-chevron{
+  width:16px;height:16px;flex:none;color:#667280;
+  transition:transform var(--dur) var(--ease);
+}
+.qad-dd.is-open .qad-dd-chevron{transform:rotate(180deg)}
+.qad-dd-menu{
+  position:absolute;left:0;right:0;top:calc(100% + 6px);z-index:5;
+  margin:0;padding:6px;list-style:none;
+  background:#fff;border:1px solid #dfe6ef;border-radius:4px;
+  box-shadow:0 12px 28px rgba(38,49,63,.14);
+  opacity:0;transform:translateY(-4px);pointer-events:none;
+  transition:opacity var(--dur) var(--ease), transform var(--dur) var(--ease);
+}
+.qad-dd.is-open .qad-dd-menu{opacity:1;transform:none;pointer-events:auto}
+.qad-dd-option{
+  display:block;width:100%;border:0;background:transparent;text-align:left;
+  padding:10px 12px;border-radius:4px;font:400 13px/1.2 var(--font);color:#242a32;cursor:pointer;
+}
+.qad-dd-option:hover,.qad-dd-option.is-active{background:rgba(248,36,8,.08);color:#111}
+.qad-dd-option[aria-selected="true"]{background:rgba(248,36,8,.12);font-weight:500}
+
+.tabs{height:42px;display:flex;background:rgba(255,255,255,.56);border:1px solid #dbe3ed;border-radius:4px;padding:4px;gap:4px;width:max-content;margin-top:12px}
+.tab{border:0;background:transparent;padding:0 14px;border-radius:4px;font:500 12px var(--font);color:#6b7380;cursor:pointer}
+.tab.active{background:#101318;color:#fff}
+
+html[data-ds-surface="dark"] .control-card,
+html[data-ds-surface="dark"] .field-card{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.1);box-shadow:none}
+html[data-ds-surface="dark"] .control-line{color:#d5dbe3}
+html[data-ds-surface="dark"] .qad-dd-menu{background:#161b22;border-color:rgba(255,255,255,.12)}
+html[data-ds-surface="dark"] .qad-dd-option{color:#e8ecf1}
+</style>
+<script src="../surface-boot.js"></script>
+</head>
+<body>
+<div class="explore explore-controls">
+  <p class="explore-note">Library exploration · other-components · red-black. Click to toggle. Hover and disabled shown as fixed demos.</p>
+
+  <div class="control-card">
+    <div class="label">Selection controls</div>
+    <div class="state-stack">
+      <label class="control-line"><button class="control-checkbox" type="button" aria-checked="false"><svg viewBox="0 0 18 18"><path d="M4.25 9.2 7.35 12.25 13.85 5.75"/></svg></button><span>Checkbox</span></label>
+      <label class="control-line"><button class="control-checkbox is-hover" type="button" aria-checked="false" tabindex="-1"><svg viewBox="0 0 18 18"><path d="M4.25 9.2 7.35 12.25 13.85 5.75"/></svg></button><span>Checkbox / hover</span></label>
+      <label class="control-line"><button class="control-checkbox is-disabled" type="button" aria-checked="false" disabled><svg viewBox="0 0 18 18"><path d="M4.25 9.2 7.35 12.25 13.85 5.75"/></svg></button><span>Checkbox / disabled</span></label>
+
+      <label class="control-line"><button class="control-radio is-checked" type="button" data-radio="live" aria-checked="true"></button><span>Radio A</span></label>
+      <label class="control-line"><button class="control-radio" type="button" data-radio="live" aria-checked="false"></button><span>Radio B</span></label>
+      <label class="control-line"><button class="control-radio is-hover" type="button" data-radio="hover" aria-checked="false" tabindex="-1"></button><span>Radio / hover</span></label>
+      <label class="control-line"><button class="control-radio is-disabled" type="button" disabled aria-checked="false"></button><span>Radio / disabled</span></label>
+
+      <label class="control-line"><button class="qad-toggle" type="button" aria-checked="false"></button><span>Toggle</span></label>
+      <label class="control-line"><button class="qad-toggle is-hover" type="button" aria-checked="false" tabindex="-1"></button><span>Toggle / hover</span></label>
+      <label class="control-line"><button class="qad-toggle is-disabled" type="button" disabled aria-checked="false"></button><span>Toggle / disabled</span></label>
+    </div>
+  </div>
+
+  <div class="field-card">
+    <div class="label">Input field components</div>
+    <div class="field-grid">
+      <label class="form-field"><span class="field-label">Text field / normal</span><input class="field-control" type="text" placeholder="Search plants, KPIs, alerts..."><span class="field-help">Default state.</span></label>
+      <label class="form-field"><span class="field-label">Text field / hover</span><input class="field-control is-hover" type="text" value="Line performance" tabindex="-1"><span class="field-help">Hover demo.</span></label>
+      <label class="form-field"><span class="field-label">Text field / disabled</span><input class="field-control" type="text" value="Locked plant" disabled><span class="field-help">Disabled.</span></label>
+
+      <div class="form-field">
+        <span class="field-label">Dropdown / normal</span>
+        <div class="qad-dd" data-dd>
+          <button class="qad-dd-trigger" type="button" aria-haspopup="listbox" aria-expanded="false">
+            <span data-dd-label>Select model</span>
+            <svg class="qad-dd-chevron" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <ul class="qad-dd-menu" role="listbox">
+            <li><button class="qad-dd-option" type="button" role="option" data-value="Select model" aria-selected="true">Select model</button></li>
+            <li><button class="qad-dd-option" type="button" role="option" data-value="Predictive throughput v4">Predictive throughput v4</button></li>
+            <li><button class="qad-dd-option" type="button" role="option" data-value="Scrap risk model">Scrap risk model</button></li>
+          </ul>
+        </div>
+        <span class="field-help">Custom menu — not the system select.</span>
+      </div>
+
+      <div class="form-field">
+        <span class="field-label">Dropdown / hover</span>
+        <div class="qad-dd is-hover" data-dd-static>
+          <button class="qad-dd-trigger" type="button" tabindex="-1" aria-expanded="false">
+            <span>Plant group</span>
+            <svg class="qad-dd-chevron" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+        <span class="field-help">Hover demo.</span>
+      </div>
+
+      <div class="form-field">
+        <span class="field-label">Dropdown / disabled</span>
+        <div class="qad-dd is-disabled" data-dd-static>
+          <button class="qad-dd-trigger" type="button" disabled aria-expanded="false">
+            <span>Last 30 days</span>
+            <svg class="qad-dd-chevron" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+        <span class="field-help">Disabled.</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="field-card">
+    <div class="label">Tabs</div>
+    <div class="tabs"><button class="tab active" type="button">Daily</button><button class="tab" type="button">Weekly</button><button class="tab" type="button">Monthly</button></div>
+  </div>
+</div>
+<script>
+(function(){
+  document.querySelectorAll('.control-checkbox:not(:disabled):not(.is-hover)').forEach(function(box){
+    box.addEventListener('click', function(){
+      var on = !box.classList.contains('is-checked');
+      box.classList.toggle('is-checked', on);
+      box.setAttribute('aria-checked', on ? 'true' : 'false');
+    });
+  });
+  document.querySelectorAll('.control-radio[data-radio="live"]').forEach(function(radio){
+    radio.addEventListener('click', function(){
+      document.querySelectorAll('.control-radio[data-radio="live"]').forEach(function(item){
+        item.classList.remove('is-checked');
+        item.setAttribute('aria-checked','false');
+      });
+      radio.classList.add('is-checked');
+      radio.setAttribute('aria-checked','true');
+    });
+  });
+  document.querySelectorAll('.qad-toggle:not(:disabled):not(.is-hover)').forEach(function(tog){
+    tog.addEventListener('click', function(){
+      var on = !tog.classList.contains('is-on');
+      tog.classList.toggle('is-on', on);
+      tog.setAttribute('aria-checked', on ? 'true' : 'false');
+    });
+  });
+  document.querySelectorAll('[data-dd]').forEach(function(dd){
+    var trigger = dd.querySelector('.qad-dd-trigger');
+    var label = dd.querySelector('[data-dd-label]');
+    var options = dd.querySelectorAll('.qad-dd-option');
+    function close(){
+      dd.classList.remove('is-open');
+      if(trigger) trigger.setAttribute('aria-expanded','false');
+    }
+    function open(){
+      dd.classList.add('is-open');
+      if(trigger) trigger.setAttribute('aria-expanded','true');
+    }
+    if(trigger){
+      trigger.addEventListener('click', function(e){
+        e.stopPropagation();
+        if(dd.classList.contains('is-open')) close(); else open();
+      });
+    }
+    options.forEach(function(opt){
+      opt.addEventListener('click', function(){
+        options.forEach(function(o){ o.setAttribute('aria-selected','false'); });
+        opt.setAttribute('aria-selected','true');
+        if(label) label.textContent = opt.getAttribute('data-value') || opt.textContent;
+        close();
+      });
+    });
+    document.addEventListener('click', function(e){
+      if(!dd.contains(e.target)) close();
+    });
+    document.addEventListener('keydown', function(e){
+      if(e.key === 'Escape') close();
+    });
+  });
+  document.querySelectorAll('.tabs').forEach(function(row){
+    row.querySelectorAll('.tab').forEach(function(tab){
+      tab.addEventListener('click', function(){
+        row.querySelectorAll('.tab').forEach(function(t){ t.classList.remove('active'); });
+        tab.classList.add('active');
+      });
+    });
+  });
+})();
+</script>
+</body>
+</html>

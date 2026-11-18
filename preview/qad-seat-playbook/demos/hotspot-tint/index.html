@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Demo · Cutout tint (suppliers only)</title>
+  <style>
+    :root{
+      --stage:#0a0c10;
+      --text:#f0f0ec;
+      --muted:#96968f;
+      --accent:#c6f24e;
+      --font:"DM Sans","Segoe UI",system-ui,sans-serif;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;background:#06070a;color:var(--text);font-family:var(--font)}
+    .wrap{width:min(920px,calc(100% - 40px));margin:0 auto;padding:40px 0 80px}
+    a{color:var(--accent)}
+    h1{font-size:clamp(28px,4vw,40px);letter-spacing:-.03em;line-height:1.1;margin:0}
+    p{color:var(--muted);line-height:1.5;max-width:38rem;font-size:16px}
+    .kicker{color:var(--accent);font-size:13px;margin:0 0 10px}
+
+    /* ONE shared background. Cutout PNG floats on it. */
+    .stage{
+      margin-top:28px;
+      min-height:520px;
+      border-radius:18px;
+      border:1px solid #2a2d34;
+      background:var(--stage);
+      /* subtle grid so you can see the shared ground vs the cutout */
+      background-image:
+        linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px);
+      background-size:48px 48px;
+      background-position:center;
+      display:grid;
+      place-items:center;
+      padding:48px 24px;
+      position:relative;
+    }
+    .stage-label{
+      position:absolute;left:16px;top:14px;margin:0;padding:8px 10px;border-radius:8px;
+      background:rgba(10,12,16,.85);font:500 12px/1.2 var(--font);color:#c5cad3;
+    }
+
+    .cutout{
+      position:relative;
+      display:block;
+      width:min(720px,100%);
+      border:0;
+      padding:0;
+      background:transparent;
+      cursor:pointer;
+      outline:none;
+      transition:transform .35s ease;
+      transform-origin:center center;
+    }
+    .cutout img{
+      display:block;
+      width:100%;
+      height:auto;
+      /* default: slightly dim; transparent pixels stay clear → stage shows through */
+      filter:brightness(.88) saturate(.9);
+      transition:filter .35s ease;
+    }
+
+    /* Only the 3D pixels light up (PNG alpha). No frame, no section card. */
+    .cutout:hover,
+    .cutout:focus-visible,
+    .cutout.is-on{
+      transform:scale(1.045);
+      z-index:2;
+    }
+    .cutout:hover img,
+    .cutout:focus-visible img,
+    .cutout.is-on img{
+      filter:brightness(1.18) saturate(1.2) sepia(.3) hue-rotate(170deg);
+    }
+    .cutout:focus-visible{outline:2px solid #f0f0ec;outline-offset:6px}
+
+    .dialog{
+      position:absolute;left:50%;bottom:calc(100% + 8px);
+      transform:translateX(-50%) translateY(6px);
+      width:min(260px,90%);padding:12px 14px;border-radius:12px;
+      background:rgba(10,12,16,.96);border:1px solid rgba(255,255,255,.14);
+      opacity:0;pointer-events:none;transition:opacity .22s ease, transform .22s ease;
+    }
+    .cutout:hover .dialog,
+    .cutout:focus-visible .dialog,
+    .cutout.is-on .dialog{
+      opacity:1;transform:translateX(-50%) translateY(0);
+    }
+    .dialog strong{display:block;font-size:15px}
+    .dialog p{margin:8px 0 0;font-size:13px;color:#c5cad3}
+
+    .note{margin-top:18px;font-size:14px;color:var(--muted)}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <p class="kicker">Alignment demo · suppliers cutout only</p>
+    <h1>Only the 3D cutout lights up.</h1>
+    <p>One shared stage background (with a light grid so you can see it). The suppliers art is a transparent PNG — charcoal void is gone. Hover: the platform and props tint and zoom. The stage behind stays put.</p>
+
+    <div class="stage" data-demo-stage>
+      <p class="stage-label">Shared background · hover the cutout</p>
+
+      <button class="cutout" type="button" aria-label="Suppliers cutout">
+        <img src="assets/suppliers-cutout.png" width="1280" height="720" alt="Supplier stores and truck cut out from the background." />
+        <span class="dialog">
+          <strong>Suppliers</strong>
+          <p>Highlight is on the 3D pixels only. The grid behind is the shared stage.</p>
+        </span>
+      </button>
+    </div>
+
+    <p class="note">If this is the highlight you meant, we stack more cutouts on this same stage next. <a href="../../">Back to playbook</a></p>
+  </div>
+  <script>
+    (function () {
+      var stage = document.querySelector('[data-demo-stage]');
+      var cut = stage && stage.querySelector('.cutout');
+      if (!cut) return;
+      cut.addEventListener('pointerenter', function () { cut.classList.add('is-on'); });
+      cut.addEventListener('pointerleave', function () { cut.classList.remove('is-on'); });
+      cut.addEventListener('focus', function () { cut.classList.add('is-on'); });
+      cut.addEventListener('blur', function () { cut.classList.remove('is-on'); });
+    })();
+  </script>
+</body>
+</html>

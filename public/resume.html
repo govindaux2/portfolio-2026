@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Samavedam Govinda — Product Designer</title>
+  <style>
+    :root {
+      --bg: #f7f6f3;
+      --sidebar: #f7f6f3;
+      --page: #ffffff;
+      --ink: #37352f;
+      --line: #e3e2de;
+      --hover: #efefed;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+      font-size: 16px;
+      line-height: 1.5;
+    }
+
+    .app {
+      display: grid;
+      grid-template-columns: 240px 1fr;
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      padding: 14px 10px;
+      background: var(--sidebar);
+      border-right: 1px solid var(--line);
+    }
+
+    .workspace {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 8px 14px;
+      color: var(--ink);
+      font-size: 14px;
+      font-weight: 600;
+      line-height: 1.5;
+    }
+
+    .workspace-mark {
+      width: 22px;
+      height: 22px;
+      border-radius: 4px;
+      background: #37352f;
+      color: #ffffff;
+      font-size: 13px;
+      line-height: 22px;
+      text-align: center;
+    }
+
+    .nav a {
+      display: block;
+      padding: 6px 8px;
+      border-radius: 6px;
+      color: var(--ink);
+      text-decoration: none;
+      font-size: 15px;
+      line-height: 1.5;
+    }
+
+    .nav a:hover { background: var(--hover); }
+
+    .nav .label {
+      margin: 16px 8px 6px;
+      color: var(--ink);
+      font-size: 13px;
+      font-weight: 600;
+      line-height: 1.5;
+    }
+
+    .canvas {
+      background: var(--page);
+      min-height: 100vh;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      min-height: 44px;
+      padding: 8px 16px;
+      color: var(--ink);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .page {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 28px 48px 80px;
+    }
+
+    h1 {
+      margin: 8px 0 8px;
+      font-size: 40px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1.3;
+    }
+
+    .role {
+      margin: 0 0 16px;
+      color: var(--ink);
+      font-size: 16px;
+      line-height: 1.5;
+    }
+
+    .props {
+      display: grid;
+      gap: 4px;
+      margin: 0 0 22px;
+      padding: 0;
+      list-style: none;
+    }
+
+    .props li {
+      display: grid;
+      grid-template-columns: 120px 1fr;
+      gap: 8px;
+      align-items: baseline;
+      font-size: 15px;
+      line-height: 1.5;
+    }
+
+    .props span {
+      color: var(--ink);
+      font-weight: 600;
+    }
+
+    .props a {
+      color: var(--ink);
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+
+    h2 {
+      margin: 28px 0 10px;
+      padding-top: 12px;
+      border-top: 1px solid var(--line);
+      font-size: 18px;
+      font-weight: 650;
+      line-height: 1.4;
+    }
+
+    h3 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 650;
+      line-height: 1.4;
+    }
+
+    p { margin: 0 0 6px; line-height: 1.5; }
+
+    .job { margin: 0 0 16px; }
+
+    ul {
+      margin: 4px 0 8px;
+      padding-left: 20px;
+    }
+
+    li {
+      margin: 4px 0;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 800px) {
+      .app { grid-template-columns: 1fr; }
+      .sidebar { display: none; }
+      .page { padding: 24px 20px 64px; }
+      h1 { font-size: 32px; }
+    }
+
+    @media print {
+      .sidebar, .topbar { display: none; }
+      .app { display: block; }
+      .canvas, body { background: #fff; }
+      .page {
+        max-width: none;
+        padding: 0;
+        font-size: 11pt;
+      }
+      h1 { font-size: 22pt; line-height: 1.3; }
+      h2 { break-after: avoid; }
+      .job { break-inside: avoid; }
+      a { color: inherit; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="workspace">
+        <div class="workspace-mark">G</div>
+        Govinda
+      </div>
+      <nav class="nav">
+        <div class="label">Resume</div>
+        <a href="#profile">Profile</a>
+        <a href="#experience">Experience</a>
+        <a href="#skills">Skills</a>
+        <a href="#education">Education</a>
+      </nav>
+    </aside>
+
+    <main class="canvas">
+      <div class="topbar">Resume / Samavedam Govinda</div>
+      <article class="page">
+        <header id="profile">
+          <h1>Samavedam Govinda</h1>
+          <p class="role">Product Designer</p>
+          <ul class="props">
+            <li><span>Location</span> Bangalore, India</li>
+            <li><span>Phone</span> <a href="tel:+916360383987">+91 6360383987</a></li>
+            <li><span>Email</span> <a href="mailto:govindaux2@gmail.com">govindaux2@gmail.com</a></li>
+            <li><span>LinkedIn</span> <a href="https://www.linkedin.com/in/sgovinda">linkedin.com/in/sgovinda</a></li>
+            <li><span>Portfolio</span> <a href="https://www.behance.net/govindaux1">behance.net/govindaux1</a></li>
+          </ul>
+          <p>Product designer with 6 years in banking, fintech, and enterprise software. Designs regulated application flows and operational platforms from research through developer handoff. Leads small design teams and partners with product and engineering on complex, multi-step workflows.</p>
+        </header>
+
+        <section id="experience">
+          <h2>Experience</h2>
+
+          <div class="job">
+            <h3>Lead Digital Solution Designer</h3>
+            <p>Divami Design Labs, Hyderabad · May 2026 – Present</p>
+            <p>QAD Manufacturing Intelligent Platform</p>
+            <ul>
+              <li>Lead a three-person UX team on an automation platform that reduces repetitive manual work and helps operators recover when operations are disrupted.</li>
+              <li>Define user flows, reviews, and developer handoff so product and engineering share one scoped outcome.</li>
+            </ul>
+          </div>
+
+          <div class="job">
+            <h3>Product Designer (AVP)</h3>
+            <p>Wells Fargo · Dec 2023 – May 2026</p>
+            <p>Small business and consumer banking</p>
+            <ul>
+              <li>Designed apply flows for a shared small-business application, business line increase, new digital deposits, and merchant services.</li>
+              <li>Shipped responsive screens on the bank design system with product managers and engineers, and mentored two designers.</li>
+              <li>Improved the digital lending application for business lines of credit. Processing time fell by 30%.</li>
+              <li>Delivered prototypes and responsive designs for 12 projects in the New Digital Deposits Application, including checking and savings accounts with multiple owners.</li>
+              <li>Supported user-acceptance testing, resolved production experience issues, and proposed clearer flows for deposits and payments.</li>
+            </ul>
+          </div>
+
+          <div class="job">
+            <h3>UX Design Consultant</h3>
+            <p>Neudesic, an IBM company · Jun 2022 – Aug 2023</p>
+            <p>KynderConnect, Learning Care Group</p>
+            <ul>
+              <li>Designed a childcare operations product for records, scheduled reports, and parent updates in one place.</li>
+              <li>Led three designers on workflow improvements and extended the design system for consistent layouts across devices.</li>
+            </ul>
+          </div>
+
+          <div class="job">
+            <h3>UX/UI Engineer</h3>
+            <p>Trelleborg Sealing Solutions, Bangalore · Sep 2021 – Jun 2022</p>
+            <p>MountFinder Pro</p>
+            <ul>
+              <li>Designed and shipped the mobile and web app that uses the phone accelerometer with sound and vibration analysis to recommend an anti-vibration mount.</li>
+              <li>Ran workshops and design reviews with product, business, marketing, and engineering.</li>
+            </ul>
+          </div>
+
+          <div class="job">
+            <h3>UX/UI Designer</h3>
+            <p>Entlogics · May 2020 – Sep 2021</p>
+            <p>Education products and marketing site</p>
+            <ul>
+              <li>Designed two education applications for working professionals and high schools.</li>
+              <li>Redesigned the marketing website. Bounce rate fell by about 10%.</li>
+            </ul>
+            <p>Digital marketing internship (graphic design, web design, content writing) · May 2019 – May 2020</p>
+          </div>
+        </section>
+
+        <section id="skills">
+          <h2>Skills</h2>
+          <p>Product design, UX strategy, user flows, interaction design, information architecture, wireframing, prototyping, user research, usability testing, design systems, accessibility, responsive design, workshop facilitation, stakeholder management, developer handoff.</p>
+          <p>Tools: Figma, Storybook.</p>
+        </section>
+
+        <section>
+          <h2>Recognition</h2>
+          <p>Two Spotlight awards at Wells Fargo for execution.</p>
+          <p>Award at Trelleborg for 3D work and innovation.</p>
+        </section>
+
+        <section id="education">
+          <h2>Education</h2>
+          <p>International Certificate in Product Management (Executive), C. T. Bauer College of Business at the University of Houston and Institute of Product Leadership · 2022–2023</p>
+          <p>BVA, Applied Arts, Karnataka Chitrakala Parishath · 2017–2021</p>
+          <p>B.Tech, Electronics and Communication Engineering, REVA University · 2012–2016</p>
+        </section>
+      </article>
+    </main>
+  </div>
+</body>
+</html>

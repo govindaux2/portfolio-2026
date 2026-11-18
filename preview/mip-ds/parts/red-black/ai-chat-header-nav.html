@@ -1,0 +1,428 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>QAD Header Navigation AI Chat Source Ready</title>
+<style>
+:root{
+  --qad-red:#f82408;
+  --qad-orange:#ff8661;
+  --qad-deep:#95002d;
+  --carbon:#0f1011;
+  --ink:#111417;
+  --graphite:#2e3944;
+  --steel:#4d5c6a;
+  --muted:#66707d;
+  --line:#dbe0e9;
+  --mist:#f2f3fb;
+  --white:#fbfbff;
+  --glass:rgba(255,255,255,.72);
+  --dark-card:rgba(255,255,255,.075);
+  --dark-line:rgba(255,255,255,.13);
+  --green:#86c9a8;
+  --blue:#8eb6ff;
+  --radius:4px;
+  --ease:cubic-bezier(.16,1,.3,1);
+  --soft:cubic-bezier(.2,0,0,1);
+  font-family:"IBM Plex Sans", Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  color:var(--ink);
+  background:
+    radial-gradient(circle at 86% 14%, rgba(248,36,8,.045), transparent 26%),
+    radial-gradient(circle at 18% 72%, rgba(77,92,106,.08), transparent 34%),
+    linear-gradient(135deg,#fbfbff 0%,#f3f5fa 46%,#e8edf5 100%);
+  overflow:hidden;
+}
+body:before{
+  content:"";
+  position:fixed;
+  inset:58px 0 0 56px;
+  z-index:-3;
+  pointer-events:none;
+  opacity:.9;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1500' height='900' viewBox='0 0 1500 900'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop stop-color='%234d5c6a' stop-opacity='.18'/%3E%3Cstop offset='.58' stop-color='%2398a3b3' stop-opacity='.10'/%3E%3Cstop offset='1' stop-color='%23f82408' stop-opacity='.10'/%3E%3C/linearGradient%3E%3ClinearGradient id='r' x1='0' y1='0' x2='1' y2='0'%3E%3Cstop stop-color='%23f82408' stop-opacity='0'/%3E%3Cstop offset='.45' stop-color='%23ff8661' stop-opacity='.20'/%3E%3Cstop offset='1' stop-color='%23f82408' stop-opacity='0'/%3E%3C/linearGradient%3E%3Cfilter id='soft'%3E%3CfeGaussianBlur stdDeviation='1.4'/%3E%3C/filter%3E%3C/defs%3E%3Cg fill='none' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M-60 214 C116 122 234 140 384 224 C538 312 654 282 782 188 C928 82 1060 84 1188 190 C1306 288 1390 278 1580 154' stroke='url(%23g)' stroke-width='1.15'/%3E%3Cpath d='M-60 648 C114 538 246 568 378 638 C536 722 652 696 790 594 C934 488 1074 472 1218 566 C1340 646 1452 638 1586 560' stroke='url(%23g)' stroke-width='1.05'/%3E%3Cpath d='M44 444 C204 390 318 408 466 476 C606 540 742 512 886 414 C1018 326 1128 326 1246 404 C1364 482 1458 476 1538 430' stroke='url(%23g)' stroke-width='1'/%3E%3Cpath d='M528 142 L614 142 L652 180 L760 180 L794 146 L916 146' stroke='%234d5c6a' stroke-opacity='.16' stroke-width='.9'/%3E%3Cpath d='M650 370 L742 370 L780 332 L864 332 L902 370 L1044 370' stroke='%234d5c6a' stroke-opacity='.13' stroke-width='.9'/%3E%3Cpath d='M1032 232 C1088 202 1140 208 1190 246' stroke='url(%23r)' stroke-width='2.1' filter='url(%23soft)' opacity='.38'/%3E%3C/g%3E%3Cg fill='%234d5c6a' fill-opacity='.16'%3E%3Ccircle cx='384' cy='224' r='3'/%3E%3Ccircle cx='782' cy='188' r='3'/%3E%3Ccircle cx='1188' cy='190' r='3'/%3E%3Ccircle cx='466' cy='476' r='2.6'/%3E%3Ccircle cx='886' cy='414' r='2.6'/%3E%3Ccircle cx='614' cy='142' r='2.4'/%3E%3C/g%3E%3Cg fill='%23f82408' fill-opacity='.20'%3E%3Ccircle cx='1032' cy='232' r='2.8'/%3E%3C/g%3E%3C/svg%3E");
+  background-size:cover;
+  background-position:center;
+}
+body:after{
+  content:"";
+  position:fixed;
+  inset:58px 0 0 56px;
+  z-index:-2;
+  pointer-events:none;
+  opacity:.28;
+  background:
+    linear-gradient(90deg,transparent 0 18%,rgba(77,92,106,.055) 18.2%,transparent 18.7% 100%),
+    linear-gradient(0deg,transparent 0 24%,rgba(77,92,106,.045) 24.2%,transparent 24.7% 100%);
+  background-size:380px 260px;
+  mask-image:linear-gradient(110deg,transparent 0%,#000 12%,#000 74%,transparent 100%);
+}
+button{font-family:inherit}
+svg{display:block}
+
+/* ------------------------------------------------------------------
+   SOURCE COMPONENT 01: APPLICATION HEADER
+   Keep this component when merging into the final QAD design system.
+   ------------------------------------------------------------------ */
+.app-header{
+  position:fixed;
+  left:0;
+  right:0;
+  top:0;
+  height:56px;
+  min-height:56px;
+  z-index:12;
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap:12px;
+  padding:0 16px 0 18px;
+  border:0;
+  border-bottom:1px solid rgba(255,255,255,.12);
+  border-radius:0;
+  background:
+    radial-gradient(circle at 96% 50%,rgba(248,36,8,.13),transparent 20%),
+    linear-gradient(92deg,#07080a 0%,#0b0d10 46%,#101419 74%,#171115 91%,#2a050b 100%);
+  box-shadow:0 14px 34px rgba(15,16,17,.18), inset 0 1px 0 rgba(255,255,255,.10);
+  backdrop-filter:blur(24px) saturate(150%);
+  -webkit-backdrop-filter:blur(24px) saturate(150%);
+  overflow:hidden;
+}
+.app-header:before{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:
+    repeating-linear-gradient(90deg,rgba(255,255,255,.045) 0 1px,transparent 1px 44px),
+    repeating-linear-gradient(0deg,rgba(255,255,255,.03) 0 1px,transparent 1px 18px);
+  opacity:.24;
+  mask-image:linear-gradient(90deg,#000 0%,#000 72%,transparent 100%);
+}
+.app-header:after{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:
+    linear-gradient(112deg,transparent 0 14%,rgba(255,255,255,.10) 14.2%,transparent 14.8% 48%,rgba(255,134,97,.18) 48.4%,transparent 50.5% 100%),
+    linear-gradient(22deg,transparent 0 64%,rgba(77,92,106,.25) 64.2%,transparent 64.8% 100%),
+    linear-gradient(90deg,transparent,rgba(255,255,255,.16) 42%,rgba(255,134,97,.20) 72%,transparent);
+  opacity:.68;
+  mix-blend-mode:screen;
+}
+.app-logo{
+  width:56px;
+  height:56px;
+  margin-right:auto;
+  position:relative;
+  z-index:2;
+  display:grid;
+  place-items:center;
+  border:0;
+  background:transparent;
+}
+.app-logo svg{width:20px;filter:none}
+.header-signal{
+  position:absolute;
+  left:68px;
+  right:116px;
+  top:50%;
+  height:1px;
+  transform:translateY(-50%);
+  background:linear-gradient(90deg,rgba(255,255,255,.12),rgba(255,255,255,.06) 44%,rgba(255,134,97,.16) 74%,transparent);
+  opacity:.38;
+  pointer-events:none;
+}
+.header-signal:before,
+.header-signal:after{
+  content:"";
+  position:absolute;
+  height:1px;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.26),rgba(255,134,97,.20),transparent);
+}
+.header-signal:before{left:8%;right:22%;transform:translateY(-12px);opacity:.54}
+.header-signal:after{left:30%;right:8%;transform:translateY(13px);opacity:.36}
+.user-area{position:relative;z-index:2;display:flex;align-items:center;gap:12px}
+.header-icon{
+  width:34px;
+  height:34px;
+  border:0;
+  border-radius:var(--radius);
+  background:transparent;
+  display:grid;
+  place-items:center;
+  color:rgba(255,255,255,.82);
+  box-shadow:none;
+  transition:transform .18s var(--soft),color .18s var(--soft),filter .18s var(--soft),background .18s var(--soft);
+}
+.header-icon:hover{color:#fff;background:rgba(255,255,255,.07);filter:drop-shadow(0 0 12px rgba(255,134,97,.30));transform:translateY(-1px)}
+.header-icon svg{width:20px;height:20px;stroke-width:1.5}
+.user-icon{color:rgba(255,255,255,.92);position:relative}
+.user-icon:before{content:"";position:absolute;inset:3px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.18),transparent 60%);opacity:.7}
+
+/* ------------------------------------------------------------------
+   SOURCE COMPONENT 02: LEFT NAVIGATION
+   White rail, black default icon stroke, red active icon/focus state.
+   ------------------------------------------------------------------ */
+.rail{
+  position:fixed;
+  left:0;
+  top:56px;
+  bottom:0;
+  width:56px;
+  z-index:10;
+  padding:16px 0 12px;
+  border:0;
+  border-right:1px solid rgba(77,92,106,.13);
+  border-radius:0;
+  background:linear-gradient(180deg,rgba(255,255,255,.985),rgba(247,249,252,.94));
+  box-shadow:12px 0 34px rgba(15,16,17,.075), inset -1px 0 0 rgba(255,255,255,.92);
+  backdrop-filter:blur(22px) saturate(150%);
+  -webkit-backdrop-filter:blur(22px) saturate(150%);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  overflow:hidden;
+}
+.rail:before{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  z-index:0;
+  opacity:.62;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='900' viewBox='0 0 56 900'%3E%3Cdefs%3E%3ClinearGradient id='bus' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop stop-color='%234d5c6a' stop-opacity='.05'/%3E%3Cstop offset='.48' stop-color='%234d5c6a' stop-opacity='.18'/%3E%3Cstop offset='1' stop-color='%23f82408' stop-opacity='.07'/%3E%3C/linearGradient%3E%3ClinearGradient id='sig' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop stop-color='%23ff8661' stop-opacity='0'/%3E%3Cstop offset='.42' stop-color='%23ff8661' stop-opacity='.34'/%3E%3Cstop offset='1' stop-color='%23f82408' stop-opacity='.18'/%3E%3C/linearGradient%3E%3Cfilter id='soft'%3E%3CfeGaussianBlur stdDeviation='.45'/%3E%3C/filter%3E%3C/defs%3E%3Crect width='56' height='900' fill='none'/%3E%3Cg fill='none' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M28 0 V900' stroke='url(%23bus)' stroke-width='1'/%3E%3Cpath d='M36 80 C21 103 21 130 36 153 C45 168 45 188 31 207 C21 221 20 240 31 258' stroke='url(%23sig)' stroke-width='1.35' opacity='.72' filter='url(%23soft)'/%3E%3Cpath d='M20 328 C35 350 35 375 20 398 C11 413 11 432 25 451 C35 466 36 486 25 506' stroke='%234d5c6a' stroke-opacity='.13' stroke-width='1.05'/%3E%3Cpath d='M35 598 C22 617 21 639 34 658 C45 674 45 695 31 716 C21 731 21 752 34 772' stroke='url(%23sig)' stroke-width='1.1' opacity='.52' filter='url(%23soft)'/%3E%3Cpath d='M18 128 H27 M28 207 H38 M18 398 H28 M28 506 H39 M18 658 H28 M28 772 H38' stroke='%234d5c6a' stroke-opacity='.16' stroke-width='.75'/%3E%3C/g%3E%3Cg fill='%234d5c6a' fill-opacity='.22'%3E%3Ccircle cx='36' cy='80' r='1.8'/%3E%3Ccircle cx='31' cy='207' r='1.8'/%3E%3Ccircle cx='20' cy='398' r='1.7'/%3E%3Ccircle cx='25' cy='506' r='1.7'/%3E%3Ccircle cx='34' cy='658' r='1.7'/%3E%3C/g%3E%3Cg fill='%23f82408' fill-opacity='.34'%3E%3Ccircle cx='36' cy='153' r='1.65'/%3E%3Ccircle cx='34' cy='772' r='1.55'/%3E%3C/g%3E%3C/svg%3E");
+  background-repeat:no-repeat;
+  background-position:center top;
+  background-size:56px 900px;
+}
+.rail:after{
+  content:"";
+  position:absolute;
+  right:0;
+  top:0;
+  bottom:0;
+  width:1px;
+  background:linear-gradient(180deg,transparent,rgba(77,92,106,.16),rgba(248,36,8,.10),transparent);
+  pointer-events:none;
+  z-index:0;
+}
+.nav{position:relative;z-index:2;display:flex;flex-direction:column;gap:10px;align-items:center;width:100%;margin-top:2px}
+.nav-item{
+  position:relative;
+  z-index:3;
+  width:42px;
+  height:40px;
+  border:0;
+  border-radius:var(--radius);
+  background:transparent;
+  color:rgba(17,20,23,.64);
+  display:grid;
+  place-items:center;
+  cursor:pointer;
+  transition:color .2s var(--soft), transform .2s var(--soft), background .2s var(--soft), box-shadow .2s var(--soft);
+}
+.nav-item svg{width:26px;height:26px;stroke-width:1.5}
+.nav-item:hover{color:var(--ink);background:rgba(17,20,23,.045);transform:translateY(-1px)}
+.nav-item.is-active{background:rgba(255,255,255,.70);color:var(--qad-red);box-shadow:0 10px 24px rgba(15,16,17,.06), inset 0 0 0 1px rgba(248,36,8,.10)}
+.nav-item.is-active:before{
+  content:"";
+  position:absolute;
+  inset:5px;
+  border-radius:50%;
+  background:radial-gradient(circle at 50% 50%, rgba(248,36,8,.10), rgba(248,36,8,.045) 58%, transparent 72%);
+  box-shadow:0 0 20px rgba(248,36,8,.13);
+  pointer-events:none;
+}
+.nav-item.is-active svg{stroke:var(--qad-red);filter:drop-shadow(0 0 7px rgba(248,36,8,.28));position:relative;z-index:2}
+.nav-item.is-active:after{
+  content:"";
+  position:absolute;
+  left:50%;
+  bottom:2px;
+  width:4px;
+  height:4px;
+  border-radius:50%;
+  transform:translateX(-50%);
+  background:var(--qad-red);
+  opacity:1;
+  box-shadow:0 0 10px rgba(248,36,8,.48);
+}
+.nav-item:not(.is-active):after{
+  content:attr(data-tip);
+  position:absolute;
+  left:50px;
+  top:50%;
+  transform:translate(6px,-50%);
+  padding:5px 8px;
+  border-radius:var(--radius);
+  background:rgba(15,16,17,.92);
+  border:1px solid rgba(255,255,255,.11);
+  color:rgba(255,255,255,.82);
+  font-size:11px;
+  line-height:1;
+  white-space:nowrap;
+  opacity:0;
+  pointer-events:none;
+  transition:.16s var(--soft);
+  box-shadow:0 10px 28px rgba(15,16,17,.25);
+}
+.nav-item:not(.is-active):hover:after{opacity:1;transform:translate(0,-50%)}
+
+/* ------------------------------------------------------------------
+   SOURCE COMPONENT 03: QAD AI DARK CHAT
+   AI chat is intentionally dark. Text replies are unboxed; charts/tables/actions
+   use containers. This is the source component for final package merge.
+   ------------------------------------------------------------------ */
+.source-stage{
+  min-height:100vh;
+  padding:84px 24px 24px 80px;
+  display:flex;
+  justify-content:flex-end;
+  align-items:stretch;
+}
+.chat-shell{
+  width:min(540px,calc(100vw - 112px));
+  min-height:calc(100vh - 108px);
+  border:1px solid rgba(255,255,255,.10);
+  border-radius:var(--radius);
+  background:#050607;
+  color:#fff;
+  box-shadow:0 32px 90px rgba(15,16,17,.31),0 0 0 1px rgba(255,255,255,.035);
+  display:grid;
+  grid-template-rows:auto 1fr auto;
+  overflow:hidden;
+  position:relative;
+}
+.chat-shell:before{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  opacity:.38;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='680' height='860' viewBox='0 0 680 860'%3E%3Cg fill='none' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M-30 190 C92 112 164 142 244 196 C338 260 424 222 514 142 C592 72 638 84 714 130' stroke='%23ffffff' stroke-opacity='.045' stroke-width='1'/%3E%3Cpath d='M-20 612 C126 510 228 548 340 624 C454 702 566 654 720 540' stroke='%23ffffff' stroke-opacity='.04' stroke-width='1'/%3E%3Cpath d='M48 402 L154 402 L190 366 L298 366 L336 402 L456 402' stroke='%23ffffff' stroke-opacity='.04' stroke-width='1'/%3E%3C/g%3E%3Cg fill='%23ffffff' fill-opacity='.08'%3E%3Ccircle cx='244' cy='196' r='2'/%3E%3Ccircle cx='514' cy='142' r='2'/%3E%3Ccircle cx='340' cy='624' r='2'/%3E%3C/g%3E%3C/svg%3E");
+  background-size:cover;
+  background-position:center;
+}
+.chat-shell>*{position:relative;z-index:1}
+.chat-header{height:68px;padding:14px 16px;border-bottom:1px solid rgba(255,255,255,.10);display:flex;align-items:center;gap:12px;background:#050607}
+.ai-mark{position:relative;width:34px;height:34px;display:grid;place-items:center}
+.ai-mark svg{width:22px;filter:drop-shadow(0 0 12px rgba(248,36,8,.5))}
+.ai-mark:before{content:"";position:absolute;inset:-5px;border:1px solid rgba(248,36,8,.32);border-radius:50%;animation:aiPulse 3.4s var(--soft) infinite}
+.ai-mark:after{content:"";position:absolute;left:-12px;right:-12px;top:16px;height:1px;background:linear-gradient(90deg,transparent,rgba(248,36,8,.9),transparent);animation:smallSweep 2.8s var(--ease) infinite}
+@keyframes aiPulse{0%,100%{transform:scale(.94);opacity:.45}50%{transform:scale(1.06);opacity:.85}}
+@keyframes smallSweep{0%,70%,100%{opacity:0;transform:translateX(-8px)}14%,44%{opacity:1}50%{transform:translateX(8px)}}
+.chat-title{flex:1}.chat-title h2{font-size:15px;line-height:1.2;margin:0 0 3px;font-weight:500;letter-spacing:-.02em}.chat-title p{font-size:12px;color:rgba(255,255,255,.52);margin:0}.chat-state{font-size:12px;color:rgba(255,255,255,.66);display:flex;align-items:center;gap:7px}.chat-state i{width:7px;height:7px;background:var(--green);border-radius:50%;box-shadow:0 0 12px rgba(134,201,168,.7)}
+.chat-body{position:relative;min-height:0;overflow:hidden;padding:18px 16px 14px;background:#050607}
+.thread{height:100%;overflow:auto;padding-right:4px;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.22) transparent}.thread::-webkit-scrollbar{width:6px}.thread::-webkit-scrollbar-thumb{background:rgba(255,255,255,.2);border-radius:3px}.day-note{text-align:center;font-size:12px;color:rgba(255,255,255,.36);margin:0 0 16px}
+.msg{display:flex;margin:0 0 18px;opacity:0;transform:translateY(12px);animation:messageIn .55s var(--ease) forwards}.msg.user{justify-content:flex-end}.msg.ai{justify-content:flex-start;display:block;max-width:92%}.bubble{font-size:13px;line-height:1.58;color:rgba(255,255,255,.82)}.bubble p{margin:0}.msg.ai .bubble{max-width:440px;background:transparent;border:0;box-shadow:none;padding:0;color:rgba(255,255,255,.78)}.msg.user .bubble{max-width:78%;padding:10px 12px;border-radius:var(--radius);background:linear-gradient(180deg,rgba(248,36,8,.16),rgba(248,36,8,.08));border:1px solid rgba(248,36,8,.24);box-shadow:0 10px 28px rgba(0,0,0,.18);color:rgba(255,255,255,.92)}
+.d1{animation-delay:.20s}.d2{animation-delay:.85s}.d3{animation-delay:1.55s}.d4{animation-delay:2.45s}.d5{animation-delay:3.75s}.d6{animation-delay:4.55s}.d7{animation-delay:5.55s}.d8{animation-delay:6.35s}.d9{animation-delay:7.45s}
+@keyframes messageIn{to{opacity:1;transform:none}}
+.typing{display:inline-flex!important;align-items:center;gap:6px;min-height:20px;background:transparent!important;border:0!important;box-shadow:none!important;padding:0!important}.typing b{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.48);display:block;animation:typing 900ms var(--soft) infinite}.typing b:nth-child(2){animation-delay:.15s}.typing b:nth-child(3){animation-delay:.3s}@keyframes typing{0%,80%,100%{transform:translateY(0);opacity:.35}40%{transform:translateY(-4px);opacity:1}}
+.response-card{position:relative;border-radius:var(--radius);background:linear-gradient(145deg,rgba(255,255,255,.095),rgba(255,255,255,.04));border:1px solid rgba(255,255,255,.13);padding:14px;max-width:100%;box-shadow:0 22px 58px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.10);backdrop-filter:blur(18px);overflow:hidden}.response-card:before{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(110deg,transparent 0 46%,rgba(255,255,255,.04) 50%,transparent 58%);opacity:.46}.response-card>*{position:relative}.response-card h3{font-size:13px;font-weight:500;margin:0 0 4px}.response-card .hint{font-size:12px;color:rgba(255,255,255,.45);margin:0 0 10px}
+.mini-chart{height:154px;border-radius:var(--radius);background:repeating-linear-gradient(90deg,rgba(255,255,255,.08) 0 1px,transparent 1px 54px),repeating-linear-gradient(0deg,rgba(255,255,255,.055) 0 1px,transparent 1px 34px),rgba(255,255,255,.035);position:relative;overflow:hidden}.mini-chart svg{position:absolute;inset:16px 13px 22px;width:calc(100% - 26px);height:calc(100% - 38px);overflow:visible}.mini-chart .line-red{fill:none;stroke:var(--qad-red);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:520;stroke-dashoffset:520;animation:drawLine 1.2s var(--ease) 2.78s forwards}.mini-chart .line-gray{fill:none;stroke:rgba(255,255,255,.45);stroke-width:2;stroke-dasharray:4 6}.mini-chart .area-red{fill:url(#chatArea);opacity:0;animation:fadeIn .7s var(--ease) 3.25s forwards}.axis-labels{position:absolute;left:14px;right:14px;bottom:6px;display:flex;justify-content:space-between;color:rgba(255,255,255,.32);font-size:10px}@keyframes drawLine{to{stroke-dashoffset:0}}@keyframes fadeIn{to{opacity:1}}
+.metric-row{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:13px;padding-top:12px;border-top:1px solid rgba(255,255,255,.09)}.metric{position:relative;min-width:0;padding:0 14px 0 0}.metric:not(:last-child):after{content:"";position:absolute;right:0;top:2px;width:1px;height:30px;background:linear-gradient(180deg,transparent,rgba(255,255,255,.14),transparent)}.metric span{display:block;font-size:11px;color:rgba(255,255,255,.42)}.metric strong{display:block;margin-top:4px;font-size:18px;font-weight:500;letter-spacing:-.02em;color:#fff}.metric.bad strong{color:#ffb19a}
+.data-table{width:100%;border-collapse:collapse;font-size:12px;border-radius:var(--radius);overflow:hidden}.data-table th{text-align:left;font-weight:500;color:rgba(255,255,255,.52);padding:9px;background:rgba(255,255,255,.06);border-bottom:1px solid rgba(255,255,255,.08)}.data-table td{padding:9px;border-bottom:1px solid rgba(255,255,255,.07);color:rgba(255,255,255,.78)}.data-table tr:last-child td{border-bottom:0}.risk-chip{display:inline-flex;align-items:center;gap:5px;color:var(--qad-orange)}.risk-chip i{width:6px;height:6px;background:var(--qad-red);border-radius:50%;box-shadow:0 0 10px rgba(248,36,8,.7)}
+.evidence{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px}.chip{border:1px solid rgba(255,255,255,.11);background:rgba(255,255,255,.06);border-radius:var(--radius);padding:6px 8px;font-size:12px;color:rgba(255,255,255,.68)}.recommend{background:linear-gradient(145deg,rgba(255,255,255,.095),rgba(255,255,255,.04))}.actions{display:flex;gap:8px;margin-top:10px}.dark-btn{position:relative;height:32px;border:1px solid rgba(255,255,255,.18);border-radius:var(--radius);background:linear-gradient(180deg,rgba(255,255,255,.92),rgba(230,234,242,.86));color:#151719;padding:0 11px;font-size:12px;font-weight:500;overflow:hidden;box-shadow:0 10px 24px rgba(0,0,0,.22),inset 0 1px 0 rgba(255,255,255,.9)}.ghost-btn{height:32px;border:1px solid rgba(255,255,255,.12);border-radius:var(--radius);background:rgba(255,255,255,.06);color:rgba(255,255,255,.78);padding:0 11px;font-size:12px}
+.composer{border-top:1px solid rgba(255,255,255,.10);padding:12px 14px;background:#050607}.suggestions{display:flex;gap:8px;overflow:hidden;margin-bottom:10px}.suggestions button{height:28px;white-space:nowrap;border-radius:var(--radius);border:1px solid rgba(255,255,255,.11);background:rgba(255,255,255,.06);color:rgba(255,255,255,.64);font-size:12px;padding:0 9px}.input{height:42px;display:flex;align-items:center;gap:10px;border-radius:var(--radius);border:1px solid rgba(255,255,255,.13);background:rgba(0,0,0,.24);padding:6px 6px 6px 12px}.input span{flex:1;color:rgba(255,255,255,.4);font-size:13px}.send{width:30px;height:30px;border:1px solid rgba(255,255,255,.22);border-radius:var(--radius);background:linear-gradient(180deg,rgba(255,255,255,.96),rgba(232,236,244,.9));color:#171a1f;box-shadow:0 10px 22px rgba(0,0,0,.24),inset 0 1px 0 rgba(255,255,255,.92);transition:transform .18s var(--soft),box-shadow .18s var(--soft)}.send:hover{transform:translateY(-1px);box-shadow:0 14px 28px rgba(0,0,0,.28),0 0 18px rgba(255,255,255,.08),inset 0 1px 0 rgba(255,255,255,.96)}
+@media(max-width:760px){body{overflow:auto}.source-stage{min-height:100vh;padding:76px 12px 12px 68px}.chat-shell{width:100%;min-height:720px}.app-header{height:56px}.rail{top:56px}.suggestions{display:none}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:1ms!important;animation-iteration-count:1!important;transition-duration:1ms!important}.msg{opacity:1;transform:none}}
+</style>
+
+<style id="secondary-readability-fix">
+.chat-title p,.chat-state,.day-note,.response-card .hint,.data-table,.chip,.dark-btn,.ghost-btn,.suggestions button,.meta,.caption,.helper{
+  font-size:14px;
+}
+.chat-title p,.chat-state,.day-note,.response-card .hint,.chip,.ghost-btn,.suggestions button{
+  color:rgba(255,255,255,.76);
+}
+.day-note{color:rgba(255,255,255,.62);}
+</style>
+<link rel="stylesheet" href="../surface.css" />
+<script src="../surface-boot.js"></script>
+</head>
+<body>
+<!--
+  QAD merge source file.
+  Keep only these source sections in final package:
+  01 application header, 02 left navigation, 03 AI dark chat.
+  Dashboard/cards/main-panel content has intentionally been removed.
+-->
+<header class="app-header" aria-label="Application header">
+  <div class="app-logo" aria-label="QAD logo">
+    <svg viewBox="0 0 207 333" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <path fill="#f82408" d="M12.1407 202.259C12.913 199.933 15.9415 195.859 17.5044 193.789L18.2726 194.197C16.6686 197.096 14.7447 199.764 12.8565 202.485C15.8755 208.178 24.0278 217.7 28.4593 222.991C58.4032 258.743 95.7154 281.906 138.774 298.734C154.723 304.967 174.269 309.879 189.057 317.674C190.619 318.498 192.303 320.35 191.906 322.374C191.563 324.128 188.71 326.26 187.126 326.945C162.6 337.554 116.008 331.57 91.8875 323.495C61.3867 313.283 21.8632 295.218 6.42545 265.898C-0.881116 252.021 -1.21599 237.458 3.3277 222.769C4.71705 218.278 12.2261 203.084 12.1407 202.259Z"/>
+      <path fill="#f82408" d="M12.1408 202.259C-23.1856 149.45 25.0762 111.576 73.7508 99.2411C80.676 97.4863 86.1312 96.7458 93.1527 96.5994C107.001 96.3115 107.877 102.98 99.5967 112.399C81.3042 131.471 60.2123 147.681 41.7621 166.632C33.2542 175.371 25.7802 184.657 18.2726 194.197L17.5044 193.789C15.9416 195.859 12.913 199.933 12.1408 202.259Z"/>
+      <path fill="#ff8661" d="M44.9246 0H68.0119C78.4296 2.28861 89.0417 1.9796 100.128 4.90077C145.864 16.9518 221.631 49.1503 203.427 109.312C201.371 116.107 197.706 123.3 194.187 129.559L193.689 129.49C153.752 70.0051 93.6144 39.283 26.9627 19.1966C23.2979 18.0921 16.3382 15.0346 14.7188 11.4716C14.9622 2.3599 38.0802 1.30755 44.9246 0Z"/>
+      <path fill="#ff8661" d="M193.689 129.49L194.187 129.559C199.916 139.29 204.843 148.615 206.268 159.946C210.93 197.031 171.828 220.869 141.604 230.672C134.471 232.985 104.933 241.126 101.801 230.922C99.423 223.175 123.701 204.423 129.14 198.931C143.731 185.548 158.397 173.193 171.546 158.469C179.348 149.732 188.115 139.678 193.689 129.49Z"/>
+    </svg>
+  </div>
+  <span class="header-signal" aria-hidden="true"></span>
+  <div class="user-area">
+    <button class="header-icon" aria-label="Notifications"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 8h18c0-1-3-1-3-8"/><path d="M10 21h4"/></svg></button>
+    <button class="header-icon user-icon" aria-label="User profile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 21a8 8 0 0 0-16 0"/><circle cx="12" cy="7" r="4"/></svg></button>
+  </div>
+</header>
+
+<nav class="rail" aria-label="QAD navigation">
+  <div class="nav">
+    <button class="nav-item is-active" data-tip="Overview" aria-label="Overview"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 10.8 12 3l9 7.8"/><path d="M5.5 9.5V21h13V9.5"/><path d="M9.5 21v-6h5v6"/></svg></button>
+    <button class="nav-item" data-tip="Performance" aria-label="Performance"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 19V5"/><path d="M4 19h16"/><path d="m7 15 4-4 3 3 5-7"/></svg></button>
+    <button class="nav-item" data-tip="Operations" aria-label="Operations"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 20h16"/><path d="M6 20V9l5-3v14"/><path d="M11 11l5-3v12"/><path d="M8 13h1M13 13h1M17 13h1"/></svg></button>
+    <button class="nav-item" data-tip="Quality" aria-label="Quality"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 3 20 7v6c0 5-3.5 7.5-8 8-4.5-.5-8-3-8-8V7l8-4Z"/><path d="m8.5 12 2.3 2.3 4.8-5"/></svg></button>
+    <button class="nav-item" data-tip="Maintenance" aria-label="Maintenance"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M14.7 6.3a4 4 0 0 0-5 5L4 17v3h3l5.7-5.7a4 4 0 0 0 5-5l-2.8 2.8-2-2 2.8-2.8Z"/></svg></button>
+    <button class="nav-item" data-tip="AI chat" aria-label="AI chat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 6.5A3.5 3.5 0 0 1 8.5 3h7A3.5 3.5 0 0 1 19 6.5v5A3.5 3.5 0 0 1 15.5 15H11l-4 4v-4.3A3.5 3.5 0 0 1 5 11.5v-5Z"/><path d="M9 8.5h6M9 11.5h3"/></svg></button>
+    <button class="nav-item" data-tip="Alerts" aria-label="Alerts"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 8h18c0-1-3-1-3-8"/><path d="M10 21h4"/></svg></button>
+    <button class="nav-item" data-tip="Settings" aria-label="Settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z"/><path d="M19 12a7 7 0 0 0-.1-1l2-1.5-2-3.4-2.4 1a7.5 7.5 0 0 0-1.7-1L14.5 3h-5l-.3 3.1c-.6.2-1.2.6-1.7 1l-2.4-1-2 3.4 2 1.5A7 7 0 0 0 5 12c0 .3 0 .7.1 1l-2 1.5 2 3.4 2.4-1c.5.4 1.1.8 1.7 1l.3 3.1h5l.3-3.1c.6-.2 1.2-.6 1.7-1l2.4 1 2-3.4-2-1.5c.1-.3.1-.7.1-1Z"/></svg></button>
+  </div>
+</nav>
+
+<main class="source-stage" aria-label="QAD AI chat source canvas">
+  <aside class="chat-shell" aria-label="QAD AI dark chat conversation">
+    <header class="chat-header">
+      <div class="ai-mark">
+        <svg viewBox="0 0 207 333" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path fill="#f82408" d="M12.1407 202.259C12.913 199.933 15.9415 195.859 17.5044 193.789L18.2726 194.197C16.6686 197.096 14.7447 199.764 12.8565 202.485C15.8755 208.178 24.0278 217.7 28.4593 222.991C58.4032 258.743 95.7154 281.906 138.774 298.734C154.723 304.967 174.269 309.879 189.057 317.674C190.619 318.498 192.303 320.35 191.906 322.374C191.563 324.128 188.71 326.26 187.126 326.945C162.6 337.554 116.008 331.57 91.8875 323.495C61.3867 313.283 21.8632 295.218 6.42545 265.898C-0.881116 252.021 -1.21599 237.458 3.3277 222.769C4.71705 218.278 12.2261 203.084 12.1407 202.259Z"/>
+          <path fill="#f82408" d="M12.1408 202.259C-23.1856 149.45 25.0762 111.576 73.7508 99.2411C80.676 97.4863 86.1312 96.7458 93.1527 96.5994C107.001 96.3115 107.877 102.98 99.5967 112.399C81.3042 131.471 60.2123 147.681 41.7621 166.632C33.2542 175.371 25.7802 184.657 18.2726 194.197L17.5044 193.789C15.9416 195.859 12.913 199.933 12.1408 202.259Z"/>
+          <path fill="#ff8661" d="M44.9246 0H68.0119C78.4296 2.28861 89.0417 1.9796 100.128 4.90077C145.864 16.9518 221.631 49.1503 203.427 109.312C201.371 116.107 197.706 123.3 194.187 129.559L193.689 129.49C153.752 70.0051 93.6144 39.283 26.9627 19.1966C23.2979 18.0921 16.3382 15.0346 14.7188 11.4716C14.9622 2.3599 38.0802 1.30755 44.9246 0Z"/>
+          <path fill="#ff8661" d="M193.689 129.49L194.187 129.559C199.916 139.29 204.843 148.615 206.268 159.946C210.93 197.031 171.828 220.869 141.604 230.672C134.471 232.985 104.933 241.126 101.801 230.922C99.423 223.175 123.701 204.423 129.14 198.931C143.731 185.548 158.397 173.193 171.546 158.469C179.348 149.732 188.115 139.678 193.689 129.49Z"/>
+        </svg>
+      </div>
+      <div class="chat-title"><h2>QAD AI</h2><p>Working through the answer step by step.</p></div>
+      <div class="chat-state"><i></i>Ready</div>
+    </header>
+    <div class="chat-body">
+      <div class="thread">
+        <p class="day-note">Today, 10:42</p>
+        <div class="msg user d1"><div class="bubble"><p>Why is Line 4 downtime rising today?</p></div></div>
+        <div class="msg ai d2"><div class="bubble"><p>Line 4 downtime is rising mainly because changeover time and feeder stoppages increased during the current shift.</p></div></div>
+        <div class="msg ai d3"><div class="bubble typing" aria-label="QAD AI is typing"><b></b><b></b><b></b></div></div>
+        <div class="msg ai d4"><div class="response-card"><h3>Downtime trend</h3><p class="hint">Line 4 compared with the previous shift.</p><div class="mini-chart"><svg viewBox="0 0 450 150" preserveAspectRatio="none"><defs><linearGradient id="chatArea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f82408" stop-opacity=".28"/><stop offset="1" stop-color="#f82408" stop-opacity="0"/></linearGradient></defs><path class="area-red" d="M4 118 C54 112 78 105 110 92 C142 78 168 90 196 70 C232 45 266 62 298 52 C340 38 380 34 446 18 L446 150 L4 150Z"/><path class="line-gray" d="M4 130 C72 116 128 119 186 96 C250 72 318 83 446 64"/><path class="line-red" d="M4 118 C54 112 78 105 110 92 C142 78 168 90 196 70 C232 45 266 62 298 52 C340 38 380 34 446 18"/></svg><div class="axis-labels"><span>6 am</span><span>9 am</span><span>12 pm</span><span>3 pm</span></div></div><div class="metric-row"><div class="metric bad"><span>Downtime</span><strong>2.6h</strong></div><div class="metric bad"><span>Changeover</span><strong>+27%</strong></div><div class="metric"><span>Confidence</span><strong>78%</strong></div></div></div></div>
+        <div class="msg ai d5"><div class="bubble"><p>I checked the event log and grouped the biggest drivers below.</p></div></div>
+        <div class="msg ai d6"><div class="response-card"><h3>Driver table</h3><p class="hint">Root-cause impact estimate for the current shift.</p><table class="data-table"><thead><tr><th>Driver</th><th>Impact</th><th>Status</th></tr></thead><tbody><tr><td>Changeover time</td><td>-2.7%</td><td><span class="risk-chip"><i></i>High</span></td></tr><tr><td>Feeder stoppages</td><td>-1.8%</td><td><span class="risk-chip"><i></i>High</span></td></tr><tr><td>Material wait</td><td>-0.9%</td><td>Medium</td></tr><tr><td>Scrap inspection</td><td>-0.6%</td><td>Low</td></tr></tbody></table><div class="evidence"><span class="chip">Changeover log</span><span class="chip">Downtime events</span><span class="chip">Feeder telemetry</span></div></div></div>
+        <div class="msg user d7"><div class="bubble"><p>What should the supervisor do first?</p></div></div>
+        <div class="msg ai d8"><div class="response-card recommend"><h3>Recommended next action</h3><p class="hint">Move the next changeover forward by 20 minutes and assign a feeder check before restart. This should recover about 1.1 hours today if started now.</p><div class="actions"><button class="dark-btn">Create action</button><button class="ghost-btn">Show evidence</button></div></div></div>
+        <div class="msg ai d9"><div class="bubble"><p>I can also prepare a shift handoff note with the chart, table, and action plan.</p></div></div>
+      </div>
+    </div>
+    <footer class="composer">
+      <div class="suggestions"><button>Show the last 24 hours</button><button>Compare with Line 2</button><button>Prepare handoff note</button></div>
+      <div class="input"><span>Ask QAD AI about operations, risk, or root cause...</span><button class="send" aria-label="Send">→</button></div>
+    </footer>
+  </aside>
+</main>
+<script>
+const navItems=[...document.querySelectorAll('.nav-item')];
+navItems.forEach(item=>item.addEventListener('click',()=>{
+  navItems.forEach(i=>i.classList.remove('is-active'));
+  item.classList.add('is-active');
+}));
+</script>
+</body>
+</html>

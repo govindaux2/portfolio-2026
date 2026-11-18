@@ -1,0 +1,580 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>QAD · Plant floor · supply delay</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --ink: #202124;
+      --mute: #5f6368;
+      --line: rgba(60, 64, 67, 0.22);
+      --glass-strong: rgba(255, 255, 255, 0.94);
+      --hot: #1a73e8;
+      --font: "IBM Plex Sans", "Helvetica Neue", sans-serif;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; background: #e8eaed; color: var(--ink); font-family: var(--font); }
+    body { min-height: 100vh; }
+
+    .shell { max-width: 1280px; margin: 0 auto; padding: 24px 20px 72px; }
+    .top {
+      display: flex; flex-wrap: wrap; gap: 16px 24px;
+      align-items: flex-end; justify-content: space-between;
+      margin-bottom: 20px;
+    }
+    .kicker {
+      margin: 0 0 6px;
+      font: 500 11px/1 var(--font);
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--mute);
+    }
+    .top h1 {
+      margin: 0;
+      font: 500 26px/1.15 var(--font);
+      letter-spacing: -0.03em;
+      max-width: 24ch;
+    }
+    .top p {
+      margin: 8px 0 0;
+      max-width: 48ch;
+      font: 400 14px/1.45 var(--font);
+      color: var(--mute);
+    }
+    .phases { display: flex; gap: 8px; flex-wrap: wrap; }
+    .phase {
+      appearance: none; border: 1px solid #dadce0;
+      background: #fff; color: var(--mute);
+      border-radius: 999px; padding: 8px 14px;
+      font: 500 12px/1 var(--font); cursor: pointer;
+      box-shadow: 0 1px 2px rgba(60,64,67,0.08);
+    }
+    .phase.is-on { background: #202124; color: #fff; border-color: #202124; }
+
+    .legend {
+      display: flex; flex-wrap: wrap; gap: 10px 16px;
+      align-items: center;
+      margin: 0 0 14px;
+      font: 400 12px/1.3 var(--font);
+      color: var(--mute);
+    }
+    .legend span { display: inline-flex; align-items: center; gap: 8px; }
+    .legend i {
+      width: 10px; height: 10px; border-radius: 99px; display: inline-block;
+      border: 2px solid var(--hot); background: #fff;
+    }
+    .legend i.path { border-color: #e37400; background: rgba(227,116,0,0.15); }
+
+    .plant {
+      position: relative;
+      display: grid;
+      grid-template-columns: 1.05fr 1.45fr 0.95fr;
+      grid-template-rows: 1.15fr 0.95fr 0.85fr;
+      min-height: min(78vh, 820px);
+      background: #dfe3e8;
+      border: 1px solid #cfd4da;
+      border-radius: 4px;
+      overflow: hidden;
+      box-shadow: 0 1px 2px rgba(60,64,67,0.08), 0 8px 24px rgba(60,64,67,0.06);
+    }
+
+    .zone {
+      position: relative;
+      isolation: isolate;
+      border-right: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      min-height: 0;
+      overflow: hidden;
+    }
+    .zone:nth-child(3n) { border-right: 0; }
+
+    .zone::before {
+      content: "";
+      position: absolute; inset: 0;
+      background-image: var(--bg);
+      background-size: cover;
+      background-position: center;
+      opacity: 0.34;
+      filter: grayscale(0.35) contrast(1.05);
+      z-index: 0;
+    }
+    .zone::after {
+      content: "";
+      position: absolute; inset: 0;
+      background: linear-gradient(180deg, rgba(248,249,250,0.55) 0%, rgba(248,249,250,0.78) 100%);
+      z-index: 1;
+    }
+    .zone > * { position: relative; z-index: 2; }
+
+    .receiving { grid-column: 1; grid-row: 1 / span 2; --bg: url("./qad-plant/warehouse.png"); }
+    .production { grid-column: 2; grid-row: 1 / span 2; --bg: url("./qad-plant/production.jpg"); }
+    .planning { grid-column: 3; grid-row: 1; --bg: url("./qad-plant/workshop.png"); }
+    .purchasing { grid-column: 3; grid-row: 2; --bg: url("./qad-plant/receiving.png"); }
+    .shipping { grid-column: 1 / span 2; grid-row: 3; --bg: url("./qad-plant/shipping.jpg"); }
+    .cut { grid-column: 3; grid-row: 3; --bg: none; background: #202124; color: #fff; border-right: 0; }
+    .cut::before, .cut::after { display: none; }
+
+    .zone-pad {
+      height: 100%;
+      padding: 18px 18px 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .dept {
+      margin: 0;
+      font: 500 11px/1 var(--font);
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--mute);
+    }
+    .cut .dept { color: #9aa0a6; }
+
+    .room {
+      margin: 0;
+      font: 500 28px/1.1 var(--font);
+      letter-spacing: -0.03em;
+      max-width: 12ch;
+    }
+    .production .room { font-size: 34px; max-width: 14ch; }
+    .cut .room { color: #fff; font-size: 22px; max-width: 16ch; }
+
+    .blurb {
+      margin: 8px 0 0;
+      font: 400 13px/1.4 var(--font);
+      color: #3c4043;
+      max-width: 28ch;
+    }
+    .cut .blurb { color: #dadce0; }
+
+    .pins { display: flex; flex-wrap: wrap; gap: 8px; }
+    .pin {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: var(--glass-strong);
+      border: 1px solid #dadce0;
+      box-shadow: 0 1px 2px rgba(60,64,67,0.1);
+      font: 500 12px/1.2 var(--font);
+      color: var(--ink);
+      backdrop-filter: blur(8px);
+    }
+    .pin em {
+      font-style: normal;
+      font: 500 11px/1 var(--font);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--mute);
+    }
+    .pin.is-hot {
+      border-color: #aecbfa;
+      box-shadow: 0 0 0 1px rgba(26,115,232,0.2), 0 1px 2px rgba(60,64,67,0.08);
+    }
+    .pin.is-hot::before {
+      content: "";
+      width: 7px; height: 7px; border-radius: 99px;
+      background: var(--hot);
+    }
+    .cut .pin {
+      background: rgba(255,255,255,0.08);
+      border-color: rgba(255,255,255,0.18);
+      color: #fff;
+    }
+    .cut .pin em { color: #9aa0a6; }
+
+    .jobs {
+      margin: 0; padding: 0; list-style: none;
+      display: grid; gap: 6px;
+    }
+    .jobs li {
+      font: 400 12px/1.35 var(--font);
+      color: #3c4043;
+      padding-left: 14px;
+      position: relative;
+    }
+    .jobs li::before {
+      content: "";
+      position: absolute; left: 0; top: 0.55em;
+      width: 6px; height: 1px; background: #80868b;
+    }
+    .cut .jobs li { color: #dadce0; }
+    .cut .jobs li::before { background: #9aa0a6; }
+
+    .flow {
+      position: absolute;
+      z-index: 4;
+      pointer-events: none;
+      inset: 0;
+    }
+    .flow svg { width: 100%; height: 100%; display: block; }
+    .flow path {
+      fill: none;
+      stroke: rgba(227, 116, 0, 0.85);
+      stroke-width: 2.5;
+      stroke-dasharray: 6 7;
+      stroke-linecap: round;
+    }
+    .flow-label {
+      position: absolute;
+      z-index: 5;
+      left: 38%;
+      top: 46%;
+      transform: translate(-50%, -50%);
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.95);
+      border: 1px solid #f9ab00;
+      box-shadow: 0 1px 2px rgba(60,64,67,0.12);
+      font: 500 11px/1 var(--font);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: #b06000;
+      pointer-events: none;
+    }
+
+    .stage-tag {
+      display: inline-flex;
+      align-self: flex-start;
+      margin-bottom: 8px;
+      padding: 5px 8px;
+      border-radius: 4px;
+      background: rgba(32,33,36,0.08);
+      font: 500 11px/1 var(--font);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #3c4043;
+    }
+    .cut .stage-tag { background: rgba(255,255,255,0.1); color: #bdc1c6; }
+
+    .ask {
+      margin-top: 16px;
+      background: #fff;
+      border: 1px solid #dadce0;
+      border-radius: 12px;
+      padding: 14px 16px;
+      box-shadow: 0 1px 2px rgba(60,64,67,0.06);
+      display: grid; gap: 8px;
+    }
+    .ask strong {
+      font: 500 11px/1.3 var(--font);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--mute);
+    }
+    .ask p {
+      margin: 0;
+      font: 400 13px/1.45 var(--font);
+      color: #3c4043;
+      max-width: 56ch;
+    }
+    .ask .opts { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 2px; }
+    .ask button {
+      appearance: none;
+      border: 1px solid #dadce0;
+      background: #fff;
+      color: var(--ink);
+      border-radius: 999px;
+      padding: 7px 12px;
+      font: 500 12px/1 var(--font);
+      cursor: pointer;
+    }
+    .ask button.is-picked {
+      background: #202124; color: #fff; border-color: #202124;
+    }
+
+    .footbar {
+      margin-top: 16px;
+      display: flex; flex-wrap: wrap; gap: 12px 20px;
+      justify-content: space-between;
+      font: 400 12px/1.4 var(--font);
+      color: var(--mute);
+    }
+    .footbar a { color: #1a73e8; text-decoration: none; }
+    .footbar a:hover { text-decoration: underline; }
+
+    .phase-panel { display: none; }
+    .phase-panel.is-on { display: block; }
+    .stub {
+      min-height: 360px;
+      background: #fff;
+      border: 1px solid #dadce0;
+      border-radius: 12px;
+      padding: 32px 36px;
+      display: flex; flex-direction: column; justify-content: space-between;
+    }
+    .stub h2 {
+      margin: 0;
+      font: 500 32px/1.15 var(--font);
+      letter-spacing: -0.03em;
+      max-width: 18ch;
+    }
+    .stub p {
+      margin: 12px 0 0;
+      max-width: 48ch;
+      font: 400 14px/1.45 var(--font);
+      color: var(--mute);
+    }
+
+    @media (max-width: 900px) {
+      .plant {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto;
+        min-height: 0;
+      }
+      .receiving, .production, .planning, .purchasing, .shipping, .cut {
+        grid-column: auto; grid-row: auto;
+        min-height: 220px;
+        border-right: 0;
+      }
+      .flow, .flow-label { display: none; }
+      .room, .production .room { font-size: 24px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header class="top">
+      <div>
+        <p class="kicker">Phase A · Plant floor</p>
+        <h1>A manufacturing unit, as a floor plan.</h1>
+        <p>Departments first. Roles pinned on the rooms. The orange path is where a late PO travels — that loop is why supply delay came first.</p>
+      </div>
+      <div class="phases" role="tablist" aria-label="Build phases">
+        <button class="phase is-on" type="button" data-phase="a" aria-selected="true">A · Floor</button>
+        <button class="phase" type="button" data-phase="b" aria-selected="false">B · Tighten</button>
+        <button class="phase" type="button" data-phase="c" aria-selected="false">C · Figma</button>
+      </div>
+    </header>
+
+    <section class="phase-panel is-on" data-panel="a">
+      <div class="legend">
+        <span><i></i> Role on the floor</span>
+        <span><i class="path"></i> Supply-delay path</span>
+        <span>Source to pay → Plan to produce → Order to cash</span>
+      </div>
+
+      <div class="plant" aria-label="Manufacturing floor plan">
+        <div class="flow" aria-hidden="true">
+          <svg viewBox="0 0 100 100" preserveAspectRatio="none">
+            <path d="M 18 28 C 28 28, 34 38, 48 42 C 58 45, 62 52, 55 68 C 50 78, 38 82, 28 84" />
+            <path d="M 55 42 C 68 36, 78 30, 86 24" />
+            <path d="M 62 68 C 72 72, 80 78, 86 88" />
+          </svg>
+        </div>
+        <div class="flow-label">Supply delay path</div>
+
+        <article class="zone receiving">
+          <div class="zone-pad">
+            <div>
+              <span class="stage-tag">Source to pay</span>
+              <p class="dept">01 · Receiving / warehouse</p>
+              <h2 class="room">Materials in</h2>
+              <p class="blurb">PO arrives. Promise date slips. Signal hits email, EDI, or a phone call.</p>
+            </div>
+            <div>
+              <div class="pins">
+                <span class="pin is-hot"><em>Role</em> Buyer</span>
+                <span class="pin"><em>Role</em> Logistics</span>
+              </div>
+              <ul class="jobs" style="margin-top:12px">
+                <li>Track supplier promise</li>
+                <li>Expedite / partial ship</li>
+                <li>Raise the alarm upstream</li>
+              </ul>
+            </div>
+          </div>
+        </article>
+
+        <article class="zone production">
+          <div class="zone-pad">
+            <div>
+              <span class="stage-tag">Plan to produce</span>
+              <p class="dept">02 · Production floor</p>
+              <h2 class="room">Line 3 keeps running — until it can’t</h2>
+              <p class="blurb">Work orders, BOM, frozen zone. A late housing part becomes idle time or a broken customer date.</p>
+            </div>
+            <div>
+              <div class="pins">
+                <span class="pin is-hot"><em>Role</em> Production planner</span>
+                <span class="pin is-hot"><em>Role</em> Scheduler</span>
+                <span class="pin"><em>Role</em> Maintenance</span>
+              </div>
+              <ul class="jobs" style="margin-top:12px">
+                <li>Calculate run-out</li>
+                <li>Reschedule inside frozen horizon</li>
+                <li>Substitute / reallocate / overtime</li>
+              </ul>
+            </div>
+          </div>
+        </article>
+
+        <article class="zone planning">
+          <div class="zone-pad">
+            <div>
+              <span class="stage-tag">Align</span>
+              <p class="dept">03 · Planning room</p>
+              <h2 class="room">Stakeholders meet</h2>
+              <p class="blurb">Buyer, planner, logistics, CSR — one picture of impact before a decision.</p>
+            </div>
+            <div class="pins">
+              <span class="pin is-hot"><em>Role</em> VP</span>
+              <span class="pin"><em>Join</em> Cross-functional</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="zone purchasing">
+          <div class="zone-pad">
+            <div>
+              <span class="stage-tag">Source to pay</span>
+              <p class="dept">04 · Purchasing desk</p>
+              <h2 class="room">Alternate source</h2>
+              <p class="blurb">New PO, other site, or buy finished goods when the house cannot wait.</p>
+            </div>
+            <div class="pins">
+              <span class="pin"><em>Role</em> Purchasing</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="zone shipping">
+          <div class="zone-pad">
+            <div>
+              <span class="stage-tag">Order to cash</span>
+              <p class="dept">05 · Shipping / customer promise</p>
+              <h2 class="room">Protect the date — or renegotiate it</h2>
+              <p class="blurb">Finished goods, safety stock, and who gets told. OTIF lived here; it stayed out of MVP 1.</p>
+            </div>
+            <div>
+              <div class="pins">
+                <span class="pin is-hot"><em>Role</em> Customer service</span>
+                <span class="pin"><em>Watch</em> OTIF · later</span>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="zone cut">
+          <div class="zone-pad">
+            <div>
+              <span class="stage-tag">First cut</span>
+              <p class="dept">Why this case</p>
+              <h2 class="room">Supply delay crosses the whole floor</h2>
+              <p class="blurb">One late PO walks receiving → line → planning → customer. That made it the story we could show, then cut to four decision loops for the event.</p>
+            </div>
+            <div>
+              <div class="pins">
+                <span class="pin"><em>MVP</em> Buyer · Planner · VP · CSR</span>
+              </div>
+              <ul class="jobs" style="margin-top:12px">
+                <li>Signal → gather → alert → decide</li>
+                <li>Carry out on the floor</li>
+                <li>Follow-on in MRP / safety stock</li>
+              </ul>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <div class="ask" data-ask="path">
+        <strong>Ask · path</strong>
+        <p>Keep the orange dashed path as the main story, or animate zone highlights on hover instead?</p>
+        <div class="opts">
+          <button type="button" class="is-picked" data-pick="dashed">Keep dashed path</button>
+          <button type="button" data-pick="hover">Hover highlights only</button>
+          <button type="button" data-pick="both">Path + hover</button>
+        </div>
+      </div>
+
+      <div class="ask" data-ask="rooms">
+        <strong>Ask · rooms</strong>
+        <p>Is five rooms enough (receiving, line, planning, purchasing, shipping), or add a separate quality / inventory bay?</p>
+        <div class="opts">
+          <button type="button" class="is-picked" data-pick="five">Five rooms</button>
+          <button type="button" data-pick="six">Add inventory bay</button>
+        </div>
+      </div>
+
+      <div class="ask" data-ask="photo">
+        <strong>Ask · photos</strong>
+        <p>Backgrounds mix your Figma plant refs with two generated floor/dock shots. Swap any room for a real customer plant photo when you have one?</p>
+        <div class="opts">
+          <button type="button" class="is-picked" data-pick="keep">Keep for now</button>
+          <button type="button" data-pick="swap">I’ll drop real shots later</button>
+        </div>
+      </div>
+
+      <div class="footbar">
+        <span>Floor plan mock · faded department photos · roles pinned</span>
+        <span><a href="./qad-manufacturing.html">Case page</a> · Phase C → Slide for QAD</span>
+      </div>
+    </section>
+
+    <section class="phase-panel" data-panel="b">
+      <div class="stub">
+        <div>
+          <p class="kicker">Phase B</p>
+          <h2>Tighten rooms, path, and copy from your picks.</h2>
+          <p>Lock path style, room count, and which photos stay. Then cut each room to one breath.</p>
+        </div>
+        <p class="kicker">Waiting on Phase A answers</p>
+      </div>
+    </section>
+
+    <section class="phase-panel" data-panel="c">
+      <div class="stub">
+        <div>
+          <p class="kicker">Phase C</p>
+          <h2>Draw this floor plan on Slide for QAD.</h2>
+          <p>1440×810 frames on page 64:25 — plant floor, then the supply-delay path callout. Same quiet chrome.</p>
+        </div>
+        <p class="kicker">Blocked on Phase B</p>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const phases = document.querySelectorAll(".phase");
+    const panels = document.querySelectorAll(".phase-panel");
+    const picks = {};
+
+    phases.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const id = btn.dataset.phase;
+        phases.forEach((b) => {
+          b.classList.toggle("is-on", b === btn);
+          b.setAttribute("aria-selected", b === btn ? "true" : "false");
+        });
+        panels.forEach((p) => p.classList.toggle("is-on", p.dataset.panel === id));
+      });
+    });
+
+    document.querySelectorAll(".ask").forEach((ask) => {
+      ask.querySelectorAll("button").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          ask.querySelectorAll("button").forEach((b) => b.classList.remove("is-picked"));
+          btn.classList.add("is-picked");
+          picks[ask.dataset.ask] = btn.dataset.pick;
+          try { localStorage.setItem("qad.plant.floor.picks", JSON.stringify(picks)); } catch (_) {}
+        });
+      });
+    });
+
+    try {
+      const saved = JSON.parse(localStorage.getItem("qad.plant.floor.picks") || "{}");
+      Object.assign(picks, saved);
+      document.querySelectorAll(".ask").forEach((ask) => {
+        const val = picks[ask.dataset.ask];
+        if (!val) return;
+        ask.querySelectorAll("button").forEach((b) => b.classList.toggle("is-picked", b.dataset.pick === val));
+      });
+    } catch (_) {}
+  </script>
+</body>
+</html>

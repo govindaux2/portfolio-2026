@@ -1,0 +1,97 @@
+/* ---- per-component editor ----
+   One gear per specimen. Hover opens it, click pins it open, Escape or a
+   click outside closes it. Everything inside writes to that component's
+   tokens only, so nothing you do here can leak into another component. */
+.spec{position:relative}
+.spec .ht{display:flex;align-items:center;gap:8px}
+.gear{margin-left:auto;flex:0 0 auto;width:26px;height:26px;display:grid;place-items:center;
+  border:0;background:none;color:var(--text-muted);cursor:pointer;border-radius:var(--r-sm);
+  opacity:0;font-size:14px;transition:opacity var(--t) var(--ease),background var(--t) var(--ease),
+    color var(--t) var(--ease),transform var(--t) var(--ease)}
+.spec:hover .gear,.gear:focus-visible,.gear[aria-expanded=true]{opacity:1}
+.gear:hover{background:var(--tint);color:var(--text)}
+.gear[aria-expanded=true]{color:var(--accent);background:var(--wash);transform:rotate(45deg)}
+.gear .pinned{position:absolute;top:2px;right:2px;width:6px;height:6px;border-radius:50%;
+  background:var(--accent)}
+.gear .pinned[hidden]{display:none}
+
+.ed{position:absolute;z-index:70;top:34px;right:0;width:288px;
+  background:var(--surface);border:1px solid var(--hair);border-radius:var(--r-md);
+  box-shadow:0 22px 60px rgba(0,0,0,.34);animation:slideup var(--t) var(--ease) both;
+  max-height:70vh;overflow-y:auto;overscroll-behavior:contain}
+.ed[hidden]{display:none}
+.ed .top{position:sticky;top:0;z-index:2;display:flex;align-items:center;gap:8px;padding:10px 12px;
+  background:var(--surface);border-bottom:1px solid var(--hair);font-size:var(--t-xs);
+  font-weight:var(--w-semi)}
+.ed .top .sub{font-weight:var(--w-reg);color:var(--text-muted)}
+.ed .top .x{margin-left:auto;border:0;background:none;color:var(--text-muted);cursor:pointer;
+  font-size:15px;line-height:1;padding:2px 5px;border-radius:5px}
+.ed .top .x:hover{background:var(--tint);color:var(--text)}
+.ed .grp{padding:10px 12px;border-bottom:1px solid var(--hair)}
+.ed .grp:last-child{border-bottom:0}
+.ed .gh{display:flex;align-items:center;gap:8px;font-size:var(--t-micro);letter-spacing:.1em;
+  text-transform:uppercase;color:var(--text-muted);font-weight:var(--w-semi);margin-bottom:8px}
+.ed .gh .rst{margin-left:auto;border:0;background:none;color:var(--accent);cursor:pointer;
+  font-size:var(--t-micro);font-weight:var(--w-med);padding:2px 5px;border-radius:5px;
+  text-transform:none;letter-spacing:0}
+.ed .gh .rst:hover{background:var(--wash)}
+.ed .gh .rst[hidden]{display:none}
+.ed .gh .inh{color:var(--text-muted);font-weight:var(--w-reg);text-transform:none;letter-spacing:0}
+
+.ed .fr{display:flex;align-items:center;gap:9px;margin:0 0 7px;font-size:var(--t-sm)}
+.ed .fr:last-child{margin-bottom:0}
+.ed .fr > .k{width:58px;flex:0 0 auto;color:var(--text-muted);font-size:var(--t-xs)}
+.ed .fr > .v{margin-left:auto;font-size:var(--t-micro);color:var(--text-muted);
+  font-variant-numeric:tabular-nums;width:38px;text-align:right}
+.ed input[type=color]{width:24px;height:22px;padding:0;border:0;background:none;cursor:pointer;
+  flex:0 0 auto}
+.ed input[type=color]::-webkit-color-swatch{border:1px solid var(--hair);border-radius:5px}
+.ed input[type=color]::-webkit-color-swatch-wrapper{padding:0}
+.ed input[type=range]{flex:1;min-width:0;accent-color:var(--accent);height:18px;margin:0}
+.ed .seg{display:flex;gap:2px;background:var(--tint);border-radius:var(--r-sm);padding:2px;
+  margin-bottom:9px}
+.ed .seg button{flex:1;border:0;background:none;color:var(--text-muted);font:inherit;
+  font-size:var(--t-xs);padding:5px 4px;border-radius:5px;cursor:pointer;
+  transition:background var(--t) var(--ease),color var(--t) var(--ease)}
+.ed .seg button.on{background:var(--surface);color:var(--text);font-weight:var(--w-med);
+  box-shadow:0 1px 3px rgba(0,0,0,.16)}
+.ed .prev{height:34px;border-radius:var(--r-sm);margin-bottom:9px;
+  box-shadow:inset 0 0 0 1px var(--hair)}
+.ed .warn{display:flex;gap:7px;font-size:var(--t-micro);color:var(--warn);margin-top:8px;
+  line-height:1.45}
+.ed .warn[hidden]{display:none}
+.ed .ft{padding:9px 12px;display:flex;align-items:center;gap:8px;font-size:var(--t-micro);
+  color:var(--text-muted);border-top:1px solid var(--hair);position:sticky;bottom:0;
+  background:var(--surface)}
+.ed .ft button{margin-left:auto;border:0;background:var(--tint);color:var(--text-2);cursor:pointer;
+  font-size:var(--t-micro);padding:5px 9px;border-radius:var(--r-sm)}
+.ed .ft button:hover{background:var(--tint-2);color:var(--text)}
+
+/* studio summary of everything pinned */
+.sum{display:grid;gap:2px;margin-bottom:6px}
+.sum .none{font-size:11.5px;color:#79808d;padding:4px 2px;line-height:1.45}
+.sum .row{display:flex;align-items:center;gap:7px;font-size:11.5px;color:#b9c0cb;padding:3px 4px;
+  border-radius:6px}
+.sum .row:hover{background:rgba(255,255,255,.06)}
+.sum .row i{width:10px;height:10px;border-radius:3px;flex:0 0 auto;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.2)}
+.sum .row span{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sum .row button{border:0;background:none;color:#79808d;cursor:pointer;font-size:11px;padding:1px 4px}
+.sum .row button:hover{color:#fff}
+
+/* self-check badge */
+#check{position:fixed;left:16px;bottom:16px;z-index:200;font:400 12px/1.4 var(--font);
+  background:var(--surface);border:1px solid var(--hair);border-radius:var(--r-md);
+  box-shadow:0 14px 40px rgba(0,0,0,.3);overflow:hidden;max-width:330px}
+#check .hd{display:flex;align-items:center;gap:8px;padding:8px 11px;cursor:pointer;
+  color:var(--text-2);font-weight:var(--w-med)}
+#check .hd .d{width:7px;height:7px;border-radius:50%;background:var(--ok);flex:0 0 auto}
+#check.bad .hd .d{background:var(--danger)}
+#check .hd .cnt{color:var(--text-muted);font-weight:var(--w-reg)}
+#check .hd .cv{margin-left:6px;color:var(--text-muted);font-size:11px}
+#check ul{list-style:none;margin:0;padding:0 11px 10px;display:none}
+#check.open ul{display:block}
+#check li{display:flex;gap:8px;padding:3px 0;color:var(--text-muted);font-size:11.5px}
+#check li b{font-weight:var(--w-reg);color:var(--ok);flex:0 0 auto}
+#check li.fail b{color:var(--danger)}
+#check li.fail{color:var(--text-2)}

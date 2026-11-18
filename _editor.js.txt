@@ -1,0 +1,349 @@
+/* ============================================================
+   PER-COMPONENT EDITOR
+   Every component exposes the same surfaces: text, accent, line, box and
+   shadow, plus the geometry of its box. State is sparse — a group only
+   exists once you touch it, and anything absent keeps inheriting from the
+   global theme, so the accent slider and the four style presets still work.
+   ============================================================ */
+const CMP=[
+ ['ask','Approval',[['--c-ask-target','']].slice(0,0)],
+ ['op','Tool row',[['--c-op-target','Target text'],['--c-op-hover','Hover tint',1]]],
+ ['code','Code block',[['--c-diff-add','Diff added'],['--c-diff-del','Diff removed']]],
+ ['user','Your prompt',[]],
+ ['prose','Agent prose',[]],
+ ['plan','Plan',[['--c-plan-done','Done tick']]],
+ ['fan','Subagents',[]],
+ ['note','Notices',[['--c-note-warn','Warning'],['--c-note-danger','Danger'],['--c-note-ok','Success']]],
+ ['btn','Buttons',[]],
+ ['comp','Composer',[]],
+ ['pin','Pinned bar',[]],
+];
+const CNAME=Object.fromEntries(CMP.map(c=>[c[0],c[1]]));
+const GROUPS=['text','accent','line','box','shadow','geo'];
+const GLABEL={text:'Text',accent:'Accent',line:'Line',box:'Box',shadow:'Shadow',geo:'Geometry'};
+/* what each group inherits from when untouched, shown in the panel */
+const INHERIT={ask:{text:'text',accent:'accent'},op:{text:'text',accent:'warning'},
+  code:{text:'text',accent:'muted'},user:{text:'text',accent:'accent'},
+  prose:{text:'text',accent:'text'},plan:{text:'text',accent:'accent'},
+  fan:{text:'text',accent:'accent'},note:{text:'text',accent:'accent'},
+  btn:{text:'contrast',accent:'accent'},comp:{text:'text',accent:'accent'},
+  pin:{text:'text',accent:'accent'}};
+
+const probe=document.createElement('span');
+probe.style.cssText='position:absolute;visibility:hidden;pointer-events:none';
+document.body.appendChild(probe);
+function resolved(v){                        /* effective colour, as #rrggbb */
+  probe.style.color='#000'; probe.style.color=`var(${v})`;
+  const m=getComputedStyle(probe).color.match(/[\d.]+/g);
+  return m ? '#'+m.slice(0,3).map(n=>(+n).toString(16).padStart(2,'0')).join('') : '#888888';
+}
+function numOf(v,fallback){
+  const n=parseFloat(getComputedStyle(root).getPropertyValue(v));
+  return Number.isFinite(n)?n:fallback;
+}
+const mix=(hex,a)=>a>=100?hex:`color-mix(in srgb, ${hex} ${a}%, transparent)`;
+function lum(hex){
+  const c=[1,3,5].map(i=>parseInt(hex.substr(i,2),16)/255)
+    .map(v=>v<=.03928?v/12.92:Math.pow((v+.055)/1.055,2.4));
+  return .2126*c[0]+.7152*c[1]+.0722*c[2];
+}
+const ratio=(a,b)=>{const [x,y]=[lum(a),lum(b)].sort((m,n)=>n-m);return (x+.05)/(y+.05)};
+
+/* ---- state → CSS custom properties ---- */
+function boxValue(b){
+  if(!b) return null;
+  if(b.mode==='none') return 'transparent';
+  if(b.mode==='solid') return mix(b.a,b.alpha);
+  return `linear-gradient(${b.ang}deg, ${mix(b.a,b.alpha)}, ${mix(b.b,b.alpha)})`;
+}
+function shadowValue(sh){
+  if(!sh || !sh.on) return '0 0 0 0 transparent';
+  return `0 ${sh.y}px ${sh.blur}px ${sh.spread}px ${mix(sh.c,sh.alpha)}`;
+}
+function applyComponents(){
+  ALLVARS.forEach(v=>root.style.removeProperty(v));
+  Object.entries(ST.cmp).forEach(([id,st])=>{
+    const P=(k,val)=>root.style.setProperty(`--c-${id}-${k}`,val);
+    if(st.text)   P('text',st.text);
+    if(st.accent) P('accent',st.accent);
+    if(st.line){  P('line',st.line.c); P('lw',st.line.w+'px'); }
+    if(st.box)    P('box',boxValue(st.box));
+    if(st.shadow) P('shadow',shadowValue(st.shadow));
+    if(st.geo){   P('radius',st.geo.radius+'px'); P('pad',st.geo.pad+'px'); }
+    if(st.extras) Object.entries(st.extras).forEach(([v,hex])=>
+      root.style.setProperty(v, SOFT.has(v)?mix(hex,12):hex));
+  });
+}
+
+/* every property the editor can write, so a reset restores inheritance */
+const ALLVARS=CMP.flatMap(([id,,extras])=>
+  ['text','accent','line','lw','box','shadow','radius','pad'].map(k=>`--c-${id}-${k}`)
+  .concat(extras.map(e=>e[0])));
+const SOFT=new Set(['--c-op-hover']);
+
+/* ---- panel ---- */
+function seed(id){                            /* current values, for first paint */
+  return {
+    text:resolved(`--c-${id}-text`), accent:resolved(`--c-${id}-accent`),
+    line:{c:resolved(`--c-${id}-line`), w:numOf(`--c-${id}-lw`,0)},
+    box:{mode:'solid', a:resolved(`--c-${id}-box`), b:resolved(`--c-${id}-accent`),
+         ang:180, alpha:100},
+    shadow:{on:false, c:'#000000', y:10, blur:30, spread:-8, alpha:35},
+    geo:{radius:numOf(`--c-${id}-radius`,8), pad:numOf(`--c-${id}-pad`,0)}
+  };
+}
+function st(id){ return ST.cmp[id] || (ST.cmp[id]={}); }
+function commit(){ apply(); syncEditors(); }
+
+function buildEditor(card){
+  const id=card.dataset.cmp, meta=CMP.find(c=>c[0]===id); if(!meta) return;
+  const extras=meta[2], d=seed(id);
+  const ed=el(`<div class="ed" hidden>
+    <div class="top">${meta[1]}<span class="sub">surfaces</span>
+      <button class="x" title="Close">×</button></div>
+    <div class="body"></div>
+    <div class="ft"><span class="msg"></span><button class="rstall">Reset component</button></div>
+  </div>`);
+  const body=$('.body',ed);
+  const cur=ST.cmp[id]||{};
+
+  /* --- text + accent --- */
+  const inh=INHERIT[id]||{};
+  ['text','accent'].forEach(k=>{
+    const g=el(`<div class="grp" data-g="${k}">
+      <div class="gh">${GLABEL[k]}<span class="inh"></span>
+        <button class="rst" hidden>Reset</button></div>
+      <div class="fr"><span class="k">Colour</span>
+        <input type="color" value="${(cur[k])||d[k]}"><span class="v"></span></div>
+    </div>`);
+    $('input',g).oninput=e=>{ st(id)[k]=e.target.value; commit(); };
+    $('.rst',g).onclick=()=>{ delete st(id)[k]; commit(); };
+    $('.inh',g).textContent='follows '+(inh[k]||'theme');
+    body.appendChild(g);
+  });
+
+  /* --- line --- */
+  const gl=el(`<div class="grp" data-g="line">
+    <div class="gh">Line<span class="inh">off by default</span>
+      <button class="rst" hidden>Reset</button></div>
+    <div class="fr"><span class="k">Colour</span><input type="color" value="${(cur.line||d.line).c}"></div>
+    <div class="fr"><span class="k">Width</span>
+      <input type="range" min="0" max="4" step="1" value="${(cur.line||d.line).w}">
+      <span class="v"></span></div>
+  </div>`);
+  const lineWrite=()=>{ const [c,w]=$$('input',gl);
+    st(id).line={c:c.value,w:+w.value}; commit(); };
+  $$('input',gl).forEach(i=>i.oninput=lineWrite);
+  $('.rst',gl).onclick=()=>{ delete st(id).line; commit(); };
+  body.appendChild(gl);
+
+  /* --- box, with gradient --- */
+  const b0=cur.box||d.box;
+  const gb=el(`<div class="grp" data-g="box">
+    <div class="gh">Box<button class="rst" hidden>Reset</button></div>
+    <div class="prev"></div>
+    <div class="seg">
+      <button data-m="none">None</button><button data-m="solid">Solid</button>
+      <button data-m="gradient">Gradient</button></div>
+    <div class="fr" data-r="a"><span class="k">From</span>
+      <input type="color" value="${b0.a}"></div>
+    <div class="fr" data-r="b"><span class="k">To</span>
+      <input type="color" value="${b0.b}"></div>
+    <div class="fr" data-r="ang"><span class="k">Angle</span>
+      <input type="range" min="0" max="360" step="1" value="${b0.ang}"><span class="v"></span></div>
+    <div class="fr" data-r="alpha"><span class="k">Opacity</span>
+      <input type="range" min="0" max="100" step="1" value="${b0.alpha}"><span class="v"></span></div>
+    <div class="warn" hidden><span>▲</span><span class="wt"></span></div>
+  </div>`);
+  const boxRead=()=>({
+    mode:$('.seg button.on',gb)?.dataset.m||'solid',
+    a:$('[data-r=a] input',gb).value, b:$('[data-r=b] input',gb).value,
+    ang:+$('[data-r=ang] input',gb).value, alpha:+$('[data-r=alpha] input',gb).value});
+  const boxWrite=()=>{ st(id).box=boxRead(); commit(); };
+  $$('.seg button',gb).forEach(btn=>btn.onclick=()=>{
+    $$('.seg button',gb).forEach(x=>x.classList.remove('on'));
+    btn.classList.add('on'); boxWrite(); });
+  $$('input',gb).forEach(i=>i.oninput=boxWrite);
+  $('.rst',gb).onclick=()=>{ delete st(id).box; commit(); };
+  body.appendChild(gb);
+
+  /* --- shadow --- */
+  const s0=cur.shadow||d.shadow;
+  const gs=el(`<div class="grp" data-g="shadow">
+    <div class="gh">Shadow<button class="rst" hidden>Reset</button></div>
+    <div class="seg">
+      <button data-s="off">Off</button><button data-s="on">On</button></div>
+    <div class="fr"><span class="k">Colour</span><input type="color" value="${s0.c}"></div>
+    <div class="fr"><span class="k">Y</span>
+      <input type="range" min="0" max="40" value="${s0.y}"><span class="v"></span></div>
+    <div class="fr"><span class="k">Blur</span>
+      <input type="range" min="0" max="80" value="${s0.blur}"><span class="v"></span></div>
+    <div class="fr"><span class="k">Spread</span>
+      <input type="range" min="-20" max="20" value="${s0.spread}"><span class="v"></span></div>
+    <div class="fr"><span class="k">Opacity</span>
+      <input type="range" min="0" max="100" value="${s0.alpha}"><span class="v"></span></div>
+  </div>`);
+  const shWrite=()=>{ const i=$$('input',gs);
+    st(id).shadow={on:$('.seg button.on',gs)?.dataset.s==='on',
+      c:i[0].value,y:+i[1].value,blur:+i[2].value,spread:+i[3].value,alpha:+i[4].value};
+    commit(); };
+  $$('.seg button',gs).forEach(btn=>btn.onclick=()=>{
+    $$('.seg button',gs).forEach(x=>x.classList.remove('on'));
+    btn.classList.add('on'); shWrite(); });
+  $$('input',gs).forEach(i=>i.oninput=shWrite);
+  $('.rst',gs).onclick=()=>{ delete st(id).shadow; commit(); };
+  body.appendChild(gs);
+
+  /* --- geometry --- */
+  const g0=cur.geo||d.geo;
+  const gg=el(`<div class="grp" data-g="geo">
+    <div class="gh">Geometry<button class="rst" hidden>Reset</button></div>
+    <div class="fr"><span class="k">Radius</span>
+      <input type="range" min="0" max="30" value="${g0.radius}"><span class="v"></span></div>
+    <div class="fr"><span class="k">Padding</span>
+      <input type="range" min="0" max="32" value="${g0.pad}"><span class="v"></span></div>
+  </div>`);
+  const geoWrite=()=>{ const i=$$('input',gg);
+    st(id).geo={radius:+i[0].value,pad:+i[1].value}; commit(); };
+  $$('input',gg).forEach(i=>i.oninput=geoWrite);
+  $('.rst',gg).onclick=()=>{ delete st(id).geo; commit(); };
+  body.appendChild(gg);
+
+  /* --- component specific colours --- */
+  if(extras.length){
+    const ge=el(`<div class="grp" data-g="extras">
+      <div class="gh">This component<button class="rst" hidden>Reset</button></div></div>`);
+    extras.forEach(([v,label])=>{
+      const r=el(`<div class="fr" data-v="${v}"><span class="k">${label}</span>
+        <input type="color" value="${(cur.extras&&cur.extras[v])||resolved(v)}"></div>`);
+      $('input',r).oninput=e=>{ const s=st(id); (s.extras=s.extras||{})[v]=e.target.value; commit(); };
+      ge.appendChild(r);
+    });
+    $('.rst',ge).onclick=()=>{ delete st(id).extras; commit(); };
+    body.appendChild(ge);
+  }
+
+  $('.rstall',ed).onclick=()=>{ delete ST.cmp[id]; commit(); rebuildEditor(card); };
+  $('.x',ed).onclick=()=>closeEditors();
+  card.appendChild(ed);
+  return ed;
+}
+function rebuildEditor(card){
+  const open=!$('.ed',card)?.hidden;
+  $('.ed',card)?.remove();
+  const ed=buildEditor(card);
+  if(open && ed) ed.hidden=false;
+  syncEditors();
+}
+
+/* keep every open panel truthful about what is pinned vs inherited */
+function syncEditors(){
+  $$('.spec[data-cmp]').forEach(card=>{
+    const id=card.dataset.cmp, cur=ST.cmp[id]||{}, ed=$('.ed',card);
+    const pinned=Object.keys(cur).length;
+    const dot=$('.gear .pinned',card); if(dot) dot.hidden=!pinned;
+    if(!ed) return;
+    GROUPS.concat('extras').forEach(g=>{
+      const el2=$(`.grp[data-g="${g}"]`,ed); if(!el2) return;
+      const on=cur[g]!==undefined;
+      $('.rst',el2).hidden=!on;
+      const inh=$('.inh',el2); if(inh) inh.hidden=on;
+    });
+    /* live readouts */
+    const gb=$('.grp[data-g=box]',ed);
+    if(gb){
+      const mode=(cur.box&&cur.box.mode)||'solid';
+      $$('.seg button',gb).forEach(b=>b.classList.toggle('on',b.dataset.m===mode));
+      const box=cur.box||seed(id).box;
+      $('[data-r=b]',gb).style.display=mode==='gradient'?'':'none';
+      $('[data-r=ang]',gb).style.display=mode==='gradient'?'':'none';
+      $('[data-r=a]',gb).style.display=mode==='none'?'none':'';
+      $('[data-r=alpha]',gb).style.display=mode==='none'?'none':'';
+      $('[data-r=ang] .v',gb).textContent=box.ang+'°';
+      $('[data-r=alpha] .v',gb).textContent=box.alpha+'%';
+      $('.prev',gb).style.background=cur.box?boxValue(cur.box):resolved(`--c-${id}-box`);
+      /* contrast guard: text against the top of its own box */
+      const w=$('.warn',gb), fg=cur.text||resolved(`--c-${id}-text`);
+      const bg=(cur.box&&cur.box.mode!=='none')?cur.box.a:resolved(`--c-${id}-box`);
+      const r=ratio(fg,bg), poor=(cur.box&&cur.box.mode!=='none')&&r<4.5;
+      w.hidden=!poor;
+      if(poor) $('.wt',w).textContent=`Text is ${r.toFixed(1)}:1 on this fill. Body copy needs 4.5:1.`;
+    }
+    const gs=$('.grp[data-g=shadow]',ed);
+    if(gs){
+      const on=!!(cur.shadow&&cur.shadow.on);
+      $$('.seg button',gs).forEach(b=>b.classList.toggle('on',(b.dataset.s==='on')===on));
+      const sh=cur.shadow||seed(id).shadow, vs=$$('.v',gs);
+      [sh.y+'px',sh.blur+'px',sh.spread+'px',sh.alpha+'%'].forEach((t,i)=>{if(vs[i])vs[i].textContent=t});
+    }
+    const gl2=$('.grp[data-g=line]',ed);
+    if(gl2){ const ln=cur.line||seed(id).line; const v=$('.v',gl2); if(v) v.textContent=ln.w+'px'; }
+    const gg2=$('.grp[data-g=geo]',ed);
+    if(gg2){ const g=cur.geo||seed(id).geo, vs=$$('.v',gg2);
+      if(vs[0])vs[0].textContent=g.radius+'px'; if(vs[1])vs[1].textContent=g.pad+'px'; }
+    $('.msg',ed).textContent=pinned?`${pinned} group${pinned>1?'s':''} pinned`:'All inherited';
+    $('.rstall',ed).hidden=!pinned;
+  });
+  renderSummary();
+}
+
+/* ---- open / close: hover with intent, click to pin ---- */
+let hoverT=null, pinnedCard=null;
+function closeEditors(){
+  $$('.ed').forEach(e=>e.hidden=true);
+  $$('.gear').forEach(g=>g.setAttribute('aria-expanded','false'));
+  pinnedCard=null;
+}
+function openFor(card){
+  const ed=$('.ed',card)||buildEditor(card); if(!ed) return;
+  $$('.ed').forEach(e=>{ if(e!==ed) e.hidden=true });
+  $$('.gear').forEach(g=>g.setAttribute('aria-expanded','false'));
+  ed.hidden=false; $('.gear',card).setAttribute('aria-expanded','true');
+  syncEditors();
+}
+document.addEventListener('pointerover',e=>{
+  const gear=e.target.closest('.gear');
+  if(gear){ clearTimeout(hoverT);
+    hoverT=setTimeout(()=>openFor(gear.closest('.spec')),110); return; }
+  if(e.target.closest('.ed')) clearTimeout(hoverT);
+});
+document.addEventListener('pointerout',e=>{
+  if(pinnedCard) return;
+  const from=e.target.closest('.gear,.ed'); if(!from) return;
+  const to=e.relatedTarget&&e.relatedTarget.closest&&e.relatedTarget.closest('.gear,.ed');
+  if(to) return;
+  clearTimeout(hoverT); hoverT=setTimeout(closeEditors,320);
+});
+document.addEventListener('click',e=>{
+  const gear=e.target.closest('.gear');
+  if(gear){ e.stopPropagation(); const card=gear.closest('.spec');
+    if(pinnedCard===card){ closeEditors(); } else { pinnedCard=card; openFor(card); }
+    return; }
+  if(!e.target.closest('.ed')) closeEditors();
+});
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeEditors(); });
+
+/* ---- studio ledger ---- */
+function renderSummary(){
+  const ids=Object.keys(ST.cmp).filter(id=>Object.keys(ST.cmp[id]).length);
+  const n=ids.reduce((a,id)=>a+Object.keys(ST.cmp[id]).length,0);
+  $('#cmpCount').textContent=n;
+  const box=$('#cmpSummary');
+  if(!n){
+    box.innerHTML='<div class="none">Nothing pinned — every component follows the theme. Hover the ✳ on any component below.</div>';
+    return;
+  }
+  box.innerHTML=ids.map(id=>{
+    const st=ST.cmp[id];
+    const swatch=st.box?boxValue(st.box):(st.accent||resolved(`--c-${id}-accent`));
+    return `<div class="row" data-id="${id}"><i style="background:${swatch}"></i>
+      <span>${CNAME[id]} · ${Object.keys(st).join(', ')}</span>
+      <button title="Reset">×</button></div>`;
+  }).join('')+'<div class="row"><span></span><button id="rstAll">Reset all</button></div>';
+  $$('#cmpSummary .row [title=Reset]').forEach(b=>b.onclick=()=>{
+    const id=b.parentElement.dataset.id; delete ST.cmp[id];
+    apply(); const card=$(`.spec[data-cmp="${id}"] .ed`)?.closest('.spec');
+    if(card) rebuildEditor(card); else syncEditors(); });
+  const all=$('#rstAll'); if(all) all.onclick=()=>{ ST.cmp={};
+    $$('.ed').forEach(e=>e.remove()); apply(); syncEditors(); };
+}

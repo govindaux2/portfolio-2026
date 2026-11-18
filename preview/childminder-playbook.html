@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Childminder playbook</title>
+  <meta name="description" content="Planning playbook for an AI childminder app: routines, live feed, memories, learnings, assessments, and a sourced look at AI features in childcare apps." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <script>document.documentElement.classList.add("js");</script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.css" rel="stylesheet" />
+  <style>
+    :root { --ink: #18181b; --mute: #3f3f46; --line: #e4e4e7; --paper: #fafafa; --card: #fff; --accent: #0f766e; --soft: #f0fdfa; }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: "Source Sans 3", ui-sans-serif, system-ui, sans-serif; color: var(--ink); background: var(--paper); }
+    ::selection { background: #ccfbf1; color: #134e4a; }
+    :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+    a { color: var(--accent); text-underline-offset: 3px; }
+    table { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 1.5; font-variant-numeric: tabular-nums; }
+    th, td { border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; padding: 14px 16px; }
+    th { font-size: 13px; font-weight: 600; color: var(--ink); background: var(--paper); }
+    .badge { display: inline-block; border-radius: 999px; padding: 8px 12px; font-size: 12px; font-weight: 600; line-height: 1.2; border: 1px solid transparent; white-space: nowrap; }
+    .b-must { background: var(--soft); color: #115e59; border-color: #99f6e4; }
+    .b-good { background: #f4f4f5; color: #27272a; border-color: var(--line); }
+    .b-nice { background: var(--card); color: var(--mute); border-color: var(--line); }
+    .b-unique { background: var(--accent); color: #fff; border-color: var(--accent); }
+    .b-sug { background: var(--card); color: var(--accent); border-color: var(--accent); }
+    .layout { min-height: 100vh; }
+    main { padding: 40px 40px 96px 88px; max-width: 1180px; }
+    .nav { position: fixed; top: 16px; left: 16px; z-index: 40; width: max-content; }
+    .nav-dock { display: flex; align-items: center; justify-content: center; width: 38px; padding: 5px; border-radius: 999px; background: #161618; border: 1px solid rgb(255 255 255 / 14%); box-shadow: 0 8px 20px rgb(0 0 0 / 28%); }
+    .nav-menu { position: relative; }
+    .nav-menu::after { content: ""; position: absolute; top: -8px; left: 100%; width: 14px; height: calc(100% + 16px); }
+    .nav-burger { display: grid; place-items: center; width: 28px; height: 28px; padding: 0; border-radius: 50%; color: #f3efe6; background: #2a2a2e; border: 1px solid rgb(255 255 255 / 10%); cursor: pointer; }
+    .nav-burger:hover, .nav-burger:focus-visible { background: #3a3a3f; }
+    .nav-pop { position: absolute; top: 0; left: calc(100% + 10px); display: none; flex-direction: column; gap: 2px; min-width: 196px; max-height: calc(100vh - 40px); overflow: auto; padding: 12px; border-radius: 16px; background: #1a1a1d; border: 1px solid rgb(255 255 255 / 12%); box-shadow: 0 16px 36px rgb(0 0 0 / 36%); }
+    .nav-menu:hover .nav-pop, .nav-menu:focus-within .nav-pop, .nav.is-open .nav-pop { display: flex; }
+    .nav-group { display: flex; flex-direction: column; gap: 2px; padding-top: 8px; }
+    .nav-group + .nav-group { margin-top: 8px; border-top: 1px solid rgb(255 255 255 / 10%); }
+    .nav-group-label { padding: 8px 12px 4px; color: rgb(243 239 230 / 62%); font-size: 13px; font-weight: 600; }
+    .nav-pop-link { display: flex; align-items: center; justify-content: flex-start; gap: 10px; padding: 8px 12px; border-radius: 10px; color: #f3efe6; text-decoration: none; text-align: left; white-space: nowrap; font-size: 13px; font-weight: 500; }
+    .nav-pop-link::before { content: ""; width: 6px; height: 6px; flex: none; border-radius: 50%; background: transparent; }
+    .nav-pop-link.is-here { background: rgb(243 239 230 / 8%); }
+    .nav-pop-link.is-here::before { background: #f3efe6; }
+    .nav-pop-link:hover, .nav-pop-link:focus-visible { background: rgb(243 239 230 / 8%); color: #f3efe6; }
+    .card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 20px; }
+    h1 { font-size: 36px; line-height: 1.15; letter-spacing: -0.03em; font-weight: 600; margin: 0; }
+    h2 { font-size: 26px; letter-spacing: -0.02em; font-weight: 600; margin: 0 0 12px; }
+    h3 { font-size: 16px; font-weight: 600; margin: 0 0 8px; }
+    .lede { color: var(--mute); font-size: 16px; line-height: 1.55; max-width: 72ch; margin: 12px 0 0; }
+    section.page { margin-top: 0; }
+    .js section.page { display: none; }
+    .js section.page.is-on { display: block; }
+    .scroll { overflow-x: auto; border: 1px solid var(--line); border-radius: 12px; background: var(--card); padding: 16px; margin-top: 16px; }
+    .note { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 16px 20px; font-size: 15px; line-height: 1.55; margin-top: 16px; }
+    .brand { padding: 8px 12px 16px; }
+    @media (max-width: 860px) {
+      main { padding: 72px 16px 72px; }
+      h1 { font-size: 28px; }
+    }
+    @media print {
+      .nav { display: none; }
+      .layout { display: block; }
+      main { max-width: none; }
+      a { text-decoration: underline; }
+      .js section.page { display: block; margin-top: 28px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <header class="nav">
+      <nav class="nav-dock" aria-label="Contents">
+        <div class="nav-menu">
+          <button type="button" class="nav-burger" aria-expanded="false" aria-haspopup="true" aria-label="Menu">
+            <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true">
+              <path d="M3.2 4.8h9.6M3.2 8h9.6M3.2 11.2h9.6" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" />
+            </svg>
+          </button>
+          <div class="nav-pop" aria-label="Pages">
+            <div class="nav-group" role="group" aria-label="Read">
+              <div class="nav-group-label">Read</div>
+              <a class="nav-pop-link" href="#read">How to read</a>
+              <a class="nav-pop-link" href="#map">Day map</a>
+            </div>
+            <div class="nav-group" role="group" aria-label="Modules">
+              <div class="nav-group-label">Modules</div>
+              <a class="nav-pop-link" href="#routines">Routines</a>
+              <a class="nav-pop-link" href="#feed">Live feed</a>
+              <a class="nav-pop-link" href="#memories">Memories</a>
+              <a class="nav-pop-link" href="#learnings">Learnings</a>
+              <a class="nav-pop-link" href="#assess">Assessments</a>
+            </div>
+            <div class="nav-group" role="group" aria-label="Value">
+              <div class="nav-group-label">Value</div>
+              <a class="nav-pop-link" href="#value">Value list</a>
+            </div>
+            <div class="nav-group" role="group" aria-label="Market">
+              <div class="nav-group-label">Market</div>
+              <a class="nav-pop-link" href="#market">16 apps</a>
+              <a class="nav-pop-link" href="#ai-table">AI features</a>
+              <a class="nav-pop-link" href="#figures">Figures</a>
+              <a class="nav-pop-link" href="#sources">Sources</a>
+            </div>
+            <div class="nav-group" role="group" aria-label="Studio">
+              <div class="nav-group-label">Studio</div>
+              <a class="nav-pop-link" href="http://127.0.0.1:5173/design-system/childcare">Design system</a>
+            </div>
+          </div>
+        </div>
+      </nav>
+    </header>
+    <main>
+      <section id="read" class="page is-on">
+        <h1>An AI app for a childminder’s day</h1>
+        <p class="lede">This page is the plan, so the later app has something to be built from. It specifies routines, a live feed, memories, learnings, and AI assessments for a home childminder or a very small setting. AI suggests and drafts. A person confirms before anything is shared or treated as an assessment.</p>
+        <div class="note" style="margin-top: 20px;">
+          <span class="badge b-must">Must have</span>
+          <span class="badge b-good">Good to have</span>
+          <span class="badge b-nice">Nice to have</span>
+          <span class="badge b-unique">Unique</span>
+          <span class="badge b-sug">Suggestion</span>
+        </div>
+        <h2 style="margin-top: 28px;">How to read this</h2>
+        <div class="scroll">
+          <table>
+            <thead><tr><th>Mark</th><th>Meaning</th></tr></thead>
+            <tbody>
+              <tr><td><span class="badge b-must">Must have</span></td><td>A working day, a parent, or the EYFS actually needs it.</td></tr>
+              <tr><td><span class="badge b-good">Good to have</span></td><td>Felt every week. Ship it once the must-haves are honest.</td></tr>
+              <tr><td><span class="badge b-nice">Nice to have</span></td><td>Can wait. Often a nursery feature a childminder can live without at first.</td></tr>
+              <tr><td><span class="badge b-unique">Unique</span></td><td>The bet. The products in this set lead with something else.</td></tr>
+              <tr><td><span class="badge b-sug">Suggestion</span></td><td>Added so the product has a place for it. You had not already named it.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="note">Research pass dated 10 November 2026. EYFS wording is from the framework effective 1 November 2024, group and school-based text on <a href="https://dera.ioe.ac.uk/id/eprint/40850/1/EYFS_statutory_framework_for_group_and_school_-_based_providers.pdf">this DERA copy</a>. The publication home is <a href="https://www.gov.uk/government/publications/early-years-foundation-stage-framework--2">GOV.UK</a>. Childminders have their own file on that page. Open that file before treating a group-provider clause as the childminder rule. Vendor marketing, pitch decks, job posts, and third-party blogs are named as such. Where two pages disagree, both numbers stay.</p>
+      </section>
+
+      <section id="map" class="page">
+        <h2>Day map</h2>
+        <p class="lede">One childminder, mixed ages, often out of the house. The day runs from setup, through capture, to a summary a person has signed.</p>
+        <div class="scroll">
+          <table>
+            <thead><tr><th>Step</th><th>Who</th><th>What happens</th><th>AI may</th><th>AI must not</th></tr></thead>
+            <tbody>
+              <tr><td>1. Setup</td><td>Childminder</td><td>Turn routines on, describe a new one, set fields, add an example photo.</td><td>Propose fields from a sentence.</td><td>Turn a routine on, or invent a field the person rejected.</td></tr>
+              <tr><td>2. Arrive</td><td>Childminder</td><td>Mark who is here. Allergies and medicine sit on the child, in their own fields.</td><td>Remind what is due today.</td><td>Mark a child in or out.</td></tr>
+              <tr><td>3. Capture</td><td>Childminder</td><td>Log a meal, nap, or custom routine. Photo if that field is on.</td><td>Fill only values the person just gave, including by voice.</td><td>Guess millilitres, minutes, or “ate most”.</td></tr>
+              <tr><td>4. Feed</td><td>Childminder, then parents</td><td>Today’s enabled items, with parent comments and a separate staff note.</td><td>Draft a parent line from the log.</td><td>Publish, or copy a staff note into the parent text.</td></tr>
+              <tr><td>5. Memory</td><td>Childminder</td><td>Turn a feed item into a learning-journal note or a sweet memory. Tag every child in it.</td><td>Draft from the item, the photo, and the tags.</td><td>Send it, or include another child’s private detail.</td></tr>
+              <tr><td>6. Learning</td><td>Childminder</td><td>Write what the child was learning. Link it, or leave it stand-alone.</td><td>Offer a plain-language line and an optional framework tag.</td><td>Score the child, or file an assessment.</td></tr>
+              <tr><td>7. Assessment</td><td>Childminder</td><td>Ask for a draft when a summary is needed. Edit. Sign. Then share.</td><td>Draft from confirmed learnings and logs.</td><td>Send itself to a parent or another professional.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="routines" class="page">
+        <h2>Routines</h2>
+        <p class="lede">Meals and naps ship as starters. The childminder can add any other routine, describe it in a sentence, and shape the fields. An example photo in setup is a reference. A photo on the entry is about the child.</p>
+        <div class="scroll">
+          <table>
+            <thead><tr><th>Feature</th><th>Priority</th><th>Childminder</th><th>AI</th><th>Parent sees</th><th>Why this priority</th></tr></thead>
+            <tbody>
+              <tr><td>Meal log</td><td><span class="badge b-must">Must have</span></td><td>Time, what was offered, how it went, optional photo.</td><td>Suggests amount, bottle ml, and allergens already on the child.</td><td>Today’s meals for their child.</td><td>Parents ask this daily, and food is a welfare duty. <a href="https://www.gov.uk/government/publications/early-years-foundation-stage-framework--2">EYFS framework</a></td></tr>
+              <tr><td>Nap log</td><td><span class="badge b-must">Must have</span></td><td>Start, end, where, how it went.</td><td>Duration is calculated from the two times entered. A next window is only a hint.</td><td>Slept from–to.</td><td>Huckleberry SweetSpot predicts from logged sleep, from the child’s own record. <a href="https://huckleberrycare.com/product/sweetspot">SweetSpot</a></td></tr>
+              <tr><td>Add a routine</td><td><span class="badge b-must">Must have</span></td><td>Names it, describes it, turns it on or off.</td><td>Proposes fields from the description. The person accepts, edits, or drops each one.</td><td>Only if that routine is parent-visible.</td><td>Kinderly sells a fixed diary of meals, activities, and naps. <a href="https://kinderly.co.uk/pacey/">Kinderly for PACEY</a> Here the person designs the list.</td></tr>
+              <tr><td>Field setup</td><td><span class="badge b-must">Must have</span></td><td>Rename, hide, require, reorder. Mark a field staff-only.</td><td>Suggests a type: time, amount, choice, photo, note, children present.</td><td>Setup itself stays private.</td><td>A field the person rejected would make the log fiction. Berry can log from voice, text, or a photo when each value came from the person. <a href="https://www.ocbj.com/oc-homepage/berry-provides-specialized-expert-vetted-ai-to-help-with-babies-young-children/">Berry, Orange County Business Journal</a></td></tr>
+              <tr><td>Example photo in setup</td><td><span class="badge b-good">Good to have</span></td><td>Attaches “this is a full bowl” as a reference.</td><td>Leaves it alone.</td><td>Stays in setup.</td><td>Setup photos stay off the child’s journal.</td></tr>
+              <tr><td>Live photo on an entry</td><td><span class="badge b-must">Must have</span></td><td>Adds a photo when the field is enabled.</td><td>May offer a caption. The person edits it before it is parent-visible.</td><td>The photo, after confirm, if consent allows.</td><td>Lillio cites 250 million photos and videos shared. <a href="https://get.lillio.com/comparison/">Lillio</a></td></tr>
+              <tr><td>Toileting, mood, outdoors, activity</td><td><span class="badge b-good">Good to have</span></td><td>Starter templates, still editable.</td><td>Same field suggestion as a custom routine.</td><td>Depends on the routine.</td><td>Lillio’s listing includes meals, snacks, sleep, toileting, activities, and medication. <a href="https://appinsider.io/apps/lillio-1098305044">AppInsider listing</a></td></tr>
+              <tr><td>Medicine given</td><td><span class="badge b-must">Must have</span> <span class="badge b-sug">Suggestion</span></td><td>Name, dose, time, who gave it, parent already authorised.</td><td>Reads the child’s medicine note. Leaves the dose blank unless the person said it.</td><td>That child’s care record.</td><td>Famly Sidekick can draft accident and incident forms, and the person still clicks Insert. <a href="https://help.famly.co/en/articles/12878223-sidekick-writing-assistant">Sidekick</a></td></tr>
+              <tr><td>Accident or incident</td><td><span class="badge b-must">Must have</span> <span class="badge b-sug">Suggestion</span></td><td>What, where, first aid, who was told.</td><td>Drafts the parent sentence from those fields only.</td><td>Their child. Other children stay unnamed.</td><td>Kinderly ships accident and medication forms with PACEY. <a href="https://kinderly.co.uk/pacey/">Kinderly and PACEY</a></td></tr>
+              <tr><td>Allergy flags on the child</td><td><span class="badge b-must">Must have</span> <span class="badge b-sug">Suggestion</span></td><td>Set once. They show on meal and medicine, in their own place.</td><td>Blocks a food suggestion that hits a recorded allergen. Stops short of a diagnosis.</td><td>Their own child’s flags.</td><td>Dietary needs sit in the EYFS welfare requirements. <a href="https://www.gov.uk/government/publications/early-years-foundation-stage-framework--2">Framework</a></td></tr>
+              <tr><td>Voice to an entry</td><td><span class="badge b-good">Good to have</span> <span class="badge b-sug">Suggestion</span></td><td>Says “oat snack, ate most, photo next”.</td><td>Maps words onto fields the routine already has. Leaves blanks blank.</td><td>The saved entry only.</td><td>Berry already does this for parents. <a href="https://www.ocbj.com/oc-homepage/berry-provides-specialized-expert-vetted-ai-to-help-with-babies-young-children/">OCBJ</a> A childminder needs the same speed, with a confirm before anyone else sees it.</td></tr>
+              <tr><td>Offline capture</td><td><span class="badge b-good">Good to have</span> <span class="badge b-sug">Suggestion</span></td><td>Logs at the park. Syncs later.</td><td>Queues on the device. Waits for sync and confirm.</td><td>After sync and confirm.</td><td>Capture has to work away from a desk.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="card" style="margin-top: 16px;">
+          <h3>Setup, then a normal entry</h3>
+          <p class="lede">One screen per routine. A sentence at the top (“Bottle feed. I need how much, who gave it, and a photo”). Under it, suggested fields the person accepts. Then a table: label, type, required, parent-visible, order. The example photo is labelled Example, so it stays out of the journal. On the day, pick children, fill the fields that are on, and save. Duration is calculated. Staff-only fields stay out of the parent payload.</p>
+        </div>
+        <div class="scroll">
+          <table>
+            <thead><tr><th>Starter</th><th>Fields worth suggesting</th><th>Default visibility</th><th>Leave out</th></tr></thead>
+            <tbody>
+              <tr><td>Meal</td><td>Time, type, food, amount or ml, photo, note, children</td><td>Parent</td><td>A menu the person did not name</td></tr>
+              <tr><td>Nap</td><td>Start, end, place, how it went, note</td><td>Parent</td><td>A prediction written as a fact</td></tr>
+              <tr><td>Custom</td><td>Whatever the sentence implied, after accept</td><td>Chosen per field</td><td>A second hidden form</td></tr>
+              <tr><td>Medicine, suggestion</td><td>Medicine, dose, time, given by, parent authority</td><td>That child’s parent</td><td>Dose advice</td></tr>
+              <tr><td>Accident, suggestion</td><td>What, where, first aid, who was told</td><td>That child’s parent</td><td>Names of other children</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="feed" class="page">
+        <h2>Live feed</h2>
+        <p class="lede">The feed shows today’s enabled routines, plus comments. A custom feed is a saved view of those same entries: which routine types, whose day, and whether comments are on.</p>
+        <div class="scroll">
+          <table>
+            <thead><tr><th>Feature</th><th>Priority</th><th>Childminder</th><th>AI</th><th>Parent sees</th><th>Why</th></tr></thead>
+            <tbody>
+              <tr><td>Today, enabled routines only</td><td><span class="badge b-must">Must have</span></td><td>Scrolls the day. Filters by child.</td><td>Waits until asked.</td><td>Their child’s parent-visible rows.</td><td>Famly describes a news feed between setting and family. <a href="https://www.famly.co/us/about/press">Famly press</a></td></tr>
+              <tr><td>Comments</td><td><span class="badge b-must">Must have</span></td><td>Replies. Can close comments on one item.</td><td>May draft a reply. The person sends it.</td><td>The thread on items they can see.</td><td>Tapestry turned a short conversation at the gate into photos parents can answer. <a href="https://businesscloud.co.uk/news/how-bootstrapped-tapestry-became-a-national-favourite-for-teachers/">BusinessCloud</a></td></tr>
+              <tr><td>Staff note beside the parent comment</td><td><span class="badge b-must">Must have</span></td><td>Two fields, visually different.</td><td>Drafts only into the field that is open.</td><td>The parent comment.</td><td>Sidekick changes tone by context, then waits for Insert. <a href="https://help.famly.co/en/articles/12878223-sidekick-writing-assistant">Sidekick</a> Keep staff text in its own field.</td></tr>
+              <tr><td>Custom feed, made with AI</td><td><span class="badge b-must">Must have</span></td><td>Describes it: “end of day for parents”, or “my eyes only”.</td><td>Proposes routine types, children, and comment rules. The person saves it.</td><td>Feeds marked for them.</td><td>Six children in one house need more than a single classroom stream.</td></tr>
+              <tr><td>Who is here</td><td><span class="badge b-must">Must have</span> <span class="badge b-sug">Suggestion</span></td><td>In and out, with time.</td><td>Can pre-select children marked in.</td><td>Their child’s times.</td><td>Kinderly lists a daily register next to diaries. <a href="https://kinderly.co.uk/pacey/">Kinderly and PACEY</a></td></tr>
+              <tr><td>Weekly note in plain language</td><td><span class="badge b-good">Good to have</span> <span class="badge b-sug">Suggestion</span></td><td>Reviews a draft once a week, then sends or bins it.</td><td>Writes from confirmed parent-visible rows.</td><td>One note.</td><td>EYFS 2.3 says keep parents up to date. EYFS 2.5 says ongoing assessment can live in professional judgement, with a written record only when you choose to keep one. <a href="https://dera.ioe.ac.uk/id/eprint/40850/1/EYFS_statutory_framework_for_group_and_school_-_based_providers.pdf">Framework PDF, 2.3 and 2.5</a></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="card" style="margin-top: 16px;">
+          <h3>What a saved feed stores</h3>
+          <p class="lede">Name, who can open it, which routine types, which children, comments on or off. Staff notes stay out of every parent feed. Deleting a feed leaves the entries where they are. One item can sit in more than one feed.</p>
+        </div>
+      </section>
+
+      <section id="memories" class="page">
+        <h2>Memories</h2>
+        <p class="lede">A feed item can become a memory. There are two kinds: a learning-journal note, and a sweet memory. Several children can be on one memory. Parents are included only when their child is tagged.</p>
+        <div class="scroll">
+          <table>
+            <thead><tr><th>Feature</th><th>Priority</th><th>Childminder</th><th>AI</th><th>Parent sees</th><th>Why</th></tr></thead>
+            <tbody>
+              <tr><td>Turn a feed item into a memory</td><td><span class="badge b-must">Must have</span></td><td>Picks journal or sweet. Confirms the text. Picks children.</td><td>Drafts from that item’s parent-visible fields and photo.</td><td>After share.</td><td>Tapestry grows a journal from observations, photos, and video. <a href="https://tapestry.info/wp-content/uploads/2025/03/Tapestry-Web-Guide-for-managers.pdf">Manager guide, 2025</a></td></tr>
+              <tr><td>Tag several children</td><td><span class="badge b-must">Must have</span></td><td>Adds or removes tags before share.</td><td>Starts from children already on the feed item.</td><td>The memory if their child is tagged, and only the approved parent text.</td><td>Learning Genie allows a group observation. <a href="https://helpdesk.learning-genie.com/help/articles/201">Learning Genie</a> Each parent still needs a version that fits their child.</td></tr>
+              <tr><td>One home for journals and sweet memories</td><td><span class="badge b-must">Must have</span></td><td>Filters by child, kind, and date.</td><td>Can retitle. A change of kind after share asks for a new confirm.</td><td>Their child’s shared memories.</td><td>Storypark’s homepage says 11,850 services and 1.1 million family members. <a href="https://www.storypark.com/">Storypark</a></td></tr>
+              <tr><td>AI draft, person publishes</td><td><span class="badge b-must">Must have</span></td><td>Edits, then shares.</td><td>Offers a plainer parent version. The childminder stays the author.</td><td>The shared version.</td><td>Storypark Assist supports the story and keeps the educator’s voice. <a href="https://www.storypark.com/lp/ai-at-storypark">Assist</a> <a href="https://blog.storypark.com/2025/02/putting-our-ai-commitments-into-action-storypark-ai-is-almost-here/">February 2025</a></td></tr>
+              <tr><td>Share with parents of tagged children</td><td><span class="badge b-must">Must have</span></td><td>Chooses which of those parents are included.</td><td>Lists who would receive it. Waits.</td><td>The memory, if photo consent is on.</td><td>A group photo is other children’s data. <a href="https://ico.org.uk/for-organisations/uk-gdpr-guidance-and-resources/childrens-information/childrens-code-guidance-and-resources/introduction-to-the-childrens-code/">ICO Children’s code</a></td></tr>
+              <tr><td>A preview per parent</td><td><span class="badge b-must">Must have</span> <span class="badge b-sug">Suggestion</span></td><td>Reads a preview for each parent before send.</td><td>Drops staff notes, other children’s allergies, and anyone else’s medicine.</td><td>The preview approved for them.</td><td>This is how “tag the group and share” goes wrong, and the preview is the fix.</td></tr>
+              <tr><td>Photo consent per child</td><td><span class="badge b-must">Must have</span> <span class="badge b-sug">Suggestion</span></td><td>Records consent, including group photos.</td><td>Leaves out a child whose consent is off, and says why.</td><td>Photos they have allowed.</td><td>Same ICO page. A photo is personal data.</td></tr>
+              <tr><td>Export when a child leaves</td><td><span class="badge b-good">Good to have</span> <span class="badge b-sug">Suggestion</span></td><td>Exports one child’s journal.</td><td>Stays out of it.</td><td>They can keep their copy.</td><td>Tapestry exports a PDF and sells a printed book. <a href="https://tapestry.info/wp-content/uploads/2025/03/Tapestry-Web-Guide-for-managers.pdf">Manager guide</a></td></tr>
+              <tr><td>A diary ping</td><td><span class="badge b-nice">Nice to have</span></td><td>Optional end-of-day prompt.</td><td>Asks one question about what was left unlogged.</td><td>Waits until a memory is shared.</td><td>Qeepsake’s prompts are scheduled texts. Tinybeans said adaptive AI prompts were still ahead of them on 3 Nov 2025. <a href="https://www.prnewswire.com/news-releases/tinybeans-acquires-qeepsake-creating-the-leading-privacy-first-family-memory-platform-302603273.html">PR Newswire</a></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="card" style="margin-top: 16px;">
+          <h3>Group memory</h3>
+          <p class="lede">The feed item stays on the feed. The memory stores kind, tags, draft, approved parent text, photo ids, the consent snapshot at send time, and who sent it. Medicine and accident items stay care records. A journal note may say “an incident was recorded”, and the detail stays on the routine.</p>
+        </div>
+      </section>
+
+      <section id="learnings" class="page">
+        <h2>Learnings</h2>
+        <p class="lede">A learning is a short note about what a child was learning. It can hang off a routine, a feed item, or a memory, or stand on its own. Scores and the signed summary live under Assessments.</p>
+        <div class="scroll">
+          <table>
+            <thead><tr><th>Feature</th><th>Priority</th><th>Childminder</th><th>AI</th><th>Parent sees</th><th>Why</th></tr></thead>
+            <tbody>
+              <tr><td>Capture a learning</td><td><span class="badge b-must">Must have</span></td><td>One or two sentences, optionally linked.</td><td>Offers a plainer line. The person keeps or rewrites it.</td><td>Only if the note is marked shared.</td><td>EYFS 2.5: ongoing assessment is noticing what children know, then shaping what happens next. A written record is a choice, required for the two-year summary, optional for the everyday noticing. <a href="https://dera.ioe.ac.uk/id/eprint/40850/1/EYFS_statutory_framework_for_group_and_school_-_based_providers.pdf">EYFS 2.5</a></td></tr>
+              <tr><td>Optional framework tag</td><td><span class="badge b-good">Good to have</span> <span class="badge b-sug">Suggestion</span></td><td>Turns EYFS or Birth to 5 Matters on. Tags an area when useful.</td><td>Suggests an area. The note can be saved with the tag left empty.</td><td>The words, or the area name if the childminder wants it shown.</td><td>Kinderly includes EYFS, Birth to 5 Matters, and the Wales, Scotland, and Northern Ireland frameworks. <a href="https://kinderly.co.uk/pacey/">Kinderly and PACEY</a> <a href="https://birthto5matters.org.uk/">Birth to 5 Matters</a></td></tr>
+              <tr><td>Stand-alone learning</td><td><span class="badge b-must">Must have</span></td><td>Writes it with a blank photo slot and no routine attached.</td><td>Saves the words on their own.</td><td>If shared.</td><td>EYFS 2.2: judgement stands on professional knowledge. A photo is optional evidence. <a href="https://dera.ioe.ac.uk/id/eprint/40850/1/EYFS_statutory_framework_for_group_and_school_-_based_providers.pdf">EYFS 2.2</a></td></tr>
+              <tr><td>One next step</td><td><span class="badge b-good">Good to have</span></td><td>Writes what they will offer tomorrow.</td><td>May propose one. The person keeps it.</td><td>Optional.</td><td>Inspectors ask what children are intended to learn, given what they already know. <a href="https://www.gov.uk/government/publications/early-years-inspection-handbook-eif">Inspection handbook</a></td></tr>
+              <tr><td>Cohort charts</td><td><span class="badge b-nice">Nice to have</span></td><td>Leave them for a later build.</td><td>Keep scores out of the chart.</td><td>Hidden.</td><td>Kinderly sells cohort tracking for settings. <a href="https://kinderly.co.uk/">Kinderly</a> A handful of children can be read one by one.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="assess" class="page">
+        <h2>Assessments</h2>
+        <p class="lede">AI may draft. The childminder signs. A parent or a health visitor sees it only after that signature. Learnings can feed the draft. The signature is what makes it an assessment.</p>
+        <div class="scroll">
+          <table>
+            <thead><tr><th>State</th><th>What it is</th></tr></thead>
+            <tbody>
+              <tr><td>Draft</td><td>Private. Built from confirmed learnings, parent-visible logs, and shared memories. Editable. Kept off the parent feed.</td></tr>
+              <tr><td>Signed</td><td>The childminder has edited it and pressed Sign. The record stores who signed, and when. Sharing is a second action.</td></tr>
+              <tr><td>Held back</td><td>The draft stays on the device until someone signs. A worry appears in the summary only when the notes support it.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="scroll">
+          <table>
+            <thead><tr><th>Piece</th><th>Priority</th><th>What good looks like</th><th>Source</th></tr></thead>
+            <tbody>
+              <tr><td>Help judgement. Cite the notes.</td><td><span class="badge b-must">Must have</span></td><td>The draft lists the notes it used. It asks for another photo only if the childminder wants one.</td><td>EYFS 2.2 and 2.5. <a href="https://dera.ioe.ac.uk/id/eprint/40850/1/EYFS_statutory_framework_for_group_and_school_-_based_providers.pdf">Framework PDF</a></td></tr>
+              <tr><td>Ordinary words for parents</td><td><span class="badge b-must">Must have</span></td><td>Framework codes stay in the childminder’s copy unless they ask for them in the parent copy.</td><td>EYFS 2.3, and the progress-check guide on everyday language. <a href="https://assets.publishing.service.gov.uk/media/6284c0a2e90e071f61322177/Progress_check_at_age_two_non-statutory_guidance_for_the_early_years_foundation_stage_.pdf">Progress check guidance</a></td></tr>
+              <tr><td>Progress check between two and three</td><td><span class="badge b-must">Must have</span></td><td>A short summary of the prime areas: communication and language; personal, social and emotional development; physical development. Strengths. Where support might help. Any worry about delay. What the childminder will do, with parents.</td><td>EYFS 2.6 to 2.8. The guide names partnership, action, and early identification. <a href="https://assets.publishing.service.gov.uk/media/6284c0a2e90e071f61322177/Progress_check_at_age_two_non-statutory_guidance_for_the_early_years_foundation_stage_.pdf">Guidance</a></td></tr>
+              <tr><td>Edit, then sign</td><td><span class="badge b-must">Must have</span></td><td>Insert, rewrite, delete a claim. Sign stores the person’s name.</td><td>Sidekick drafts assessments and two-year checks from text or voice, then waits for Insert. Updated 3 Sep 2026. <a href="https://help.famly.co/en/articles/12878223-sidekick-writing-assistant">Sidekick</a></td></tr>
+              <tr><td>Strengths, support, next step at home, next step here</td><td><span class="badge b-must">Must have</span></td><td>Four short blocks. The home step is written as a conversation with the parent.</td><td>EYFS 2.8 and 2.9. <a href="https://dera.ioe.ac.uk/id/eprint/40850/1/EYFS_statutory_framework_for_group_and_school_-_based_providers.pdf">Framework PDF</a></td></tr>
+              <tr><td>Consent before another professional sees it</td><td><span class="badge b-must">Must have</span></td><td>A share to a health visitor is a named action, agreed with the parent, and recorded.</td><td>EYFS 2.10, and the guide’s link to the Healthy Child review at two. <a href="https://assets.publishing.service.gov.uk/media/6284c0a2e90e071f61322177/Progress_check_at_age_two_non-statutory_guidance_for_the_early_years_foundation_stage_.pdf">Guidance</a></td></tr>
+              <tr><td>Show the notes the draft used</td><td><span class="badge b-must">Must have</span></td><td>A list under the draft. Remove one, then regenerate.</td><td>Sidekick sends past text for that child to OpenAI only when it is used, and says names go across only if staff typed them into the text. Say this on the screen. <a href="https://help.famly.co/en/articles/12878223-sidekick-writing-assistant">Sidekick data section</a></td></tr>
+              <tr><td>Prime areas first</td><td><span class="badge b-good">Good to have</span></td><td>Other areas are a later page the childminder can add.</td><td>EYFS 2.7: beyond the prime areas, the provider decides what the summary includes. <a href="https://dera.ioe.ac.uk/id/eprint/40850/1/EYFS_statutory_framework_for_group_and_school_-_based_providers.pdf">EYFS 2.7</a></td></tr>
+              <tr><td>Development Matters as language</td><td><span class="badge b-good">Good to have</span> <span class="badge b-sug">Suggestion</span></td><td>A phrase may be borrowed. The draft stays free of a level or a score.</td><td><a href="https://www.gov.uk/government/publications/development-matters--2">Development Matters</a> is non-statutory.</td></tr>
+              <tr><td>Lesson generation</td><td><span class="badge b-nice">Nice to have</span></td><td>A planning aid for later. The assessment stays a signed summary.</td><td>Learning Genie generates a lesson from the weekly planner. The observation note is still typed. <a href="https://helpdesk.learning-genie.com/help/articles/236">Lesson AI</a> <a href="https://helpdesk.learning-genie.com/help/articles/201">Observation</a> Illumine markets observations in a brand voice. <a href="https://illumine.app/ai">illumine</a> Keep a draft on screen before a parent can see it.</td></tr>
+              <tr><td>Auto-score, auto-concern, auto-send</td><td><span class="badge b-unique">Leave out</span></td><td>These three stay out of the product.</td><td>The guide says the written note helps only when people then listen, talk, and plan. <a href="https://assets.publishing.service.gov.uk/media/6284c0a2e90e071f61322177/Progress_check_at_age_two_non-statutory_guidance_for_the_early_years_foundation_stage_.pdf">Guidance</a></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="card" style="margin-top: 16px;">
+          <h3>Patterns worth keeping</h3>
+          <p class="lede">Keep Famly’s Insert step, Storypark’s rule that the author keeps their voice, and Procare’s rule that a suggestion changes the record only after a person approves it. RoomRunner also says centre data is kept out of model training, and that personal data is anonymised before the model sees it. That FAQ is about room moves. The confirm step still belongs on an assessment. <a href="https://www.procaresupport.com/procare-online/docs/faq-roomrunner">RoomRunner FAQ</a> Owlet and Nanit scores stay in those products.</p>
+        </div>
+      </section>
+
+      <section id="value" class="page">
+        <h2>What would make it valuable</h2>
+        <p class="lede">The tables above are the modules you named. This one is the product around them.</p>
+        <div class="scroll">
+          <table>
+            <thead><tr><th>Idea</th><th>Priority</th><th>Origin</th><th>Why it matters</th><th>Read</th></tr></thead>
+            <tbody>
+              <tr><td>Routines the childminder designs</td><td><span class="badge b-unique">Unique</span></td><td>Your brief</td><td>Diary apps ship a fixed daily sheet. This one starts from a sentence.</td><td><a href="#routines">Routines</a></td></tr>
+              <tr><td>Custom feeds</td><td><span class="badge b-unique">Unique</span></td><td>Your brief</td><td>Mixed ages and mixed families share one house.</td><td><a href="#feed">Feed</a></td></tr>
+              <tr><td>A feed item becomes a journal note or a sweet memory</td><td><span class="badge b-must">Must have</span></td><td>Your brief</td><td>The same moment is typed once.</td><td><a href="https://www.storypark.com/">Storypark</a></td></tr>
+              <tr><td>Several children, with a preview per parent</td><td><span class="badge b-unique">Unique</span></td><td>Your brief</td><td>Group notes exist. A separate parent preview of one shared story is the missing piece.</td><td><a href="https://helpdesk.learning-genie.com/help/articles/201">Learning Genie</a></td></tr>
+              <tr><td>A signed assessment</td><td><span class="badge b-must">Must have</span></td><td>Your brief</td><td>Sidekick can draft a two-year check. This product adds the citation list and keeps send as its own step.</td><td><a href="https://help.famly.co/en/articles/12878223-sidekick-writing-assistant">Sidekick</a></td></tr>
+              <tr><td>Allergy and medicine on the child</td><td><span class="badge b-must">Must have</span> <span class="badge b-sug">Suggestion</span></td><td>Suggestion</td><td>Lunch needs the flag on the child record, where the meal form can see it.</td><td><a href="https://www.gov.uk/government/publications/early-years-foundation-stage-framework--2">EYFS</a></td></tr>
+              <tr><td>Consent before a group photo moves</td><td><span class="badge b-must">Must have</span> <span class="badge b-sug">Suggestion</span></td><td>Suggestion</td><td>The memory feature depends on it.</td><td><a href="https://ico.org.uk/for-organisations/uk-gdpr-guidance-and-resources/childrens-information/childrens-code-guidance-and-resources/introduction-to-the-childrens-code/">ICO</a></td></tr>
+              <tr><td>Voice log that leaves blanks blank</td><td><span class="badge b-unique">Unique</span> <span class="badge b-sug">Suggestion</span></td><td>Suggestion</td><td>Berry logs from voice. A missing number stays empty.</td><td><a href="https://www.ocbj.com/oc-homepage/berry-provides-specialized-expert-vetted-ai-to-help-with-babies-young-children/">Berry</a></td></tr>
+              <tr><td>Offline, one thumb</td><td><span class="badge b-good">Good to have</span> <span class="badge b-sug">Suggestion</span></td><td>Suggestion</td><td>The park and the school run.</td><td><a href="#map">Day map</a></td></tr>
+              <tr><td>Weekly parent note</td><td><span class="badge b-good">Good to have</span> <span class="badge b-sug">Suggestion</span></td><td>Suggestion</td><td>Parents stay current through one plain note.</td><td><a href="https://dera.ioe.ac.uk/id/eprint/40850/1/EYFS_statutory_framework_for_group_and_school_-_based_providers.pdf">EYFS 2.3</a></td></tr>
+              <tr><td>Journal export</td><td><span class="badge b-good">Good to have</span> <span class="badge b-sug">Suggestion</span></td><td>Suggestion</td><td>Parents expect a keepsake. Tapestry prints one.</td><td><a href="https://tapestry.info/wp-content/uploads/2025/03/Tapestry-Web-Guide-for-managers.pdf">Tapestry</a></td></tr>
+              <tr><td>Framework packs you can switch off</td><td><span class="badge b-good">Good to have</span> <span class="badge b-sug">Suggestion</span></td><td>Suggestion</td><td>Tags are a layer on top of the note.</td><td><a href="https://birthto5matters.org.uk/">Birth to 5</a></td></tr>
+              <tr><td>Sleep prediction written to a parent as fact</td><td><span class="badge b-nice">Hold</span></td><td>Suggestion</td><td>SweetSpot serves a parent logging their own baby. A hint inside the childminder’s day is enough.</td><td><a href="https://huckleberrycare.com/product/sweetspot">SweetSpot</a></td></tr>
+              <tr><td>A camera and a vision model on the child</td><td><span class="badge b-nice">Hold</span></td><td>Suggestion</td><td>Nanit and Owlet belong in a family’s own room. Owlet’s sock is a medical device. This app stays a log the childminder writes.</td><td><a href="https://investors.owletcare.com/news/news-details/2026/Owlet-Reports-Fourth-Quarter-and-Full-Year-2025-Results-Initiates-2026-Guidance/default.aspx">Owlet FY2025</a></td></tr>
+              <tr><td>Enrollment, billing, ratios, tax</td><td><span class="badge b-nice">Nice to have</span></td><td>Suggestion</td><td>Nurseries buy software for the back office. Parents open the app to see the morning.</td><td><a href="https://www.procaresupport.com/procare-online/docs/roomrunner-enrollment-agent">RoomRunner</a></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="market" class="page">
+        <h2>Who already does a piece of this</h2>
+        <p class="lede">Sixteen products. Eight have a vendor page for a real AI feature. The rest are the diary, journal, or hardware baseline. Brightwheel’s two popular write-ups disagree, so both stay in the table as unverified.</p>
+        <div class="scroll">
+          <table>
+            <thead><tr><th>Product</th><th>For</th><th>Presence</th><th>Figure you can cite</th><th>AI they describe</th></tr></thead>
+            <tbody>
+              <tr><td><a href="https://help.famly.co/en/articles/12878223-sidekick-writing-assistant">Famly Sidekick</a></td><td>Nurseries</td><td>Press kit: 10 countries, mainly UK, Nordics, Germany, US</td><td>Four Famly pages disagree. The split is on the Figures page.</td><td>Yes. Newsfeed, messages, observations, assessments, two-year checks, accident forms. Voice or text. Insert. OpenAI, only when used.</td></tr>
+              <tr><td><a href="https://www.storypark.com/lp/ai-at-storypark">Storypark Assist</a></td><td>Educators and families</td><td>Global, with strength in Australia, New Zealand, and Canada</td><td>Homepage: 11,850 services and 1.1 million family members. Australia with Xap is a smaller cut.</td><td>Yes. Story review. The educator stays the author. A February 2025 post said the tools were coming that March.</td></tr>
+              <tr><td><a href="https://illumine.app/ai">illumine</a></td><td>Centres</td><td>Page names US, Canada, UK, UAE, Singapore, India</td><td>Their own page text: 4,000+ centres and 500,000+ children. A vendor claim.</td><td>Yes, as marketed: paraphrase, 20+ languages, lessons from a topic, observations in a brand voice. The page skips any mention of a draft step.</td></tr>
+              <tr><td><a href="https://helpdesk.learning-genie.com/help/articles/236">Learning Genie</a></td><td>Preschool teachers</td><td>US. Scale left unverified here</td><td>The help articles used give no user count.</td><td>Yes for lessons, from the weekly planner. Observation notes, including group notes, are still typed.</td></tr>
+              <tr><td><a href="https://www.procaresupport.com/procare-online/docs/roomrunner-enrollment-agent">Procare RoomRunner</a></td><td>Centre owners</td><td>US management software</td><td>This pass found no vendor user count.</td><td>Yes, for enrollment. Move-up and waitlist suggestions. A person approves. Personal data is anonymised. The diary is a different product.</td></tr>
+              <tr><td><a href="https://huckleberrycare.com/product/sweetspot">Huckleberry</a></td><td>Parents</td><td>Consumer. SweetSpot from 2 months</td><td>The company, via Orange County Business Journal: 5 million families. Product pages: 4.9 from 69,000+ parents.</td><td>Yes. SweetSpot from logs. Insights. Berry logs and advises from voice, text, or photo.</td></tr>
+              <tr><td><a href="https://www1.folha.uol.com.br/mercado/2026/08/mercado-de-monitoramento-de-bebes-fatura-us-100-mi-com-ia-e-observacao-24-h.shtml">Nanit</a></td><td>Parents, bedroom camera</td><td>Consumer hardware</td><td>Folha, 4 Aug 2026, reporting the company: 1 million daily users and revenue above $100 million. A newspaper, separate from a filing.</td><td>Camera and sleep. The same article reports a $50 million raise aimed at speech and motor skills. Treat that as a reported plan.</td></tr>
+              <tr><td><a href="https://brainbuilding.org/research/harnessing-technology/tools/kinedu/">Kinedu</a></td><td>Parents, birth to 6</td><td>Founded in Mexico, used globally</td><td>9+ million signups as of February 2023, on a Harvard Center on the Developing Child project page.</td><td>Yes. Milestones feed AIRA, which builds a daily activity plan for parents at home.</td></tr>
+              <tr><td><a href="https://babysparks.com/">BabySparks</a></td><td>Parents, ages 0–3</td><td>Global consumer</td><td>Site: “over 9 million parents”. Google Play: 1 million+ downloads. The two measures count different things.</td><td>Marketed as activities that adapt. The pages read describe play, and stop short of a generated observation. <a href="https://play.google.com/store/apps/details?hl=en&id=com.babysparks.babysparks">Play listing</a></td></tr>
+              <tr><td><a href="https://investors.owletcare.com/news/news-details/2026/Owlet-Reports-Fourth-Quarter-and-Full-Year-2025-Results-Initiates-2026-Guidance/default.aspx">Owlet</a></td><td>Parents, sock and camera</td><td>Public company. The 10-K names US, EU, and UK clearances among others</td><td>FY2025 revenue $105.7 million. The earnings release says paying subscribers passed 110,000. The 10-K says Owlet360 passed 98,000 by the end of 2025.</td><td>Shipped: sleep insights, plus cry and motion on Dream Sight. The 5 Mar 2026 call describes AI sleep coaching as work still ahead. <a href="https://www.fool.com/earnings/call-transcripts/2026/03/05/owlet-owlt-q4-2025-earnings-call-transcript/">Call</a></td></tr>
+              <tr><td><a href="https://blog.lovevery.eu/product-recommendations/the-lovevery-app-for-parents-stage-based-activities-and-expert-advice-from-birth-to-age-3/">Lovevery</a></td><td>Parents with Play Kits</td><td>Consumer, birth to 3</td><td>The page used gives no user total.</td><td>Play Finder points a camera at their toy and returns play ideas. The stages are curated for parents.</td></tr>
+              <tr><td><a href="https://www.prnewswire.com/news-releases/tinybeans-acquires-qeepsake-creating-the-leading-privacy-first-family-memory-platform-302603273.html">Tinybeans and Qeepsake</a></td><td>Family memories</td><td>Tinybeans is listed in Australia. Qeepsake was in Boston</td><td>3 Nov 2025: Qeepsake about 50,000 paid subscribers that October. Combined, about 90,000 paid and over a million free users.</td><td>Live today: scheduled text prompts and books. The release describes AI prompts and transcription as work for the following year. <a href="https://qeepsake.com/qeepsake-tinybeans/">FAQ</a></td></tr>
+              <tr><td><a href="https://get.lillio.com/comparison/">Lillio, formerly HiMama</a></td><td>Centres and parents</td><td>Canada and the US in the 2021 post</td><td>Current page: 100,000 educators and classrooms, 250 million photos and videos. 2021: 10,000+ centres, 1 million+ parents. Bain, as of 31 Dec 2022: about 38,000 centre users, 42 million observations.</td><td>This pass found no vendor page for drafted observations. A 2026 roundup says the same, and it is secondary. <a href="https://frenchydigital.com/blog/top-ai-agents-childcare-centers-2026">Frenchy Digital</a></td></tr>
+              <tr><td><a href="https://tapestry.info/our-story/">Tapestry</a></td><td>Nurseries, childminders, schools</td><td>UK-led, 40 countries on their story page</td><td>14,000 settings and schools. BusinessCloud: about 95% in the UK.</td><td>The pages read describe observations, comments, PDF export, and printed books. They do not describe a generative writer.</td></tr>
+              <tr><td><a href="https://kinderly.co.uk/">Kinderly</a></td><td>Childminders, nurseries, training</td><td>UK, with Coram PACEY</td><td>Flat6Labs PDF, path dated May 2023: 1,600 nurseries, 40,000 staff, 90% retention. Treat as old pitch material. Help centre: from £15 a month, up to 20 children.</td><td>The pages read describe diaries, observations, frameworks, and contracts. They do not describe an AI writer.</td></tr>
+              <tr><td><a href="https://nmt-magazine.co.uk/kidskonnect/">Blossom, now Ovivio, via KidsKonnect</a></td><td>Nurseries</td><td>UK product inside a Dutch group that also covers the Netherlands and Belgium</td><td>Acquisition write-up: 1,000+ UK clients, 100,000 UK parents. Group: 14,000 locations. <a href="https://www.osborneclarke.com/news/osborne-clarke-advises-blossom-educational-its-acquisition-kidskonnect">Osborne Clarke</a> repeats the group figure.</td><td>This pass used no vendor AI page. A practitioner blog says Ovivio Bloom can shorten or proofread text, and the person accepts each change. Secondary. <a href="https://sagnikbhattacharya.com/blog/choose-nursery-software-ai">Blog</a></td></tr>
+              <tr><td><a href="https://fueler.io/blog/brightwheel-usage-revenue-valuation-growth-statistics">brightwheel</a></td><td>US centres</td><td>Ohio and Kentucky public programmes cite it</td><td>Keep the estimates apart. Fueler: 50,000+ centres, 2.2 million monthly users, about $37.5 million in 2024. YesPress: 150,000+ programmes, $75 million run rate, 53% share, with no method on the page. Ohio PDF: 800+ programmes. Kentucky: 350+. Wharton: Shark Tank, then Experience Early Learning.</td><td>This pass found no brightwheel page that describes the assistant. Frenchy Digital describes a 2026 content helper. Secondary.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+      </section>
+
+      <section id="ai-table" class="page">
+        <h2>What the AI actually does</h2>
+        <div class="scroll">
+          <table>
+            <thead><tr><th>Feature</th><th>Reads</th><th>Writes</th><th>Who confirms</th><th>Use here</th></tr></thead>
+            <tbody>
+              <tr><td>Famly Sidekick</td><td>Prompt or voice. For checks, past text on that child. Photos stay put. Names cross over only if someone typed them into the text.</td><td>Posts, messages, observations, assessments, two-year checks, accident forms.</td><td>Insert.</td><td>The closest cousin. Keep the confirm step, say what left the building, and add a per-child preview.</td></tr>
+              <tr><td>Storypark story review</td><td>The story being written.</td><td>Suggestions in the editor.</td><td>The author keeps their voice.</td><td>Use it for memories. The childminder remains the author of record.</td></tr>
+              <tr><td>illumine</td><td>A topic, or existing text.</td><td>Rewrites, translation, lessons, observations.</td><td>The marketing page leaves the confirm step unstated.</td><td>Translation can wait. Observations need a draft the current page does not show.</td></tr>
+              <tr><td>Learning Genie lessons</td><td>Description, age, optional standards.</td><td>Title, steps, what to watch for.</td><td>The teacher is in the planner.</td><td>Later, as planning. The signed summary stays separate.</td></tr>
+              <tr><td>RoomRunner</td><td>Ages, schedules, capacity. Personal data stripped.</td><td>Move and waitlist suggestions.</td><td>The record changes after approve.</td><td>Skip the feature. Keep the approve step. <a href="https://www.procaresupport.com/procare-online/docs/faq-roomrunner">FAQ</a></td></tr>
+              <tr><td>SweetSpot</td><td>Logged sleep, then that child’s pattern.</td><td>The next sleep window.</td><td>The parent decides.</td><td>A hint on the childminder’s own screen. Parents receive the times that were logged.</td></tr>
+              <tr><td>Berry</td><td>Logs, plus voice, text, or a photo.</td><td>Advice and several log rows.</td><td>A parent is the only user, so the confirm is lighter.</td><td>Copy the speed. A number the childminder did not say stays blank.</td></tr>
+              <tr><td>Kinedu AIRA</td><td>Milestones and stage.</td><td>A daily play plan.</td><td>Parent.</td><td>A “try this tomorrow” line can sit under a learning. The two-year check stays a signed summary.</td></tr>
+              <tr><td>BabySparks</td><td>Age and its own milestones.</td><td>Daily activities.</td><td>Parent.</td><td>Keep those scores out of the two-year check.</td></tr>
+              <tr><td>Owlet</td><td>Sock biometrics and camera signals.</td><td>Sleep and health views now. The call describes AI coaching as later work. <a href="https://www.sec.gov/Archives/edgar/data/1816708/000181670826000018/owlt-20251231.htm">10-K, year ended 31 Dec 2025</a></td><td>A parent, and a regulated device.</td><td>Leave it in the health-device category.</td></tr>
+              <tr><td>Lovevery Play Finder</td><td>Camera on their toy.</td><td>Ways to play.</td><td>Parent.</td><td>Recognition plus a library is a calmer pattern than an open chatbot.</td></tr>
+              <tr><td>Tinybeans journaling</td><td>The November 2025 release describes prompts as they already work.</td><td>AI prompts were announced for later.</td><td>Wait until that ships.</td><td>Qeepsake’s live product is the text prompt and the book.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+      </section>
+
+      <section id="figures" class="page">
+        <h2>Where the numbers disagree</h2>
+        <div class="scroll">
+          <table>
+            <thead><tr><th>Product</th><th>Keep these apart</th></tr></thead>
+            <tbody>
+              <tr><td>Famly</td><td><a href="https://www.famly.co/about">About</a>: 412,000 children, 10,000 settings, 94% say it helped them connect, and a £14 million round they call the largest of its kind in Europe. <a href="https://www.famly.co/us/about/press">Press</a>: 10,000 providers, 10 countries, more than 400,000 parents, over $20 million raised. <a href="https://famly.recruitee.com/o/senior-software-engineer-builder">Job post</a>: over 1 million parents. <a href="https://nmt-magazine.co.uk/famly-rebrand/">Nursery Management Today</a>: over 4,800 UK sites and 65,000 staff. Quote the page you mean.</td></tr>
+              <tr><td>brightwheel</td><td><a href="https://fueler.io/blog/brightwheel-usage-revenue-valuation-growth-statistics">Fueler</a> labels private-company figures as estimates: 50,000+ centres and about $37.5 million in 2024. <a href="https://yespress.io/brightwheel">YesPress</a> prints 150,000+ programmes, a $75 million run rate, and 53% share, with no method. Narrow public-programme facts: <a href="https://www.4cforchildren.org/wp-content/uploads/2024/03/What-You-Need-to-Know-Brightwheel.pdf">Ohio, 800+</a>, <a href="https://www.childcareawareky.org/announcing-free-access-to-brightwheel-childcare-management-software/">Kentucky, 350+</a>, and <a href="https://magazine.wharton.upenn.edu/issues/fall-winter-2025/brightwheel/">Wharton</a> on the origin and the curriculum acquisition.</td></tr>
+              <tr><td>Lillio</td><td><a href="https://www.lillio.com/blog/himama-secures-70m-series-b-bain-capital">2021</a>: 10,000+ centres, more than 1 million parents, a claim of more than a billion moments, $70 million led by Bain. <a href="https://www.baincapitaldoubleimpact.com/portfolio/lillio">Bain, 31 Dec 2022</a>: about 38,000 centre users, 42 million observations. <a href="https://get.lillio.com/comparison/">Current page</a>: 100,000 educators and classrooms, 250 million photos and videos, 35,000 ratings at 4.7. Read the year with the number.</td></tr>
+              <tr><td>Tapestry and Kinderly</td><td><a href="https://tapestry.info/our-story/">Tapestry</a>: 14,000 settings in 40 countries. <a href="https://businesscloud.co.uk/news/how-bootstrapped-tapestry-became-a-national-favourite-for-teachers/">BusinessCloud</a>: about 95% in the UK. <a href="https://kinderly.co.uk/pacey/">Kinderly with PACEY</a> is the childminder-shaped package in this set: diaries, observations, contracts, and frameworks, from <a href="https://intercom.help/kinderlysupport/en/articles/1463152-kinderly-together-subscription-plans">£15 a month</a>. The <a href="https://www.flat6labs.com/wp-content/uploads/2023/05/Kinderly.pdf">2023 pitch PDF</a> stays stale until they repeat it.</td></tr>
+              <tr><td>Storypark</td><td><a href="https://www.storypark.com/">Homepage</a>: 11,850 services, 1.1 million family members. <a href="https://www.storypark.com/au/storypark-xap">Australia with Xap</a>: 1,850+ services and 580,000 families. The second pair is the operations subset.</td></tr>
+              <tr><td>Owlet</td><td><a href="https://investors.owletcare.com/news/news-details/2026/Owlet-Reports-Fourth-Quarter-and-Full-Year-2025-Results-Initiates-2026-Guidance/default.aspx">Results</a>: $105.7 million revenue, up 35.4% from $78.1 million, and subscribers passing 110,000. <a href="https://www.sec.gov/Archives/edgar/data/1816708/000181670826000018/owlt-20251231.htm">10-K</a>: Owlet360 over 98,000 subscribers by the end of 2025, and FDA marketing authorisation for Dream Sock in the US. A <a href="https://www.marketscreener.com/news/owlet-investor-presentation-ce7d5edade8df224">presentation via MarketScreener</a> shows 650,000+ active users and 2.5 million socks. Keep the slides apart from the audited statements. Vital signs stay with that device.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="card" style="margin-top: 16px;">
+          <h3>The gap worth building</h3>
+          <p class="lede">Centre software already covers meals, naps, photos, comments, and a journal. A few of those products draft prose. Parent AI is built for a person logging their own child. A childminder logs other people’s children, so the confirm step has to be heavier. On the pages read for this pass, the open brief is a routine builder the childminder designs, a custom feed, a feed-to-memory step, multi-child memories with a preview per parent, and a signed assessment that waits for a person before it is sent.</p>
+        </div>
+      </section>
+
+      <section id="sources" class="page">
+        <h2>Sources</h2>
+        <p class="lede">The same links as the tables, grouped so a claim can be opened again.</p>
+        <div class="scroll">
+          <table>
+            <thead><tr><th>Group</th><th>Link</th><th>Why open it</th></tr></thead>
+            <tbody>
+              <tr><td>EYFS</td><td><a href="https://www.gov.uk/government/publications/early-years-foundation-stage-framework--2">Statutory framework</a></td><td>Home for the group-provider file and the childminder file.</td></tr>
+              <tr><td>EYFS</td><td><a href="https://dera.ioe.ac.uk/id/eprint/40850/1/EYFS_statutory_framework_for_group_and_school_-_based_providers.pdf">DERA copy, from 1 Nov 2024</a></td><td>Clauses 2.1 to 2.10. Group and school-based text.</td></tr>
+              <tr><td>EYFS</td><td><a href="https://assets.publishing.service.gov.uk/media/6284c0a2e90e071f61322177/Progress_check_at_age_two_non-statutory_guidance_for_the_early_years_foundation_stage_.pdf">Progress check at age two</a></td><td>Plain language, prime areas, partnership.</td></tr>
+              <tr><td>EYFS</td><td><a href="https://www.gov.uk/government/publications/early-years-inspection-handbook-eif">Inspection handbook</a></td><td>What inspectors ask practitioners.</td></tr>
+              <tr><td>EYFS</td><td><a href="https://www.gov.uk/government/publications/development-matters--2">Development Matters</a></td><td>Non-statutory language for development.</td></tr>
+              <tr><td>EYFS</td><td><a href="https://birthto5matters.org.uk/">Birth to 5 Matters</a></td><td>An optional framework.</td></tr>
+              <tr><td>Privacy</td><td><a href="https://ico.org.uk/for-organisations/uk-gdpr-guidance-and-resources/childrens-information/childrens-code-guidance-and-resources/introduction-to-the-childrens-code/">ICO Children’s code</a></td><td>Why group photos need consent on the share itself.</td></tr>
+              <tr><td>AI</td><td><a href="https://help.famly.co/en/articles/12878223-sidekick-writing-assistant">Famly Sidekick</a></td><td>Drafts checks. Updated 3 Sep 2026.</td></tr>
+              <tr><td>AI</td><td><a href="https://www.storypark.com/lp/ai-at-storypark">Storypark Assist</a></td><td>Documentation help.</td></tr>
+              <tr><td>AI</td><td><a href="https://blog.storypark.com/2025/02/putting-our-ai-commitments-into-action-storypark-ai-is-almost-here/">Storypark, February 2025</a></td><td>The author keeps their voice.</td></tr>
+              <tr><td>AI</td><td><a href="https://illumine.app/ai">illumine</a></td><td>Lessons, observations, translation. Centre counts are theirs.</td></tr>
+              <tr><td>AI</td><td><a href="https://helpdesk.learning-genie.com/help/articles/236">Learning Genie lessons</a></td><td>What the lesson model outputs.</td></tr>
+              <tr><td>AI</td><td><a href="https://helpdesk.learning-genie.com/help/articles/201">Learning Genie observations</a></td><td>Group notes are typed by the teacher.</td></tr>
+              <tr><td>AI</td><td><a href="https://www.procaresupport.com/procare-online/docs/roomrunner-enrollment-agent">RoomRunner</a></td><td>Enrollment suggestions.</td></tr>
+              <tr><td>AI</td><td><a href="https://www.procaresupport.com/procare-online/docs/faq-roomrunner">RoomRunner FAQ</a></td><td>Training and personal data. Room moves, kept apart from a journal.</td></tr>
+              <tr><td>Parents</td><td><a href="https://huckleberrycare.com/product/sweetspot">SweetSpot</a></td><td>Nap windows from logs.</td></tr>
+              <tr><td>Parents</td><td><a href="https://huckleberrycare.com/product/insights">Huckleberry Insights</a></td><td>Plans from tracking. That page says 0 to 17 months.</td></tr>
+              <tr><td>Parents</td><td><a href="https://www.ocbj.com/oc-homepage/berry-provides-specialized-expert-vetted-ai-to-help-with-babies-young-children/">Berry, OCBJ</a></td><td>5 million families. Voice and photo logging.</td></tr>
+              <tr><td>Parents</td><td><a href="https://brainbuilding.org/research/harnessing-technology/tools/kinedu/">Kinedu</a></td><td>AIRA. Signups as of February 2023.</td></tr>
+              <tr><td>Parents</td><td><a href="https://babysparks.com/">BabySparks</a></td><td>“Over 9 million parents” is their marketing line.</td></tr>
+              <tr><td>Parents</td><td><a href="https://play.google.com/store/apps/details?hl=en&id=com.babysparks.babysparks">BabySparks on Play</a></td><td>1 million+ downloads. A store band.</td></tr>
+              <tr><td>Parents</td><td><a href="https://blog.lovevery.eu/product-recommendations/the-lovevery-app-for-parents-stage-based-activities-and-expert-advice-from-birth-to-age-3/">Lovevery</a></td><td>A camera pointed at their own toy.</td></tr>
+              <tr><td>Hardware</td><td><a href="https://investors.owletcare.com/news/news-details/2026/Owlet-Reports-Fourth-Quarter-and-Full-Year-2025-Results-Initiates-2026-Guidance/default.aspx">Owlet FY2025</a></td><td>$105.7 million. The subscriber line differs from the 10-K.</td></tr>
+              <tr><td>Hardware</td><td><a href="https://www.sec.gov/Archives/edgar/data/1816708/000181670826000018/owlt-20251231.htm">Owlet 10-K</a></td><td>The audited year, FDA status, 98,000 Owlet360 subscribers.</td></tr>
+              <tr><td>Hardware</td><td><a href="https://www.fool.com/earnings/call-transcripts/2026/03/05/owlet-owlt-q4-2025-earnings-call-transcript/">Owlet call, 5 Mar 2026</a></td><td>AI coaching described as later work.</td></tr>
+              <tr><td>Hardware</td><td><a href="https://www.marketscreener.com/news/owlet-investor-presentation-ce7d5edade8df224">Owlet presentation</a></td><td>650,000+ users and 2.5 million socks, from slides.</td></tr>
+              <tr><td>Hardware</td><td><a href="https://www1.folha.uol.com.br/mercado/2026/08/mercado-de-monitoramento-de-bebes-fatura-us-100-mi-com-ia-e-observacao-24-h.shtml">Folha on Nanit, 4 Aug 2026</a></td><td>Company claims, via a newspaper. In Portuguese.</td></tr>
+              <tr><td>Memories</td><td><a href="https://www.prnewswire.com/news-releases/tinybeans-acquires-qeepsake-creating-the-leading-privacy-first-family-memory-platform-302603273.html">Tinybeans buys Qeepsake</a></td><td>Subscriber counts and an AI roadmap. 3 Nov 2025.</td></tr>
+              <tr><td>Memories</td><td><a href="https://qeepsake.com/qeepsake-tinybeans/">Qeepsake FAQ</a></td><td>Prompts continued after the acquisition.</td></tr>
+              <tr><td>Diary</td><td><a href="https://get.lillio.com/comparison/">Lillio comparison</a></td><td>Current scale claims and daily sheets.</td></tr>
+              <tr><td>Diary</td><td><a href="https://www.lillio.com/blog/himama-secures-70m-series-b-bain-capital">HiMama, 2021</a></td><td>Older centre and parent counts.</td></tr>
+              <tr><td>Diary</td><td><a href="https://www.baincapitaldoubleimpact.com/portfolio/lillio">Bain on Lillio</a></td><td>Figures as of 31 Dec 2022.</td></tr>
+              <tr><td>Diary</td><td><a href="https://tapestry.info/our-story/">Tapestry</a></td><td>14,000 settings, 40 countries.</td></tr>
+              <tr><td>Diary</td><td><a href="https://businesscloud.co.uk/news/how-bootstrapped-tapestry-became-a-national-favourite-for-teachers/">BusinessCloud</a></td><td>About 95% in the UK.</td></tr>
+              <tr><td>Diary</td><td><a href="https://tapestry.info/wp-content/uploads/2025/03/Tapestry-Web-Guide-for-managers.pdf">Tapestry guide, March 2025</a></td><td>Export and printed journals.</td></tr>
+              <tr><td>Diary</td><td><a href="https://kinderly.co.uk/">Kinderly</a></td><td>Diaries and training.</td></tr>
+              <tr><td>Diary</td><td><a href="https://kinderly.co.uk/pacey/">Kinderly and PACEY</a></td><td>A childminder feature list.</td></tr>
+              <tr><td>Diary</td><td><a href="https://intercom.help/kinderlysupport/en/articles/1463152-kinderly-together-subscription-plans">Kinderly prices</a></td><td>£15 starter. The PACEY page lists different discounts. Check both.</td></tr>
+              <tr><td>Diary</td><td><a href="https://www.flat6labs.com/wp-content/uploads/2023/05/Kinderly.pdf">Kinderly pitch PDF</a></td><td>2023 pitch figures.</td></tr>
+              <tr><td>Diary</td><td><a href="https://www.storypark.com/">Storypark</a></td><td>11,850 services.</td></tr>
+              <tr><td>Diary</td><td><a href="https://www.storypark.com/au/storypark-xap">Storypark and Xap</a></td><td>The Australia subset.</td></tr>
+              <tr><td>Diary</td><td><a href="https://nmt-magazine.co.uk/kidskonnect/">KidsKonnect buys Blossom</a></td><td>1,000+ UK clients. 14,000 group locations.</td></tr>
+              <tr><td>Diary</td><td><a href="https://www.osborneclarke.com/news/osborne-clarke-advises-blossom-educational-its-acquisition-kidskonnect">Osborne Clarke</a></td><td>A law firm on the same deal.</td></tr>
+              <tr><td>Diary</td><td><a href="https://www.famly.co/about">Famly about</a></td><td>412,000 children.</td></tr>
+              <tr><td>Diary</td><td><a href="https://www.famly.co/us/about/press">Famly press</a></td><td>400,000 parents. The job post says more.</td></tr>
+              <tr><td>Diary</td><td><a href="https://famly.recruitee.com/o/senior-software-engineer-builder">Famly job post</a></td><td>1 million parents, in hiring copy.</td></tr>
+              <tr><td>Diary</td><td><a href="https://nmt-magazine.co.uk/famly-rebrand/">Famly rebrand</a></td><td>4,800 UK sites.</td></tr>
+              <tr><td>Diary</td><td><a href="https://fueler.io/blog/brightwheel-usage-revenue-valuation-growth-statistics">Fueler</a></td><td>Estimates. Read their note before quoting.</td></tr>
+              <tr><td>Diary</td><td><a href="https://yespress.io/brightwheel">YesPress</a></td><td>A larger estimate, including a share claim.</td></tr>
+              <tr><td>Diary</td><td><a href="https://www.4cforchildren.org/wp-content/uploads/2024/03/What-You-Need-to-Know-Brightwheel.pdf">Ohio PDF</a></td><td>800+ programmes.</td></tr>
+              <tr><td>Diary</td><td><a href="https://www.childcareawareky.org/announcing-free-access-to-brightwheel-childcare-management-software/">Kentucky</a></td><td>350+ programmes.</td></tr>
+              <tr><td>Diary</td><td><a href="https://magazine.wharton.upenn.edu/issues/fall-winter-2025/brightwheel/">Wharton</a></td><td>Origin story. The user total is elsewhere.</td></tr>
+              <tr><td>Secondary</td><td><a href="https://frenchydigital.com/blog/top-ai-agents-childcare-centers-2026">Frenchy Digital</a></td><td>An index. The page says it was checked on 5 Sep 2026.</td></tr>
+              <tr><td>Secondary</td><td><a href="https://sagnikbhattacharya.com/blog/choose-nursery-software-ai">Nursery AI blog</a></td><td>The only source here for Ovivio Bloom. The vendor page was not used.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="lede">A planning playbook. It is a reading copy for decisions, and the figures are tied to the pages above as of 10 November 2026. Open the childminder EYFS file before a screen is treated as a statutory form.</p>
+      </section>
+    </main>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js"></script>
+  <script>
+    var pages = ["read","map","routines","feed","memories","learnings","assess","value","market","ai-table","figures","sources"];
+    function showPage() {
+      var id = (location.hash || "#read").slice(1);
+      if (pages.indexOf(id) === -1) id = "read";
+      document.querySelectorAll("section.page").forEach(function (section) {
+        section.classList.toggle("is-on", section.id === id);
+      });
+      document.querySelectorAll(".nav-pop-link").forEach(function (link) {
+        var on = link.getAttribute("href") === "#" + id;
+        link.classList.toggle("is-here", on);
+        if (on) link.setAttribute("aria-current", "page");
+        else link.removeAttribute("aria-current");
+      });
+    }
+    var nav = document.querySelector(".nav");
+    var burger = document.querySelector(".nav-burger");
+    document.querySelector(".nav-dock").addEventListener("click", function (event) {
+      if (window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
+      if (event.target.closest(".nav-pop-link")) {
+        nav.classList.remove("is-open");
+        burger.setAttribute("aria-expanded", "false");
+        return;
+      }
+      var open = nav.classList.toggle("is-open");
+      burger.setAttribute("aria-expanded", open ? "true" : "false");
+    });
+    window.addEventListener("hashchange", showPage);
+    showPage();
+  </script>
+</body>
+</html>
