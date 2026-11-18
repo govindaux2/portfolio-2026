@@ -403,6 +403,90 @@
   width: 36px;
 }
 
+.work-project-doc {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: #0b0b0c;
+}
+
+.work-project-doc-links {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 8px 0 0;
+}
+
+.work-project-case-study {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: #a39c92;
+  font-family: var(--font-sans);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  line-height: 1.3;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.work-project-artifact {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  margin: 4px 0 0;
+  padding: 12px 14px;
+  border: 1px solid rgb(243 239 230 / 18%);
+  border-radius: 12px;
+  background: rgb(243 239 230 / 6%);
+  color: #f3efe6;
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  line-height: 1.3;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.work-project-artifact-mark {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #c6f24e;
+}
+
+.work-project-artifact:hover,
+.work-project-artifact:focus-visible,
+.work-project-artifact.is-here {
+  background: rgb(243 239 230 / 10%);
+  border-color: rgb(243 239 230 / 28%);
+}
+
+.work-project-artifact:focus-visible,
+.work-project-case-study:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgb(245 212 138 / 55%);
+  border-radius: 4px;
+}
+
+.work-project-case-study:hover,
+.work-project-case-study:focus-visible,
+.work-project-case-study.is-here {
+  color: #f3efe6;
+}
+
+.work-project.is-doc .work-project-stage {
+  background: #0b0b0c;
+}
+
 .work-project-section p {
   max-width: 36ch;
   margin: 0;
@@ -637,6 +721,37 @@ html[data-theme='light'] .work-project-kicker {
 
 html[data-theme='light'] .work-project-client {
   color: #2c2824;
+}
+
+html[data-theme='light'] .work-project-case-study {
+  color: #6b655c;
+}
+
+html[data-theme='light'] .work-project-case-study:hover,
+html[data-theme='light'] .work-project-case-study:focus-visible,
+html[data-theme='light'] .work-project-case-study.is-here {
+  color: #1c1916;
+}
+
+html[data-theme='light'] .work-project-artifact {
+  background: rgb(44 40 36 / 5%);
+  border-color: rgb(44 40 36 / 12%);
+  color: #1c1916;
+}
+
+html[data-theme='light'] .work-project-artifact-mark {
+  color: #5a7a12;
+}
+
+html[data-theme='light'] .work-project-artifact:hover,
+html[data-theme='light'] .work-project-artifact:focus-visible,
+html[data-theme='light'] .work-project-artifact.is-here {
+  background: rgb(44 40 36 / 8%);
+  border-color: rgb(44 40 36 / 20%);
+}
+
+html[data-theme='light'] .work-project.is-doc .work-project-stage {
+  background: #efe6da;
 }
 
 html[data-theme='light'] .work-project-section h2 {

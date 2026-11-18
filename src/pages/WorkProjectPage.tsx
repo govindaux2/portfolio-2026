@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type PointerEvent as ReactPointerEvent } from 'react';
-import { Navigate, useParams } from 'react-router-dom';
+import { Link, Navigate, useParams } from 'react-router-dom';
 import { Nav } from '../components/Nav';
 import './work-project.css';
 
@@ -11,6 +11,27 @@ const projects = {
     logo: '/logos/qad.svg',
     alt: 'A manufacturing worker holding a tablet and talking with an AI, over a factory traced in red',
     video: 'https://www.youtube-nocookie.com/embed/1OZxW5licUI',
+    docs: [
+      {
+        id: 'case',
+        label: 'Case study',
+        src: '/preview/qad-manufacturing.html?embed=1',
+        note: 'The story from mid-June through the September events.',
+      },
+      {
+        id: 'system',
+        label: 'Design system',
+        src: '/preview/qad-manufacturing2.html?embed=1',
+        note: 'MIP components board — themes, rail, and controls.',
+      },
+      {
+        id: 'playbook',
+        label: 'Seat plant playbook',
+        src: '/preview/qad-seat-playbook/?embed=1',
+        note: 'Clickable plant floor — departments, personas, and illustrative margin exposure.',
+        artifact: true,
+      },
+    ],
     chapters: [
       {
         name: 'The signal',
@@ -101,7 +122,7 @@ function readLayout(slug: string, names: readonly string[]): Layout {
 }
 
 export function WorkProjectPage() {
-  const { slug } = useParams();
+  const { slug, doc: docId } = useParams();
   const stageRef = useRef<HTMLDivElement>(null);
   const pageRef = useRef<HTMLDivElement>(null);
   const railRef = useRef<HTMLDivElement>(null);
@@ -111,6 +132,8 @@ export function WorkProjectPage() {
   const layoutRef = useRef<Layout>({ order: [], hidden: [] });
   const dragName = useRef<string | null>(null);
   const project = slug && slug in projects ? projects[slug as ProjectSlug] : null;
+  const docs = project && 'docs' in project ? project.docs : [];
+  const activeDoc = docs.find((item) => item.id === docId) ?? null;
   const video = project && 'video' in project ? project.video : null;
   const names = project ? project.chapters.map((chapter) => chapter.name) : [];
   const [videoOpen, setVideoOpen] = useState(false);
@@ -309,11 +332,15 @@ export function WorkProjectPage() {
   };
 
   if (!project) return <Navigate to="/" replace />;
+  if (docId && !activeDoc) return <Navigate to={`/work/${slug}`} replace />;
 
   return (
-    <div className="work-project" ref={pageRef}>
+    <div className={activeDoc ? 'work-project is-doc' : 'work-project'} ref={pageRef}>
       <Nav variant="inner" />
       <div className="work-project-stage" ref={stageRef}>
+        {activeDoc ? (
+          <iframe className="work-project-doc" title={activeDoc.label} src={activeDoc.src} />
+        ) : (
         <div className="work-project-reel">
           {visible.map((chapter, index) => {
             const cover = chapter.name === project.chapters[0].name;
@@ -368,6 +395,7 @@ export function WorkProjectPage() {
             );
           })}
         </div>
+        )}
       </div>
       <aside className="work-project-rail">
         <div className="work-project-rail-head">
@@ -376,9 +404,42 @@ export function WorkProjectPage() {
             <img src={project.logo} alt={project.client === 'QAD' ? project.client : ''} />
             {project.client !== 'QAD' && <span>{project.client}</span>}
           </p>
+          {docs.length > 0 && (
+            <nav className="work-project-doc-links" aria-label="Case pages">
+              <Link
+                to={`/work/${slug}`}
+                className={!activeDoc ? 'work-project-case-study is-here' : 'work-project-case-study'}
+                aria-current={!activeDoc ? 'page' : undefined}
+              >
+                Overview
+              </Link>
+              {docs.map((item) => {
+                const here = activeDoc?.id === item.id;
+                const artifact = 'artifact' in item && item.artifact;
+                const base = artifact ? 'work-project-artifact' : 'work-project-case-study';
+                return (
+                  <Link
+                    key={item.id}
+                    to={`/work/${slug}/${item.id}`}
+                    className={here ? `${base} is-here` : base}
+                    aria-current={here ? 'page' : undefined}
+                  >
+                    {artifact ? <span className="work-project-artifact-mark">Artifact</span> : null}
+                    <span>{item.label}</span>
+                  </Link>
+                );
+              })}
+            </nav>
+          )}
         </div>
         <div className="work-project-rail-scroll" ref={railRef}>
-          {visible.map((chapter) => (
+          {activeDoc ? (
+            <section className="work-project-section">
+              <h2>{activeDoc.label}</h2>
+              <p>{activeDoc.note}</p>
+            </section>
+          ) : (
+          visible.map((chapter) => (
             <section className="work-project-section" data-chapter={chapter.name} key={chapter.name}>
               <h2>{chapter.name}</h2>
               {'title' in chapter ? (
@@ -399,8 +460,10 @@ export function WorkProjectPage() {
                 <p>{chapter.copy}</p>
               )}
             </section>
-          ))}
+          ))
+          )}
         </div>
+        {!activeDoc && (
         <nav className="work-project-dots" aria-label="Project sections">
           {visible.map((chapter, index) => (
             <button
@@ -416,6 +479,8 @@ export function WorkProjectPage() {
             </button>
           ))}
         </nav>
+        )}
+        {!activeDoc && (
         <div className={sectionsOpen ? 'work-sections is-open' : 'work-sections'}>
           {sectionsOpen && (
             <div className="work-sections-panel" role="dialog" aria-label="Arrange sections">
@@ -524,6 +589,7 @@ export function WorkProjectPage() {
             </svg>
           </button>
         </div>
+        )}
       </aside>
       {videoOpen && video && (
         <div

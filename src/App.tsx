@@ -41,6 +41,7 @@ export default function App() {
         <Route path="/" element={<Home />} />
         <Route path="/work/ndla" element={<NdlaCasePage />} />
         <Route path="/work/ndla-b2" element={<NdlaB2Page />} />
+        <Route path="/work/:slug/:doc" element={<WorkProjectPage />} />
         <Route path="/work/:slug" element={<WorkProjectPage />} />
         <Route path="/prototypes/:slug" element={<PrototypePage />} />
         <Route path="/lab/glass" element={<GlassLabPage />} />
